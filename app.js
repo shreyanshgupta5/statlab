@@ -543,7 +543,11 @@
     }
 
     const strip = document.querySelector(".tchips"), cur = strip && strip.querySelector('[aria-current="true"]');
-    if (strip && cur) strip.scrollLeft = cur.offsetLeft - (strip.clientWidth - cur.offsetWidth) / 2;
+    if (strip && cur) {
+      const centre = () => (strip.scrollLeft = cur.offsetLeft - (strip.clientWidth - cur.offsetWidth) / 2);
+      centre();
+      if (document.fonts) document.fonts.ready.then(centre); // chip widths change once the web font loads
+    }
 
     clearInterval(timer);
     const cd = document.querySelector(".countdown");
