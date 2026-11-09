@@ -394,3 +394,8 @@ h1, .sh h2 { text-transform: uppercase; }
 .drow.past .yr { font-family: var(--led); font-weight: 900; font-size: 18px; color: var(--amber); }
 .drow.past .who b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 16px; }
 .next > .kicker + .countdown { margin-top: 2px; }
+
+/* 1F1 brand: red tag, white italic 1s, LED F (same as the app icon) */
+.brand span { font-size: 19px; letter-spacing: 0; color: #fff; }
+.brand i { font-family: var(--led); font-style: normal; font-weight: 900; color: var(--yellow); margin: 0 1px; text-shadow: 0 0 6px rgba(255,212,0,.6); }
+.top-meta { font-family: var(--led); font-weight: 900; color: var(--amber); }
