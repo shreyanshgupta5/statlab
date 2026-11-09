@@ -1,6 +1,6 @@
-/* 1F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
+/* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v8"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v9"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -171,9 +171,9 @@
     const start = new Date(r.raceStart || r.date + "T14:00:00Z");
     const end = new Date(start.getTime() + 2 * 36e5);
     const f = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-    return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//1F1//F1 2026//EN", "BEGIN:VEVENT",
+    return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//ONE F1//F1 2026//EN", "BEGIN:VEVENT",
       `UID:statlab-2026-r${r.round}@statlab`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(start)}`, `DTEND:${f(end)}`,
-      `SUMMARY:${r.name} (F1 R${r.round})`, `LOCATION:${r.place}`, "DESCRIPTION:Race start. Previews, standings and duels in 1F1.",
+      `SUMMARY:${r.name} (F1 R${r.round})`, `LOCATION:${r.place}`, "DESCRIPTION:Race start. Previews, standings and duels in ONE F1.",
       "BEGIN:VALARM", "TRIGGER:-PT30M", "ACTION:DISPLAY", "DESCRIPTION:Lights out in 30 minutes", "END:VALARM",
       "END:VEVENT", "END:VCALENDAR"].join("\r\n");
   }
@@ -866,7 +866,7 @@
     }
     const sh = e.target.closest("[data-share]");
     if (sh) {
-      const data = { title: "1F1", text: sh.dataset.share, url: location.href };
+      const data = { title: "ONE F1", text: sh.dataset.share, url: location.href };
       if (navigator.share) navigator.share(data).catch(() => {});
       else if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(() => { sh.textContent = "Link copied"; }).catch(() => {});
       return;

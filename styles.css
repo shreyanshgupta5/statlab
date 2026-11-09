@@ -399,3 +399,7 @@ h1, .sh h2 { text-transform: uppercase; }
 .brand span { font-size: 19px; letter-spacing: 0; color: #fff; }
 .brand i { font-family: var(--led); font-style: normal; font-weight: 900; color: var(--yellow); margin: 0 1px; text-shadow: 0 0 6px rgba(255,212,0,.6); }
 .top-meta { font-family: var(--led); font-weight: 900; color: var(--amber); }
+
+/* ONE F1 wordmark (artwork from brand/onef1-reference-1.png); lighten blends its dark backdrop into the header */
+.brand.logo { padding: 0; background: none; transform: none; display: inline-flex; align-items: center; }
+.brand.logo img { display: block; height: 30px; width: auto; mix-blend-mode: lighten; }

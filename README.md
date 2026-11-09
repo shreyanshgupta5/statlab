@@ -1,4 +1,4 @@
-# 1F1 (formerly Stat Lab)
+# ONE F1 (formerly Stat Lab)
 
 A mobile web app for the 2026 season: standings, schedule, race results, news, and head-to-head driver duels with qualifying telemetry. Installable as an app on phones (PWA) and usable offline.
 
