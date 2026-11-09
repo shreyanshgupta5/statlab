@@ -379,3 +379,4 @@ h1, .sh h2 { text-transform: uppercase; }
 .tchip[aria-current="true"] { border-color: var(--amber); }
 .seg a[aria-current="page"] { background: var(--amber); color: var(--bg); }
 .tabs a[aria-current="page"] svg { stroke: var(--amber); }
+.foot .ver { display: inline-block; margin-top: 8px; font-family: var(--led); font-weight: 900; font-size: 13px; color: var(--amber); }

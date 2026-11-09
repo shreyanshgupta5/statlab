@@ -1,5 +1,6 @@
 /* Stat Lab — mobile app shell: hash router + views. */
 (function () {
+  const APP_VERSION = "v4"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const app = document.getElementById("app");
@@ -301,7 +302,7 @@
 
       ${sectionHead("Qualifying head-to-head", "Teammate battles", `<p class="note">Median gap shown. Tap a pair to open the duel.</p>`)}
       <div class="battles">${battles}</div>
-      <p class="foot">${esc(S.NOTE || "")}</p>
+      <p class="foot">${esc(S.NOTE || "")}<br><span class="ver">App ${APP_VERSION} · data after R${S.RESULTS.length ? S.RESULTS[S.RESULTS.length - 1].round : 0}</span></p>
     `;
   }
 
