@@ -13,6 +13,7 @@ Requirements for rebuilding: Python 3, Node with Playwright (`npm i playwright`)
 | `videos/sao-paulo-gp-recap-v2.mp4` | São Paulo GP race recap reel, 1080×1920, 85 s, event cards + cartoon reactions |
 | `videos/max-interlagos-fx-preview-0-48.mp4` | Motion + sound pass on "Max × Interlagos", first 48 s (preview) |
 | `brazil-race-recap/statlab-interlagos-recap-cover.png` | Reel cover, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
+| `covers/out/statlab-cover-*.png` | Reel covers in one shared design for all five reels, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
 | `brazil-quali-carousel/slides/*.png` | São Paulo qualifying carousel, 5 slides, 1080×1350 |
 | `data/brazil_2026_race_results.csv` | Full São Paulo GP classification: grid, places gained, tyres, stops, best lap, penalties |
 | `data/drivers_standings_after_r20.csv` | Top 8 after round 20 (official totals before the race + Brazil points) |
@@ -44,6 +45,12 @@ Events, reactions and pacing (`HOLD`, `PER_LAP`, `SLOW_LAP`) are at the top of `
 node brazil-quali-carousel/export-slides.js      # -> slides/statlab-brazil-quali-1..5.png
 ```
 Numbers are written into `brazil-carousel.html`. Note: slides 2–3 show the grid as known on Saturday night (only Russell's penalty); the race-day grid had Hamilton 20th, Verstappen 21st, Leclerc 14th.
+
+**Reel covers** (`covers/`)
+```bash
+node covers/export-covers.js                     # -> covers/out/statlab-cover-<id>.png + -grid.png
+```
+All covers share one template in `covers.html`: brand tag, LED kicker, title (auto-fits), hero number, one data panel, format tag. Add a cover by copying a `.cover` block. Mexico sector times and the champion ages are typed in by hand; the 2016 position trace comes from `data/verstappen-brazil-csvs.zip`.
 
 **Video motion/sound pass** (`interlagos-video-fx/tools/`)
 `cues.py` holds the timeline found by frame analysis (`onsets.py`, `reveals.py`). `sfx.py` synthesises the sound effects, `render.py` does the motion pass and mix:
