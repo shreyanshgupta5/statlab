@@ -13,7 +13,7 @@ Requirements for rebuilding: Python 3, Node with Playwright (`npm i playwright`)
 | `videos/sao-paulo-gp-recap-v2.mp4` | São Paulo GP race recap reel, 1080×1920, 85 s, event cards + cartoon reactions |
 | `videos/max-interlagos-fx-preview-0-48.mp4` | Motion + sound pass on "Max × Interlagos", first 48 s (preview) |
 | `brazil-race-recap/statlab-interlagos-recap-cover.png` | Reel cover, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
-| `covers/out/statlab-cover-*.png` | Reel covers in one shared design for all five reels, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
+| `covers/out/statlab-cover-*.png` | Reel covers for all five reels in three colour templates (night, wet, team) with illustrated drivers, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
 | `brazil-quali-carousel/slides/*.png` | São Paulo qualifying carousel, 5 slides, 1080×1350 |
 | `data/brazil_2026_race_results.csv` | Full São Paulo GP classification: grid, places gained, tyres, stops, best lap, penalties |
 | `data/drivers_standings_after_r20.csv` | Top 8 after round 20 (official totals before the race + Brazil points) |
@@ -50,7 +50,7 @@ Numbers are written into `brazil-carousel.html`. Note: slides 2–3 show the gri
 ```bash
 node covers/export-covers.js                     # -> covers/out/statlab-cover-<id>.png + -grid.png
 ```
-All covers share one template in `covers.html`: brand tag, LED kicker, title (auto-fits), hero number, one data panel, format tag. Add a cover by copying a `.cover` block. Mexico sector times and the champion ages are typed in by hand; the 2016 position trace comes from `data/verstappen-brazil-csvs.zip`.
+All covers share one structure in `covers.html` (brand tag, LED kicker, auto-fitting title, illustrated driver, hero number, one data panel, format tag) in three colour templates: `t-night` (dark, amber), `t-wet` (rain blue) and `t-team` (full team colour via `--team`/`--team2`). Drivers are drawn in code by `driver()` from the JSON in each `.art` block (team colours, skin, eye colour, mood, gaze; `"bust": false` for helmet only), with no photos, real helmet designs or sponsor logos. Add a cover by copying a `.cover` block. Mexico sector times and the champion ages are typed in by hand; the 2016 position trace comes from `data/verstappen-brazil-csvs.zip`.
 
 **Video motion/sound pass** (`interlagos-video-fx/tools/`)
 `cues.py` holds the timeline found by frame analysis (`onsets.py`, `reveals.py`). `sfx.py` synthesises the sound effects, `render.py` does the motion pass and mix:

@@ -3,111 +3,145 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
 <style>
-/* One cover system for every Stat Lab reel. 1080x1920; everything that matters sits in the middle 1080x1440 (y 240-1680), the part the profile grid shows.
-   Same order on every cover: brand tag, LED kicker, title, hero number panel, one data panel, format tag + hand note. */
-:root { --bg: #0E0F12; --fg: #F2F2F0; --soft: #C9CDD2; --muted: #8D939B; --amber: #FFB000; --yellow: #FFD400; --rain: #4FA3FF; --red: #dc2c2c;
+/* Stat Lab reel covers, 1080x1920. Everything that matters sits in the middle 1080x1440 (y 240-1680), the part the profile grid shows.
+   Three colour templates share one structure (brand tag, LED kicker, title, illustrated driver, hero number, one data panel, format tag):
+     .t-night  dark timing screen, amber LED        (points races, standings)
+     .t-wet    deep rain blue, ice-blue LED          (wet races, classic races)
+     .t-team   full team colour, set --team / --team2 (qualifying duels, driver stories) */
+:root { --fg: #F2F2F0; --muted: #8D939B; --red: #dc2c2c; --ink: #0A0A0A;
   --display: 'Archivo', system-ui, sans-serif; --mono: 'JetBrains Mono', monospace; --led: 'Doto', monospace; --hand: 'Caveat Brush', cursive; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { margin: 0; background: #060607; display: flex; flex-wrap: wrap; gap: 40px; padding: 40px; }
-.cover { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: var(--fg); font-family: var(--display);
-  background: repeating-linear-gradient(105deg, transparent 0 46px, color-mix(in srgb, var(--accent) 9%, transparent) 46px 48px), radial-gradient(90% 60% at 50% 45%, #171A20, var(--bg)); }
-.cover::after { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,.6)); pointer-events: none; }
-.safe { position: absolute; left: 0; right: 0; top: 240px; height: 1440px; padding: 64px 72px; display: flex; flex-direction: column; }
-.brand { display: inline-block; align-self: flex-start; padding: 6px 22px; background: var(--red); transform: skewX(-16deg); }
-.brand span { display: inline-block; transform: skewX(16deg); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 30px; color: var(--bg); }
-.kick { margin-top: 30px; font-family: var(--led); font-weight: 900; font-size: 31px; letter-spacing: 4px; color: var(--amber); text-shadow: 0 0 10px rgba(255,176,0,.5); }
-.title { margin: 10px 0 0; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 124px; line-height: .9; text-transform: uppercase; white-space: nowrap; }
-.title em { font-style: inherit; color: var(--yellow); }
 
-/* hero: the one number the reel is about */
-.hero { position: relative; margin-top: 60px; padding: 34px 40px 30px; border-radius: 22px; border: 3px solid #3A3418;
-  background: radial-gradient(circle at 3px 3px, #1A1710 1.4px, transparent 1.7px) 0 0 / 7px 7px, #0A0A08; }
-.lbl { font-family: var(--mono); font-size: 26px; letter-spacing: 3px; color: var(--muted); }
-.climb { display: flex; align-items: center; gap: 26px; margin-top: 6px; font-family: var(--led); font-weight: 900; color: var(--amber); text-shadow: 0 0 14px rgba(255,176,0,.55); }
-.climb .p { font-size: 176px; line-height: 1; white-space: nowrap; }
-.climb .arrow { font-family: var(--display); font-size: 104px; color: var(--yellow); text-shadow: none; font-style: normal; }
-.climb .dot { display: inline-block; width: 26px; height: 26px; margin: 0 6px; background: currentColor; box-shadow: 0 0 14px rgba(255,176,0,.55); vertical-align: baseline; }
-.climb .u { font-size: 50px; line-height: 1.05; letter-spacing: 2px; }
-.who { margin-top: 4px; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 64px; line-height: 1; max-width: 700px; }
-.who small { display: block; margin-top: 12px; font-family: var(--mono); font-style: normal; font-weight: 500; font-size: 24px; color: var(--soft); letter-spacing: 1px; }
-.sticker { position: absolute; right: -26px; top: -54px; transform: rotate(-9deg); }
+.cover { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: var(--fg); font-family: var(--display); background: var(--bg); }
+.t-night { --bg: radial-gradient(90% 60% at 60% 50%, #1B1E25, #0E0F12); --led-c: #FFB000; --led-glow: rgba(255,176,0,.55); --hi: #FFD400; --title: #F2F2F0;
+  --panel: rgba(21,23,28,.92); --panel-line: #2A2D33; --hero: #0A0A08; --hero-line: #3A3418; --stripe: rgba(255,176,0,.07); --halo: rgba(255,176,0,.22); --tag: var(--red); --tag-fg: #0E0F12; }
+.t-wet { --bg: linear-gradient(170deg, #0B2A5C 0%, #0A1B3D 55%, #060E22 100%); --led-c: #9FE3FF; --led-glow: rgba(120,210,255,.6); --hi: #FFD400; --title: #FFFFFF;
+  --panel: rgba(6,16,38,.88); --panel-line: #1F3C70; --hero: rgba(4,10,26,.92); --hero-line: #2B5AA8; --stripe: rgba(159,227,255,.10); --halo: rgba(79,163,255,.35); --tag: var(--red); --tag-fg: #FFFFFF; }
+.t-team { --bg: linear-gradient(160deg, var(--team) 0%, var(--team) 52%, var(--team2) 100%); --led-c: #FFD400; --led-glow: rgba(255,212,0,.55); --hi: #FFD400; --title: #FFFFFF;
+  --panel: rgba(10,10,10,.86); --panel-line: rgba(255,255,255,.14); --hero: rgba(10,10,10,.9); --hero-line: rgba(255,255,255,.18); --stripe: rgba(255,255,255,.07); --halo: rgba(255,255,255,.18); --tag: #0A0A0A; --tag-fg: #FFFFFF; }
+
+.cover::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(105deg, transparent 0 46px, var(--stripe) 46px 50px); }
+.t-wet::before { background: repeating-linear-gradient(100deg, transparent 0 38px, var(--stripe) 38px 40px), repeating-linear-gradient(100deg, transparent 0 140px, rgba(255,255,255,.05) 140px 141px); }
+.t-team::before { background: linear-gradient(115deg, transparent 0 58%, rgba(0,0,0,.18) 58% 62%, transparent 62% 66%, rgba(0,0,0,.18) 66% 68%, transparent 68%), repeating-linear-gradient(105deg, transparent 0 46px, var(--stripe) 46px 50px); }
+.cover::after { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,.55)); pointer-events: none; z-index: 3; }
+
+/* illustrated driver(s) */
+.art { position: absolute; z-index: 1; }
+.art .halo { position: absolute; border-radius: 50%; background: radial-gradient(circle, var(--halo), transparent 68%); }
+.art svg { position: absolute; display: block; overflow: visible; filter: drop-shadow(0 30px 40px rgba(0,0,0,.45)); }
+
+.safe { position: absolute; z-index: 2; left: 0; right: 0; top: 240px; height: 1440px; padding: 60px 72px 56px; display: flex; flex-direction: column; }
+.brand { display: inline-block; align-self: flex-start; padding: 6px 22px; background: var(--tag); transform: skewX(-16deg); }
+.brand span { display: inline-block; transform: skewX(16deg); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 30px; color: var(--tag-fg); }
+.kick { margin-top: 26px; font-family: var(--led); font-weight: 900; font-size: 31px; letter-spacing: 4px; color: var(--led-c); text-shadow: 0 0 10px var(--led-glow); }
+.title { margin: 8px 0 0; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 124px; line-height: .9; text-transform: uppercase; white-space: nowrap; color: var(--title); text-shadow: 0 6px 0 rgba(0,0,0,.25); }
+.title em { font-style: inherit; color: var(--hi); }
+.spacer { flex: 1; }
+.col { width: 470px; }
+.duo { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+.duo .panel { margin-top: 0; }
+.duo .r { grid-template-columns: 78px 1fr 92px; }
+.duo .r b { font-size: 30px; }
+.duo .who { font-size: 34px; }
+.duo .r .v { font-size: 30px; }
+.art .bust { -webkit-mask-image: linear-gradient(#000 78%, transparent 97%); mask-image: linear-gradient(#000 78%, transparent 97%); }
+.names4 { position: absolute; display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; font-family: var(--led); font-weight: 900; color: var(--led-c); text-shadow: 0 0 10px var(--led-glow); }
+.names4 b { display: block; font-size: 40px; letter-spacing: 3px; }
+.names4 span { display: block; font-family: var(--mono); font-weight: 500; font-size: 22px; color: var(--muted); letter-spacing: 2px; text-shadow: none; }
+
+.hero { position: relative; padding: 28px 32px 26px; border-radius: 22px; border: 3px solid var(--hero-line); background: radial-gradient(circle at 3px 3px, rgba(255,255,255,.05) 1.4px, transparent 1.7px) 0 0 / 7px 7px, var(--hero); }
+.lbl { font-family: var(--mono); font-size: 22px; letter-spacing: 3px; color: var(--muted); }
+.t-team .lbl { color: rgba(255,255,255,.62); }
+.climb { display: flex; align-items: center; gap: 18px; margin-top: 4px; font-family: var(--led); font-weight: 900; color: var(--led-c); text-shadow: 0 0 14px var(--led-glow); }
+.climb .p { font-size: 112px; line-height: 1; white-space: nowrap; }
+.climb .arrow { font-family: var(--display); font-size: 80px; color: var(--hi); text-shadow: none; }
+.climb .u { font-size: 40px; line-height: 1.05; letter-spacing: 2px; }
+.climb .dot { display: inline-block; width: 20px; height: 20px; margin: 0 4px; background: currentColor; vertical-align: baseline; }
+.who { margin-top: 6px; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 40px; line-height: 1; }
+.who small { display: block; margin-top: 10px; font-family: var(--mono); font-style: normal; font-weight: 500; font-size: 21px; color: #C9CDD2; letter-spacing: 1px; }
+.sticker { position: absolute; right: -46px; top: -74px; transform: rotate(-9deg); }
 .sticker svg { display: block; }
-.car { position: absolute; right: 44px; bottom: 30px; width: 104px; height: 277px; filter: drop-shadow(0 18px 18px rgba(0,0,0,.6)); }
-.streaks { position: absolute; right: 56px; bottom: 4px; width: 80px; height: 60px; background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(242,242,240,.35) 10px 13px); mask: linear-gradient(#000, transparent); -webkit-mask: linear-gradient(#000, transparent); }
 
-/* data panel: same card on every cover, contents change */
-.panel { margin-top: 34px; padding: 32px 34px; border-radius: 18px; background: #15171C; border: 2px solid #2A2D33; }
-.panel > .lbl { font-size: 22px; margin-bottom: 16px; }
-.rows { display: grid; gap: 20px; }
-.r { display: grid; grid-template-columns: 150px 1fr 210px; align-items: center; gap: 18px; }
-.r b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 44px; line-height: 1; }
-.r .track { height: 30px; border-radius: 4px; background: #0C0D10; overflow: hidden; }
+.panel { margin-top: 18px; padding: 24px 28px; border-radius: 18px; background: var(--panel); border: 2px solid var(--panel-line); }
+.panel > .lbl { font-size: 19px; margin-bottom: 14px; }
+.rows { display: grid; gap: 14px; }
+.r { display: grid; grid-template-columns: 112px 1fr 150px; align-items: center; gap: 14px; }
+.r b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 38px; line-height: 1; }
+.r .track { height: 24px; border-radius: 4px; background: rgba(255,255,255,.07); overflow: hidden; }
 .r .fill { height: 100%; background: var(--c); border-radius: 4px; }
-.r .v { font-family: var(--led); font-weight: 900; font-size: 40px; color: var(--fg); text-align: right; white-space: nowrap; }
-.r.hi .v { color: var(--amber); text-shadow: 0 0 10px rgba(255,176,0,.5); }
-.r .v small { font-family: var(--mono); font-weight: 500; font-size: 20px; color: var(--muted); }
-.chips { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.chip { display: flex; align-items: center; gap: 18px; padding: 18px 22px; border-radius: 14px; background: #0F1115; border: 2px solid #2A2D33; }
-.chip .bar { width: 10px; align-self: stretch; border-radius: 2px; background: var(--c); }
-.chip b { display: block; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 42px; line-height: 1; }
-.chip span { display: block; margin-top: 6px; font-family: var(--mono); font-size: 20px; color: var(--muted); letter-spacing: 2px; }
-.strip .bars { display: grid; grid-template-columns: 16fr 46fr 9fr; height: 26px; margin-top: 20px; border-radius: 6px; overflow: hidden; }
-.strip .bars i:nth-child(1), .strip .bars i:nth-child(3) { background: var(--rain); } .strip .bars i:nth-child(2) { background: #FF5A4E; }
-.strip .names { display: grid; grid-template-columns: 16fr 46fr 9fr; margin-top: 10px; font-family: var(--mono); font-size: 20px; letter-spacing: 2px; color: var(--muted); text-align: center; }
-.trace { display: block; width: 100%; height: 290px; }
+.r .v { font-family: var(--led); font-weight: 900; font-size: 34px; text-align: right; white-space: nowrap; }
+.r.hi .v { color: var(--led-c); text-shadow: 0 0 10px var(--led-glow); }
+.r .v small { font-family: var(--mono); font-weight: 500; font-size: 18px; color: var(--muted); }
+.strip .bars { display: grid; grid-template-columns: 16fr 46fr 9fr; height: 22px; border-radius: 6px; overflow: hidden; }
+.strip .bars i:nth-child(1), .strip .bars i:nth-child(3) { background: #4FA3FF; } .strip .bars i:nth-child(2) { background: #FF5A4E; }
+.strip .names { display: grid; grid-template-columns: 16fr 46fr 9fr; margin-top: 8px; font-family: var(--mono); font-size: 18px; letter-spacing: 2px; color: var(--muted); text-align: center; }
+.facts { display: flex; gap: 14px; margin-bottom: 18px; }
+.facts div { flex: 1; padding: 12px 16px; border-left: 6px solid var(--c); background: rgba(255,255,255,.05); border-radius: 6px; }
+.facts b { display: block; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 27px; white-space: nowrap; line-height: 1; }
+.facts span { font-family: var(--mono); font-size: 17px; color: var(--muted); letter-spacing: 1px; }
+.trace { display: block; width: 100%; height: 200px; }
 
-.foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; }
-.foot .tag { font-family: var(--led); font-weight: 900; font-size: 34px; letter-spacing: 3px; color: var(--amber); }
-.foot .hand { font-family: var(--hand); font-size: 58px; color: var(--yellow); transform: rotate(-4deg); }
-/* outside the grid crop: quiet framing only */
-.edge { position: absolute; left: 72px; right: 72px; font-family: var(--mono); font-size: 22px; letter-spacing: 3px; color: #4A4F57; display: flex; justify-content: space-between; }
+.foot { margin-top: 26px; display: flex; justify-content: space-between; align-items: flex-end; }
+.foot .tag { font-family: var(--led); font-weight: 900; font-size: 32px; letter-spacing: 3px; color: var(--led-c); }
+.foot .hand { font-family: var(--hand); font-size: 58px; color: var(--hi); transform: rotate(-4deg); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
+.edge { position: absolute; z-index: 2; left: 72px; right: 72px; font-family: var(--mono); font-size: 22px; letter-spacing: 3px; color: rgba(255,255,255,.32); display: flex; justify-content: space-between; }
 .edge.t { top: 150px; } .edge.b { bottom: 150px; }
 </style>
 
-<!-- 1. São Paulo GP race recap -->
-<div class="cover" id="recap" style="--accent:#4FA3FF" data-car="#2A3B85,#0E1330,#E8102E" data-sticker="WOOO!">
+<!-- 1. São Paulo GP race recap · wet -->
+<div class="cover t-wet" id="recap" data-sticker="WOOO!">
+  <div class="art" style="left:470px; top:540px; width:640px; height:900px" data-drivers='[{"x":0,"y":0,"w":640,"code":"VER","suit":"#1B2A6B","suit2":"#E8102E","helmet":"#1B2A6B","h2":"#E8102E","h3":"#FFD400","skin":"#F0C4A0","iris":"#3E7CC4","mood":"fierce","look":-4}]'></div>
   <div class="edge t"><span>RACE RECAP · ROUND 20</span><span>08.11.2026</span></div>
   <div class="safe">
     <span class="brand"><span>STAT LAB</span></span>
     <div class="kick">SÃO PAULO GP · 71 LAPS IN 85 SECONDS</div>
     <h1 class="title">Interlagos<br><em>chaos</em></h1>
-    <div class="hero">
-      <div class="lbl">VERSTAPPEN · GRID → FLAG</div>
-      <div class="climb"><span class="p">P21</span><span class="arrow">→</span><span class="p">P2</span></div>
-      <div class="who">Max Verstappen<small>3rd straight Interlagos podium from P17+</small></div>
-    </div>
-    <div class="panel">
-      <div class="chips">
-        <div class="chip" style="--c:#FF8A1F"><span class="bar"></span><div><b>Norris wins</b><span>FROM POLE</span></div></div>
-        <div class="chip" style="--c:#4FA3FF"><span class="bar"></span><div><b>Rain × 2</b><span>3 TYRE SWAPS</span></div></div>
+    <div class="spacer"></div>
+    <div class="col">
+      <div class="hero">
+        <div class="lbl">GRID → FLAG</div>
+        <div class="climb"><span class="p">P21</span><span class="arrow">→</span><span class="p">P2</span></div>
+        <div class="who">Back row to podium<small>3rd straight Interlagos podium from P17+</small></div>
       </div>
-      <div class="strip"><div class="bars"><i></i><i></i><i></i></div>
-        <div class="names"><span>INTERS</span><span>SLICKS</span><span>INTERS</span></div></div>
+      <div class="panel">
+        <div class="facts"><div style="--c:#FF8A1F"><b>Norris wins</b><span>FROM POLE</span></div><div style="--c:#4FA3FF"><b>Rain × 2</b><span>3 TYRE SWAPS</span></div></div>
+        <div class="strip"><div class="bars"><i></i><i></i><i></i></div><div class="names"><span>INTERS</span><span>SLICKS</span><span>INTERS</span></div></div>
+      </div>
     </div>
     <div class="foot"><span class="tag">RACE RECAP</span><span class="hand">sound on!</span></div>
   </div>
   <div class="edge b"><span>DATA: OPENF1</span><span>@F1STATLAB</span></div>
 </div>
 
-<!-- 2. Battle for P2 points race -->
-<div class="cover" id="p2" style="--accent:#FFB000" data-car="#2A3B85,#0E1330,#E8102E" data-sticker="TIGHT!">
+<!-- 2. Battle for P2 · night -->
+<div class="cover t-night" id="p2" data-sticker="TIGHT!">
+  <div class="art" style="left:40px; top:600px; width:1000px; height:460px" data-drivers='[
+    {"x":0,"y":30,"w":250,"bust":false,"code":"VER","helmet":"#1B2A6B","h2":"#E8102E","h3":"#FFD400","skin":"#F0C4A0","iris":"#3E7CC4","mood":"fierce","look":5},
+    {"x":250,"y":30,"w":250,"bust":false,"code":"HAM","helmet":"#FFD400","h2":"#E8002D","h3":"#6A2C91","skin":"#8D5A3B","iris":"#5A3A22","mood":"focus","look":-5},
+    {"x":500,"y":30,"w":250,"bust":false,"code":"RUS","helmet":"#16181C","h2":"#27F4D2","h3":"#F2F2F0","skin":"#F2CBAA","iris":"#4B88C9","mood":"focus","look":5},
+    {"x":750,"y":30,"w":250,"bust":false,"code":"LEC","helmet":"#E8002D","h2":"#F2F2F0","h3":"#1A1A1A","skin":"#EFC29C","iris":"#5E8A4A","mood":"fierce","look":-5}]'></div>
+  <div class="names4" style="z-index:2; left:40px; width:1000px; top:900px"><div><b>VER</b><span>261</span></div><div><b>HAM</b><span>259</span></div><div><b>RUS</b><span>250</span></div><div><b>LEC</b><span>245</span></div></div>
   <div class="edge t"><span>POINTS RACE · AFTER ROUND 19</span><span>2026</span></div>
   <div class="safe">
     <span class="brand"><span>STAT LAB</span></span>
     <div class="kick">CHAMPIONSHIP · 4 DRIVERS · 1 SPOT</div>
-    <h1 class="title">Battle<br>for <em>P2</em></h1>
-    <div class="hero">
-      <div class="lbl">P2 → P5 · THE WHOLE GAP</div>
-      <div class="climb"><span class="p">16</span><span class="u">PTS</span></div>
-      <div class="who">Best of the rest<small>Antonelli already champion on 380</small></div>
-    </div>
-    <div class="panel">
-      <div class="lbl">OFFICIAL STANDINGS · SPRINTS INCLUDED</div>
-      <div class="rows" data-bars="0,262">
-        <div class="r hi" style="--c:#3671C6"><b>VER</b><div class="track"><div class="fill" data-v="261"></div></div><span class="v">261</span></div>
-        <div class="r" style="--c:#E8002D"><b>HAM</b><div class="track"><div class="fill" data-v="259"></div></div><span class="v">259</span></div>
-        <div class="r" style="--c:#27F4D2"><b>RUS</b><div class="track"><div class="fill" data-v="250"></div></div><span class="v">250</span></div>
-        <div class="r" style="--c:#E8002D"><b>LEC</b><div class="track"><div class="fill" data-v="245"></div></div><span class="v">245</span></div>
+    <h1 class="title">Battle for <em>P2</em></h1>
+    <div class="spacer"></div>
+    <div class="duo">
+      <div class="hero">
+        <div class="lbl">P2 → P5 GAP</div>
+        <div class="climb"><span class="p">16</span><span class="u">PTS</span></div>
+        <div class="who">Best of the rest<small>Antonelli champion on 380</small></div>
+      </div>
+      <div class="panel">
+        <div class="lbl">OFFICIAL STANDINGS</div>
+        <div class="rows" data-bars="0,262" style="gap:12px">
+          <div class="r hi" style="--c:#3671C6;"><b>VER</b><div class="track"><div class="fill" data-v="261"></div></div><span class="v">261</span></div>
+          <div class="r" style="--c:#E8002D;"><b>HAM</b><div class="track"><div class="fill" data-v="259"></div></div><span class="v">259</span></div>
+          <div class="r" style="--c:#27F4D2;"><b>RUS</b><div class="track"><div class="fill" data-v="250"></div></div><span class="v">250</span></div>
+          <div class="r" style="--c:#E8002D;"><b>LEC</b><div class="track"><div class="fill" data-v="245"></div></div><span class="v">245</span></div>
+        </div>
       </div>
     </div>
     <div class="foot"><span class="tag">POINTS RACE</span><span class="hand">who wants it?</span></div>
@@ -115,45 +149,56 @@ body { margin: 0; background: #060607; display: flex; flex-wrap: wrap; gap: 40px
   <div class="edge b"><span>DATA: OPENF1</span><span>@F1STATLAB</span></div>
 </div>
 
-<!-- 3. Interlagos 2016 classic -->
-<div class="cover" id="rain16" style="--accent:#4FA3FF" data-car="#1E2A6B,#0E1330,#E8102E" data-sticker="AGE 19">
+<!-- 3. Interlagos 2016 · wet -->
+<div class="cover t-wet" id="rain16" data-sticker="AGE 19">
+  <div class="art" style="left:470px; top:540px; width:640px; height:900px" data-drivers='[{"x":0,"y":0,"w":640,"code":"VER","suit":"#14204F","suit2":"#E8102E","helmet":"#F26B1D","h2":"#14204F","h3":"#FFFFFF","skin":"#F3CBA8","iris":"#3E7CC4","mood":"focus","look":-4,"wet":true}]'></div>
   <div class="edge t"><span>CLASSIC RACE · BRAZIL GP</span><span>13.11.2016</span></div>
   <div class="safe">
     <span class="brand"><span>STAT LAB</span></span>
     <div class="kick">INTERLAGOS 2016 · FULL WET RACE</div>
     <h1 class="title">Max in<br>the <em>rain</em></h1>
-    <div class="hero">
-      <div class="lbl">VERSTAPPEN · LAP 55 → FLAG</div>
-      <div class="climb"><span class="p">P14</span><span class="arrow">→</span><span class="p">P3</span></div>
-      <div class="who">11 cars in 14 laps<small>Fastest lap of the race, lap 67</small></div>
-    </div>
-    <div class="panel">
-      <div class="lbl">POSITION · LAPS 40–71</div>
-      <svg class="trace" id="trace16" viewBox="0 0 860 290"></svg>
+    <div class="spacer"></div>
+    <div class="col">
+      <div class="hero">
+        <div class="lbl">LAP 55 → FLAG</div>
+        <div class="climb"><span class="p">P14</span><span class="arrow">→</span><span class="p">P3</span></div>
+        <div class="who">11 cars, 14 laps<small>Fastest lap of the race</small></div>
+      </div>
+      <div class="panel">
+        <div class="lbl">POSITION · LAPS 40–71</div>
+        <svg class="trace" id="trace16" viewBox="0 0 480 200"></svg>
+      </div>
     </div>
     <div class="foot"><span class="tag">CLASSIC RACE</span><span class="hand">aged 19!</span></div>
   </div>
   <div class="edge b"><span>DATA: OPENF1 · JOLPICA</span><span>@F1STATLAB</span></div>
 </div>
 
-<!-- 4. Mexico GP qualifying -->
-<div class="cover" id="mexico" style="--accent:#27F4D2" data-car="#E8002D,#5A0010,#FFD400" data-sticker="66 CM">
+<!-- 4. Mexico GP qualifying · team (Ferrari red) -->
+<div class="cover t-team" id="mexico" style="--team:#C8102E; --team2:#5E0714" data-sticker="66 CM">
+  <div class="art" style="left:60px; top:690px; width:960px; height:470px" data-drivers='[
+    {"x":0,"y":0,"w":420,"bust":false,"code":"HAM","helmet":"#FFD400","h2":"#E8002D","h3":"#6A2C91","skin":"#8D5A3B","iris":"#5A3A22","mood":"fierce","look":9},
+    {"x":540,"y":0,"w":420,"bust":false,"code":"RUS","helmet":"#16181C","h2":"#27F4D2","h3":"#F2F2F0","skin":"#F2CBAA","iris":"#4B88C9","mood":"focus","look":-9}]'></div>
+  <div style="position:absolute; z-index:2; left:0; right:0; top:860px; text-align:center; font: italic 900 96px var(--display); font-stretch: 125%; color: var(--hi); text-shadow: 0 6px 0 rgba(0,0,0,.35)">VS</div>
   <div class="edge t"><span>QUALIFYING · ROUND 19</span><span>MEXICO CITY</span></div>
   <div class="safe">
     <span class="brand"><span>STAT LAB</span></span>
     <div class="kick">MEXICO GP · POLE POSITION</div>
     <h1 class="title">Hamilton<br><em>v</em> Russell</h1>
-    <div class="hero">
-      <div class="lbl">POLE MARGIN · ABOUT 66 CM</div>
-      <div class="climb"><span class="p">0<i class="dot"></i>009</span><span class="u">SEC</span></div>
-      <div class="who">Hamilton on pole<small>Russell quicker in one sector of three</small></div>
-    </div>
-    <div class="panel">
-      <div class="lbl">WHO WON EACH SECTOR · BY HOW MUCH</div>
-      <div class="rows" data-bars="0,0.03">
-        <div class="r" style="--c:#E8002D"><b>S1</b><div class="track"><div class="fill" data-v="0.025"></div></div><span class="v">HAM <small>.025</small></span></div>
-        <div class="r" style="--c:#27F4D2"><b>S2</b><div class="track"><div class="fill" data-v="0.022"></div></div><span class="v">RUS <small>.022</small></span></div>
-        <div class="r" style="--c:#E8002D"><b>S3</b><div class="track"><div class="fill" data-v="0.006"></div></div><span class="v">HAM <small>.006</small></span></div>
+    <div class="spacer"></div>
+    <div class="duo">
+      <div class="hero">
+        <div class="lbl">POLE MARGIN</div>
+        <div class="climb"><span class="p">0<i class="dot"></i>009</span><span class="u">SEC</span></div>
+        <div class="who">Hamilton on pole<small>About 66 cm on track</small></div>
+      </div>
+      <div class="panel">
+        <div class="lbl">WHO WON EACH SECTOR</div>
+        <div class="rows" data-bars="0,0.03">
+          <div class="r" style="--c:#FFD400"><b>S1</b><div class="track"><div class="fill" data-v="0.025"></div></div><span class="v">HAM <small>.025</small></span></div>
+          <div class="r" style="--c:#27F4D2"><b>S2</b><div class="track"><div class="fill" data-v="0.022"></div></div><span class="v">RUS <small>.022</small></span></div>
+          <div class="r" style="--c:#FFD400"><b>S3</b><div class="track"><div class="fill" data-v="0.006"></div></div><span class="v">HAM <small>.006</small></span></div>
+        </div>
       </div>
     </div>
     <div class="foot"><span class="tag">QUALIFYING</span><span class="hand">whose lap?</span></div>
@@ -161,24 +206,28 @@ body { margin: 0; background: #060607; display: flex; flex-wrap: wrap; gap: 40px
   <div class="edge b"><span>DATA: OPENF1</span><span>@F1STATLAB</span></div>
 </div>
 
-<!-- 5. Antonelli champion / season in 70 s -->
-<div class="cover" id="antonelli" style="--accent:#27F4D2" data-car="#27F4D2,#0B3B36,#101214" data-sticker="RECORD">
+<!-- 5. Antonelli champion · team (Mercedes teal) -->
+<div class="cover t-team" id="antonelli" style="--team:#00A19B; --team2:#06302D" data-sticker="RECORD">
+  <div class="art" style="left:470px; top:540px; width:640px; height:900px" data-drivers='[{"x":0,"y":0,"w":640,"code":"ANT","suit":"#16181C","suit2":"#27F4D2","helmet":"#F2F2F0","h2":"#27F4D2","h3":"#16181C","skin":"#E9BC93","iris":"#6B4A2E","mood":"happy","look":-3}]'></div>
   <div class="edge t"><span>SEASON RECAP · 2026</span><span>WORLD CHAMPION</span></div>
   <div class="safe">
     <span class="brand"><span>STAT LAB</span></span>
     <div class="kick">2026 SEASON IN 70 SECONDS</div>
     <h1 class="title">Kimi<br><em>Antonelli</em></h1>
-    <div class="hero">
-      <div class="lbl">AGE AT FIRST TITLE</div>
-      <div class="climb"><span class="p">20</span><span class="u">YRS<br>68 DAYS</span></div>
-      <div class="who">Youngest ever<small>A 16-year-old record, gone</small></div>
-    </div>
-    <div class="panel">
-      <div class="lbl">YOUNGEST WORLD CHAMPIONS · AGE</div>
-      <div class="rows" data-bars="0,24">
-        <div class="r hi" style="--c:#27F4D2"><b>ANT</b><div class="track"><div class="fill" data-v="20.19"></div></div><span class="v">20<small>Y</small> 68<small>D</small></span></div>
-        <div class="r" style="--c:#3671C6"><b>VET</b><div class="track"><div class="fill" data-v="23.37"></div></div><span class="v">23<small>Y</small> 134<small>D</small></span></div>
-        <div class="r" style="--c:#8D939B"><b>HAM</b><div class="track"><div class="fill" data-v="23.82"></div></div><span class="v">23<small>Y</small> 300<small>D</small></span></div>
+    <div class="spacer"></div>
+    <div class="col">
+      <div class="hero">
+        <div class="lbl">AGE AT TITLE</div>
+        <div class="climb"><span class="p">20</span><span class="u">YRS<br>68 DAYS</span></div>
+        <div class="who">Youngest ever<small>A 16-year-old record, gone</small></div>
+      </div>
+      <div class="panel">
+        <div class="lbl">YOUNGEST WORLD CHAMPIONS</div>
+        <div class="rows" data-bars="0,24">
+          <div class="r hi" style="--c:#27F4D2"><b>ANT</b><div class="track"><div class="fill" data-v="20.19"></div></div><span class="v">20<small>Y</small> 68<small>D</small></span></div>
+          <div class="r" style="--c:#3671C6"><b>VET</b><div class="track"><div class="fill" data-v="23.37"></div></div><span class="v">23<small>Y</small> 134<small>D</small></span></div>
+          <div class="r" style="--c:#FF8A1F"><b>HAM</b><div class="track"><div class="fill" data-v="23.82"></div></div><span class="v">23<small>Y</small> 300<small>D</small></span></div>
+        </div>
       </div>
     </div>
     <div class="foot"><span class="tag">SEASON RECAP</span><span class="hand">what a year!</span></div>
@@ -187,37 +236,93 @@ body { margin: 0; background: #060607; display: flex; flex-wrap: wrap; gap: 40px
 </div>
 
 <script>
-// the same little car on every cover, in the team's colours
-const carSVG = (body, dark, accent) => `<div class="streaks"></div><svg class="car" viewBox="0 0 60 160" aria-hidden="true">
-  <path d="M4 10 h52 l2 7 h-56 z" fill="${dark}"/><rect x="6" y="12" width="48" height="3" fill="${accent}"/>
-  <rect x="1" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/><rect x="47" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/>
-  <path d="M26 6 Q30 2 34 6 L37 58 H23 Z" fill="${body}"/><path d="M28.5 8 L31.5 8 L32.5 56 H27.5 Z" fill="${accent}"/>
-  <path d="M14 70 Q14 62 22 60 H38 Q46 62 46 70 L48 112 Q48 122 40 126 H20 Q12 122 12 112 Z" fill="${dark}"/>
-  <path d="M16 72 Q16 65 23 63 H37 Q44 65 44 72 L45 108 Q45 116 39 119 H21 Q15 116 15 108 Z" fill="${body}"/>
-  <ellipse cx="30" cy="76" rx="6.5" ry="11" fill="#07080A"/><circle cx="30" cy="78" r="4.2" fill="${accent}"/>
-  <path d="M26 88 H34 L33 130 H27 Z" fill="${body}"/>
-  <rect x="0" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/><rect x="47" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/>
-  <path d="M14 140 H46 V152 H14 Z" fill="${dark}"/><rect x="14" y="143" width="32" height="4" fill="${body}"/></svg>`;
+/* Illustrated driver: helmet with the visor up (eyes showing), HANS, race suit in team colours.
+   Drawn in code, no photos: team colours and a three-letter code identify the driver, never a real helmet design or sponsor. */
+let uid = 0;
+function driver(d) {
+  const id = 'd' + (++uid), K = '#0A0A0A', sw = 6;
+  const mood = d.mood || 'focus', look = d.look || 0, wet = !!d.wet;
+  const eye = (cx, side) => {
+    const cy = 348, lid = mood === 'happy' ? 4 : 14, top = mood === 'happy' ? 22 : 20;
+    const ix = cx + look, iy = cy + (mood === 'happy' ? -2 : 0);
+    // brow: inner end down for focus/fierce, arched for happy
+    const inner = cx - side * 30, outer = cx + side * 36;
+    const bIn = mood === 'fierce' ? cy - 20 : mood === 'focus' ? cy - 26 : cy - 36, bOut = mood === 'happy' ? cy - 34 : cy - 36;
+    return `<path d="M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z" fill="#FBF8F2"/>
+      <clipPath id="${id}e${side}"><path d="M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z"/></clipPath>
+      <g clip-path="url(#${id}e${side})"><circle cx="${ix}" cy="${iy}" r="14" fill="${d.iris}"/><circle cx="${ix}" cy="${iy}" r="6.5" fill="${K}"/><circle cx="${ix + 4}" cy="${iy - 5}" r="4" fill="#fff"/>
+        <path d="M${cx - 40} ${cy - 30} H${cx + 40} V${cy - 6} Q${cx} ${cy - 14} ${cx - 40} ${cy - 6} Z" fill="rgba(0,0,0,.18)"/></g>
+      <path d="M${cx - 36} ${cy + 1} Q${cx} ${cy - top - 2} ${cx + 36} ${cy + 1}" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+      ${mood === 'happy' ? `<path d="M${cx - 26} ${cy + 12} Q${cx} ${cy + 20} ${cx + 26} ${cy + 12}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="3" stroke-linecap="round"/>` : ''}
+      <path d="M${inner} ${bIn} Q${(inner + outer) / 2} ${Math.min(bIn, bOut) - 8} ${outer} ${bOut}" fill="none" stroke="#3A2A1E" stroke-width="9" stroke-linecap="round"/>`;
+  };
+  const bust = d.bust !== false;
+  const vb = bust ? '0 0 600 820' : '80 110 440 480';
+  const h = bust ? d.w * 820 / 600 : d.w * 480 / 440;
+  return `<svg viewBox="${vb}" class="${bust ? 'bust' : ''}" style="left:${d.x}px; top:${d.y}px; width:${d.w}px; height:${h}px" aria-hidden="true">
+  <defs>
+    <linearGradient id="${id}sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
+    <radialGradient id="${id}h" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+    <linearGradient id="${id}v" x1="0" x2="1"><stop offset="0" stop-color="#1B1030"/><stop offset=".45" stop-color="#2B3F8F"/><stop offset=".75" stop-color="#9B3FB5"/><stop offset="1" stop-color="#F28B2E"/></linearGradient>
+    <pattern id="${id}c" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#1A1C20"/><rect width="5" height="5" fill="#26292F"/><rect x="5" y="5" width="5" height="5" fill="#26292F"/></pattern>
+    <clipPath id="${id}hc"><path d="M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z"/></clipPath>
+  </defs>
+  ${bust ? `
+  <path d="M10 830 C22 700 84 616 198 588 L402 588 C516 616 578 700 590 830 Z" fill="${d.suit}" stroke="${K}" stroke-width="${sw}"/>
+  <path d="M60 830 C74 724 112 662 176 628 L204 650 C148 692 118 752 110 830 Z M540 830 C526 724 488 662 424 628 L396 650 C452 692 482 752 490 830 Z" fill="${d.suit2}" stroke="${K}" stroke-width="4"/>
+  <path d="M10 830 C22 700 84 616 198 588 L402 588 C516 616 578 700 590 830 Z" fill="url(#${id}sh)"/>
+  <path d="M250 600 L300 650 L350 600" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="5"/>
+  <text x="300" y="770" text-anchor="middle" style="font: italic 900 64px 'Archivo'; font-stretch: 125%; fill: ${d.suit2}; stroke: ${K}; stroke-width: 3px; paint-order: stroke">${d.code}</text>
+  <path d="M140 604 C160 540 226 516 300 516 C374 516 440 540 460 604 L426 622 C404 578 362 560 300 560 C238 560 196 578 174 622 Z" fill="url(#${id}c)" stroke="${K}" stroke-width="${sw}"/>
+  <path d="M212 590 C226 552 374 552 388 590 L378 606 C350 584 250 584 222 606 Z" fill="${d.suit2}" stroke="${K}" stroke-width="4"/>` : ''}
+  <path d="M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z" fill="${d.helmet}"/>
+  <g clip-path="url(#${id}hc)">
+    <path d="M90 410 C170 330 430 330 510 410 L510 470 C430 380 170 380 90 470 Z" fill="${d.h2}"/>
+    <path d="M90 450 C170 380 430 380 510 450 L510 462 C430 392 170 392 90 462 Z" fill="${d.h3}"/>
+    <path d="M276 120 C284 190 288 236 286 258 L314 258 C312 236 316 190 324 120 Z" fill="${d.h2}"/>
+    <path d="M262 120 C270 190 274 236 272 258 L280 258 C282 236 278 190 270 120 Z M338 120 C330 190 326 236 328 258 L320 258 C318 236 322 190 330 120 Z" fill="${d.h3}"/>
+    <path d="M200 505 H400 V528 H200 Z" fill="rgba(0,0,0,.55)"/>
+    <path d="M220 512 H380 M220 521 H380" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+    <rect x="80" y="100" width="440" height="500" fill="url(#${id}h)"/>
+  </g>
+  <path d="M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z" fill="none" stroke="${K}" stroke-width="${sw}"/>
+  <path d="M170 296 H430 Q458 296 458 324 V362 Q458 392 428 394 C360 400 240 400 172 394 Q142 392 142 362 V324 Q142 296 170 296 Z" fill="#141518" stroke="${K}" stroke-width="${sw}"/>
+  <path d="M178 306 H422 Q446 306 446 328 V360 Q446 382 420 384 C356 389 244 389 180 384 Q154 382 154 360 V328 Q154 306 178 306 Z" fill="#E9E6E0"/>
+  <path d="M196 316 H404 Q426 316 426 336 V358 Q426 374 404 376 C350 380 250 380 196 376 Q174 374 174 358 V336 Q174 316 196 316 Z" fill="${d.skin}"/>
+  <path d="M196 316 H404 Q426 316 426 336 V340 C350 330 250 330 174 340 V336 Q174 316 196 316 Z" fill="rgba(0,0,0,.12)"/>
+  ${eye(250, -1)}${eye(350, 1)}
+  <path d="M300 352 C296 362 296 370 302 374" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M146 252 C200 226 400 226 454 252 L460 298 H140 Z" fill="url(#${id}v)" stroke="${K}" stroke-width="${sw}" stroke-linejoin="round"/>
+  <path d="M176 262 C240 246 300 244 360 248" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 288 H450" stroke="${K}" stroke-width="3"/>
+  <circle cx="122" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/><circle cx="478" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/>
+  <path d="M240 548 C260 562 340 562 360 548" fill="none" stroke="${K}" stroke-width="5"/>
+  ${wet ? Array.from({ length: 14 }, (_, i) => { const x = 130 + (i * 53) % 340, y = 160 + (i * 97) % 330; return `<path d="M${x} ${y} q-5 12 0 16 q5 -4 0 -16 z" fill="rgba(255,255,255,.75)" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>`; }).join('') : ''}
+</svg>`;
+}
+
 const burst = "M120,0 L95,13 L111,32 L82,33 L86,58 L60,45 L44,66 L27,46 L5,63 L-8,42 L-33,58 L-40,36 L-67,46 L-66,23 L-95,28 L-87,7 L-118,0 L-90,-12 L-105,-31 L-78,-30 L-82,-56 L-56,-43 L-40,-63 L-22,-44 L0,-61 L13,-40 L38,-57 L44,-35 L70,-48 L71,-25 L98,-30 L90,-9 Z";
 document.querySelectorAll('.cover').forEach((c) => {
-  const hero = c.querySelector('.hero');
-  hero.insertAdjacentHTML('beforeend', carSVG(...c.dataset.car.split(',')));
-  hero.insertAdjacentHTML('afterbegin', `<div class="sticker"><svg width="250" height="130" viewBox="-125 -65 250 130"><path d="${burst}" fill="#FFD400" stroke="#0A0A08" stroke-width="6"/><text x="0" y="16" text-anchor="middle" style="font: 48px 'Caveat Brush', cursive; fill: #0A0A08">${c.dataset.sticker}</text></svg></div>`);
+  const art = c.querySelector('.art');
+  const ds = JSON.parse(art.dataset.drivers);
+  art.innerHTML = ds.map((d) => { const hw = d.w * 0.9; return `<div class="halo" style="left:${d.x + d.w / 2 - hw / 2}px; top:${d.y + (d.bust === false ? 0 : d.w * 0.05)}px; width:${hw}px; height:${hw}px"></div>`; }).join('') + ds.map(driver).join('');
+  c.querySelector('.hero').insertAdjacentHTML('afterbegin', `<div class="sticker"><svg width="230" height="120" viewBox="-125 -65 250 130"><path d="${burst}" fill="#FFD400" stroke="#0A0A08" stroke-width="6"/><text x="0" y="16" text-anchor="middle" style="font: 48px 'Caveat Brush', cursive; fill: #0A0A08">${c.dataset.sticker}</text></svg></div>`);
   c.querySelectorAll('[data-bars]').forEach((rows) => {
     const [lo, hi] = rows.dataset.bars.split(',').map(Number);
     rows.querySelectorAll('.fill').forEach((f) => { f.style.width = Math.max(4, (Number(f.dataset.v) - lo) / (hi - lo) * 100) + '%'; });
   });
 });
-// titles: shrink until the longest line fits the safe width
-document.fonts.ready.then(() => document.querySelectorAll('.title').forEach((t) => { let f = 124; while (t.scrollWidth > t.clientWidth && f > 80) { t.style.fontSize = (--f) + 'px'; } document.body.dataset.fitted = '1'; }));
+
 // Verstappen's position, Brazil 2016 laps 40-71 (content/data/verstappen-brazil-csvs.zip, ver_brazil_laps.csv)
 (() => {
   const pos = [2,2,2,2,3,5,5,5,5,5,5,5,5,5,7,14,13,12,11,10,9,8,7,7,7,6,5,4,4,3,3,3];
-  const W = 860, H = 290, pad = 22, L = 70, x = (i) => L + i / (pos.length - 1) * (W - L - pad), y = (p) => pad + (p - 1) / 15 * (H - 2 * pad);
-  const pts = pos.map((p, i) => `${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(' ');
-  const i55 = 15, grid = [1, 5, 10, 15].map((p) => `<line x1="${L}" x2="${W - pad}" y1="${y(p)}" y2="${y(p)}" stroke="#2A2D33" stroke-width="2" vector-effect="non-scaling-stroke"/><text x="0" y="${y(p) + 7}" style="font: 20px 'JetBrains Mono'; fill: #8D939B">P${p}</text>`).join('');
+  const W = 480, H = 200, pad = 16, L = 52, x = (i) => L + i / (pos.length - 1) * (W - L - pad), y = (p) => pad + (p - 1) / 15 * (H - 2 * pad);
+  const grid = [1, 5, 10, 15].map((p) => `<line x1="${L}" x2="${W - pad}" y1="${y(p)}" y2="${y(p)}" stroke="rgba(255,255,255,.12)" stroke-width="2"/><text x="0" y="${y(p) + 6}" style="font: 17px 'JetBrains Mono'; fill: #8D939B">P${p}</text>`).join('');
   document.getElementById('trace16').innerHTML = grid +
-    `<polyline points="${pts}" fill="none" stroke="#FFB000" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` +
-    `<circle cx="${x(i55)}" cy="${y(14)}" r="10" fill="#4FA3FF"/><circle cx="${x(pos.length - 1)}" cy="${y(3)}" r="10" fill="#FFD400"/>`;
+    `<polyline points="${pos.map((p, i) => `${x(i).toFixed(1)},${y(p).toFixed(1)}`).join(' ')}" fill="none" stroke="#9FE3FF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>` +
+    `<circle cx="${x(15)}" cy="${y(14)}" r="9" fill="#FF5A4E"/><circle cx="${x(pos.length - 1)}" cy="${y(3)}" r="9" fill="#FFD400"/>`;
 })();
+
+// titles: shrink until the longest line fits the safe width
+document.fonts.ready.then(() => document.querySelectorAll('.title').forEach((t) => { let f = 124; while (t.scrollWidth > t.clientWidth && f > 80) { t.style.fontSize = (--f) + 'px'; } document.body.dataset.fitted = '1'; }));
 </script>
