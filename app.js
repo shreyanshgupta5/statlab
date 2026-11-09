@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v13"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v14"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -635,7 +635,10 @@
 
     const chips = S.RESULTS.map((r) => {
       const ri = (S.RACE_INFO || {})[r.round] || {};
-      return `<a class="tchip" href="#/duel/${qa.id}/${qb.id}/race/${r.round}" ${r.round === round ? 'aria-current="true"' : ""}>
+      // each race opens on that race's front row: the P1 and P2 qualifiers
+      const front = ((S.QUALI_DETAIL || {})[r.round] || []).filter((q) => q.best != null).sort((x, y) => x.pos - y.pos);
+      const p1 = front[0] ? front[0].id : qa.id, p2 = front[1] ? front[1].id : qb.id;
+      return `<a class="tchip" href="#/duel/${p1}/${p2}/race/${r.round}" ${r.round === round ? 'aria-current="true"' : ""}>
         <span class="mono">R${r.round}</span><b>${esc(ri.short || r.round)}</b>${DUELS[r.round] ? "<i></i>" : ""}</a>`;
     }).join("");
 
