@@ -267,7 +267,7 @@ a.race:active { background: var(--card-2); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend span::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--tc); }
 
-/* ---------- v2: following, driver + team pages, fights, calendar ---------- */
+/* ---------- v2: following, driver + team pages, calendar ---------- */
 a.row:active, a.trow:active, a.rrow:active, a.drow:active { background: var(--card-2); }
 .row.fav .who b::after, .trow.fav .tname::after { content: " ★"; color: #FFD400; font-style: normal; font-size: 13px; }
 .drows li:first-child .drow { border-top: 0; }
@@ -299,15 +299,6 @@ a.row:active, a.trow:active, a.rrow:active, a.drow:active { background: var(--ca
 .form.pts { background: #1F5E3A; color: #CFF5DD; }
 .form.dnf { background: #5A1F1C; color: var(--down); font-size: 10px; }
 .forms.big { margin-top: 10px; } .forms.big .form { min-width: 40px; height: 34px; font-size: 14px; }
-
-.fights { display: grid; gap: 10px; }
-.fight { padding: 14px 16px; background: var(--card); border-radius: var(--radius); }
-.fight-top { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 0.08em; color: var(--red-text); }
-.fight-top .dim { color: var(--muted); }
-.fight ol { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.fight li a { display: inline-flex; align-items: baseline; gap: 8px; min-height: 40px; padding: 8px 12px; border-radius: 10px; background: var(--card-2); border-left: 4px solid var(--tc); }
-.fight li b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 16px; }
-.fight li .mono { font-size: 12px; color: var(--soft); }
 
 a.dcard { display: block; }
 .dcard .forms { margin-top: 4px; }
@@ -375,7 +366,6 @@ h1, .sh h2 { text-transform: uppercase; }
 .row, .rrow { min-height: 58px; }
 .row .bar { height: 3px; opacity: .9; }
 .sh h2 em, h1 em { font-style: inherit; color: var(--yellow); }
-.fight-top .mono:first-child { font-family: var(--led); font-weight: 900; font-size: 14px; color: var(--amber); }
 .tchip[aria-current="true"] { border-color: var(--amber); }
 .seg a[aria-current="page"] { background: var(--amber); color: var(--bg); }
 .tabs a[aria-current="page"] svg { stroke: var(--amber); }

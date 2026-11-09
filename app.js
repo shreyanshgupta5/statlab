@@ -1,6 +1,6 @@
 /* Stat Lab — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v4"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v5"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const app = document.getElementById("app");
@@ -164,20 +164,6 @@
   const formGuide = (id, n = 5, link = false) => driverRounds(id).filter((x) => x.raced).slice(-n).map((x) => formChip(x, link)).join("");
   const teammates = (d) => S.DRIVERS.filter((x) => x.team === d.team && x.id !== d.id && DSmap[x.id] && (DSmap[x.id].history.length || DSmap[x.id].points));
 
-  /* ---------- championship fights still open ---------- */
-  function closeFights() {
-    const left = S.CALENDAR.length - S.RESULTS.length;
-    const swing = 26; // one Grand Prix win plus fastest-lap-free margin: within one race of each other
-    const groups = [];
-    let cur = [DS[0]];
-    for (let i = 1; i < Math.min(DS.length, 10) && DS[i].points > 0; i++) { // points positions only
-      if (cur[cur.length - 1].points - DS[i].points <= swing) cur.push(DS[i]);
-      else { if (cur.length > 1) groups.push(cur); cur = [DS[i]]; }
-    }
-    if (cur.length > 1) groups.push(cur);
-    return { left, groups: groups.slice(0, 3) };
-  }
-
   /* ---------- add the next race to a calendar ---------- */
   function icsFor(r) {
     const start = new Date(r.raceStart || r.date + "T14:00:00Z");
@@ -246,13 +232,6 @@
       ? `${sectionHead("Your grid", "Following", `<p class="note">Saved on this device. Tap ★ on any driver or team page.</p>`)}<div class="favs reveal">${favCards}</div>`
       : `<section class="onboard reveal"><span class="kicker">Make it yours</span><h2>Who do you follow?</h2><p class="note">Pick drivers to pin their form and gaps to the top.</p><div class="picks">${pick}</div></section>`;
 
-    const cf = closeFights();
-    const fights = cf.groups.map((g) => {
-      const top = g[0];
-      return `<div class="fight"><div class="fight-top"><span class="mono">P${top.rank}–P${g[g.length - 1].rank}</span><span class="mono dim">${top.points - g[g.length - 1].points} pts spread</span></div>
-        <ol>${g.map((s) => `<li style="--tc:${tc(driver[s.id].team)}"><a href="#/driver/${s.id}"><b>${esc(driver[s.id].last)}</b><span class="mono">${s === top ? s.points : "−" + (top.points - s.points)}</span></a></li>`).join("")}</ol></div>`;
-    }).join("");
-
     const battles = S.TEAMS.map((t) => {
       const [a, b] = S.DRIVERS.filter((d) => d.team === t.id);
       const q = qualiH2H(a.id, b.id);
@@ -291,8 +270,6 @@
       </div>` : ""}
 
       ${following}
-
-      ${fights ? `${sectionHead(`${cf.left} rounds left`, "Close fights", `<p class="note">Drivers within one race win (26 pts) of the car ahead.</p>`)}<div class="fights reveal">${fights}</div>` : ""}
 
       ${sectionHead("Drivers", "Standings")}
       <ol class="standings">${standings}</ol>
@@ -783,6 +760,15 @@
     }
   }
   window.addEventListener("hashchange", route);
+
+  // tap the tab you're already on to jump back to the top (the hash doesn't change, so route() won't run)
+  tabs.forEach((t) => t.addEventListener("click", (e) => {
+    const here = location.hash && location.hash !== "#" ? location.hash : "#/";
+    if (t.getAttribute("href") !== here) return;
+    e.preventDefault();
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+  }));
 
   // one listener for follow stars, share and calendar buttons
   app.addEventListener("click", (e) => {
