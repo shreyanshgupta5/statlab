@@ -312,3 +312,70 @@ a.row:active, a.trow:active, a.rrow:active, a.drow:active { background: var(--ca
 a.dcard { display: block; }
 .dcard .forms { margin-top: 4px; }
 .dcard .form { min-width: 24px; height: 22px; font-size: 11px; }
+
+/* ---------- v3: the reel look (timing screen, LED numbers, colour templates, helmets, stickers) ---------- */
+:root { --led: 'Doto', var(--mono); --hand: 'Caveat Brush', cursive; --amber: #FFB000; --yellow: #FFD400; --glow: rgba(255,176,0,.5); --ice: #9FE3FF; }
+body { background: repeating-linear-gradient(105deg, transparent 0 46px, rgba(255,176,0,.025) 46px 48px) fixed, var(--bg); }
+
+/* LED type for labels and numbers, like the reels' timing screen */
+.kicker { font-family: var(--led); font-weight: 900; font-size: 14px; letter-spacing: .12em; color: var(--amber); text-shadow: 0 0 8px var(--glow); }
+h1, .sh h2 { text-transform: uppercase; }
+.pts, .pos { font-family: var(--led); font-weight: 900; font-style: normal; }
+.pts { font-size: 22px; color: var(--amber); text-shadow: 0 0 8px var(--glow); }
+.pos { font-size: 16px; color: var(--soft); }
+.standings li:first-child .pos { color: var(--yellow); }
+.hero-stats b, .facts b.mono, .gapbig, .dstats b, .fav-card .mono, .countdown { font-family: var(--led); font-weight: 900; font-style: normal; }
+.hero-stats b { font-size: 26px; color: var(--amber); text-shadow: 0 0 10px var(--glow); }
+.hero-row .hero-stats > div { min-width: 0; }
+.metrics b.win { color: var(--amber); text-shadow: 0 0 8px var(--glow); }
+.metrics b { font-family: var(--led); font-style: normal; font-size: 20px; }
+.gapbig { text-shadow: 0 0 14px currentColor; }
+.foot { font-family: var(--mono); }
+
+/* hero panels: dot-matrix board with a team stripe on top */
+.hero { border: 3px solid #3A3418; border-top: 6px solid var(--tc); overflow: visible;
+  background: radial-gradient(circle at 3px 3px, rgba(255,255,255,.045) 1.3px, transparent 1.6px) 0 0 / 7px 7px, #0A0A08; }
+.hero-row { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.hero-row .hero-stats { margin-top: 0; flex: 1; gap: 10px 14px; }
+.hero .helmet { flex: none; filter: drop-shadow(0 10px 14px rgba(0,0,0,.5)); }
+.hero-num { opacity: .22; }
+
+/* team template: the whole card in team colour, like the Mexico and Antonelli covers */
+.t-team { background: linear-gradient(115deg, transparent 0 60%, rgba(0,0,0,.18) 60% 64%, transparent 64% 68%, rgba(0,0,0,.18) 68% 70%, transparent 70%),
+  linear-gradient(160deg, var(--tc) 0%, color-mix(in srgb, var(--tc) 70%, #000) 55%, color-mix(in srgb, var(--tc) 25%, #000) 100%);
+  border-color: rgba(0,0,0,.35); border-top-color: rgba(255,255,255,.35); }
+.t-team .kicker { color: var(--yellow); text-shadow: 0 0 8px rgba(0,0,0,.4); }
+.t-team h1 { color: #fff; text-shadow: 0 4px 0 rgba(0,0,0,.25); }
+.t-team h1 span, .t-team .hero-stats span { color: rgba(255,255,255,.75); }
+.t-team .hero-stats b { color: var(--yellow); text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.t-team .hero-num { -webkit-text-stroke-color: rgba(255,255,255,.6); }
+.t-team .star:not(.on), .t-team .ghost { border-color: rgba(255,255,255,.45); background: rgba(0,0,0,.25); }
+
+/* wet template: rain blue, like the São Paulo and 2016 covers */
+.t-wet { background: repeating-linear-gradient(100deg, transparent 0 38px, rgba(159,227,255,.08) 38px 40px), linear-gradient(170deg, #0B2A5C, #0A1B3D 60%, #060E22);
+  border-top-color: var(--ice); }
+.t-wet .kicker, .t-wet .countdown { color: var(--ice); text-shadow: 0 0 10px rgba(120,210,255,.6); }
+.t-wet .countdown { font-size: 30px; line-height: 1.1; }
+.t-wet .cal { border-color: rgba(159,227,255,.45); background: rgba(0,0,0,.25); }
+
+/* sticker + handwritten notes */
+.sticker { position: absolute; z-index: 2; right: -10px; top: -26px; width: 118px; transform: rotate(-9deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+.sticker svg { display: block; width: 100%; height: auto; }
+.sticker text { font: 46px var(--hand); fill: #0A0A08; }
+
+/* helmets in cards */
+.fav-card.has-helmet { position: relative; padding-right: 76px; }
+.fav-card .helmet { position: absolute; right: 12px; top: 12px; }
+.duel-head .helmet { margin: -4px 0 4px -4px; }
+.duel-head .r-side { align-items: flex-end; text-align: right; }
+.duel-head .r-side .helmet { margin: -4px -4px 4px 0; }
+.dcard-top .helmet { margin: -6px 0 0 -6px; }
+
+/* timing-tower rows */
+.row, .rrow { min-height: 58px; }
+.row .bar { height: 3px; opacity: .9; }
+.sh h2 em, h1 em { font-style: inherit; color: var(--yellow); }
+.fight-top .mono:first-child { font-family: var(--led); font-weight: 900; font-size: 14px; color: var(--amber); }
+.tchip[aria-current="true"] { border-color: var(--amber); }
+.seg a[aria-current="page"] { background: var(--amber); color: var(--bg); }
+.tabs a[aria-current="page"] svg { stroke: var(--amber); }

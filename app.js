@@ -84,6 +84,49 @@
   const upcoming = S.CALENDAR.find((r) => new Date(r.raceStart || r.date + "T23:59:00Z") > Date.now());
   const awaiting = S.CALENDAR.filter((r) => !S.RESULTS.some((x) => x.round === r.round) && (!upcoming || r.round < upcoming.round));
 
+  /* ---------- illustrated helmets: the same drawing as the reel covers ----------
+     Team colours and a stripe identify the driver, never a real helmet design or sponsor. */
+  const LOOK = {
+    VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
+    HAM: ["#FFD400", "#E8002D", "#6A2C91", "#8D5A3B", "#5A3A22", "focus"], LEC: ["#E8002D", "#F2F2F0", "#1A1A1A", "#EFC29C", "#5E8A4A", "fierce"],
+    RUS: ["#16181C", "#27F4D2", "#F2F2F0", "#F2CBAA", "#4B88C9", "focus"], ANT: ["#F2F2F0", "#27F4D2", "#16181C", "#E9BC93", "#6B4A2E", "happy"],
+    NOR: ["#FF8000", "#16181C", "#47C7FC", "#F0C4A0", "#4B88C9", "happy"], PIA: ["#FF8000", "#1B2A6B", "#F2F2F0", "#F0C4A0", "#4B88C9", "focus"],
+  };
+  const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
+  let hid = 0;
+  function helmet(id, { size = 96, look = 0, cls = "" } = {}) {
+    const d = driver[id];
+    const base = d && team[d.team] ? team[d.team].color : "#8D939B";
+    const [h1, h2, h3, skin, iris, mood] = LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
+    const K = "#0A0A0A", u = "h" + ++hid, cy = 348;
+    const eye = (cx, side) => {
+      const top = mood === "happy" ? 22 : 20, lid = mood === "happy" ? 4 : 14, ix = cx + look;
+      const inner = cx - side * 30, outer = cx + side * 36, bIn = mood === "fierce" ? cy - 20 : mood === "focus" ? cy - 26 : cy - 36, bOut = mood === "happy" ? cy - 34 : cy - 36;
+      const shape = `M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z`;
+      return `<path d="${shape}" fill="#FBF8F2"/><clipPath id="${u}e${side}"><path d="${shape}"/></clipPath>
+        <g clip-path="url(#${u}e${side})"><circle cx="${ix}" cy="${cy}" r="14" fill="${iris}"/><circle cx="${ix}" cy="${cy}" r="6.5" fill="${K}"/><circle cx="${ix + 4}" cy="${cy - 5}" r="4" fill="#fff"/></g>
+        <path d="M${cx - 36} ${cy + 1} Q${cx} ${cy - top - 2} ${cx + 36} ${cy + 1}" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M${inner} ${bIn} Q${(inner + outer) / 2} ${Math.min(bIn, bOut) - 8} ${outer} ${bOut}" fill="none" stroke="#3A2A1E" stroke-width="9" stroke-linecap="round"/>`;
+    };
+    const shell = "M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z";
+    return `<svg class="helmet ${cls}" viewBox="80 110 440 480" width="${size}" height="${Math.round(size * 480 / 440)}" aria-hidden="true">
+      <defs><radialGradient id="${u}g" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+      <linearGradient id="${u}v" x1="0" x2="1"><stop offset="0" stop-color="#1B1030"/><stop offset=".45" stop-color="#2B3F8F"/><stop offset=".75" stop-color="#9B3FB5"/><stop offset="1" stop-color="#F28B2E"/></linearGradient>
+      <clipPath id="${u}c"><path d="${shell}"/></clipPath></defs>
+      <path d="${shell}" fill="${h1}"/>
+      <g clip-path="url(#${u}c)"><path d="M90 410 C170 330 430 330 510 410 L510 470 C430 380 170 380 90 470 Z" fill="${h2}"/><path d="M90 450 C170 380 430 380 510 450 L510 462 C430 392 170 392 90 462 Z" fill="${h3}"/>
+        <path d="M276 120 C284 190 288 236 286 258 L314 258 C312 236 316 190 324 120 Z" fill="${h2}"/><path d="M200 505 H400 V528 H200 Z" fill="rgba(0,0,0,.55)"/><rect x="80" y="100" width="440" height="500" fill="url(#${u}g)"/></g>
+      <path d="${shell}" fill="none" stroke="${K}" stroke-width="6"/>
+      <path d="M170 296 H430 Q458 296 458 324 V362 Q458 392 428 394 C360 400 240 400 172 394 Q142 392 142 362 V324 Q142 296 170 296 Z" fill="#141518" stroke="${K}" stroke-width="6"/>
+      <path d="M178 306 H422 Q446 306 446 328 V360 Q446 382 420 384 C356 389 244 389 180 384 Q154 382 154 360 V328 Q154 306 178 306 Z" fill="#E9E6E0"/>
+      <path d="M196 316 H404 Q426 316 426 336 V358 Q426 374 404 376 C350 380 250 380 196 376 Q174 374 174 358 V336 Q174 316 196 316 Z" fill="${skin}"/>
+      ${eye(250, -1)}${eye(350, 1)}
+      <path d="M146 252 C200 226 400 226 454 252 L460 298 H140 Z" fill="url(#${u}v)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M176 262 C240 246 300 244 360 248" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="122" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/><circle cx="478" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/></svg>`;
+  }
+  const sticker = (txt) => `<span class="sticker" aria-hidden="true"><svg viewBox="-125 -65 250 130"><path d="M120,0 L95,13 L111,32 L82,33 L86,58 L60,45 L44,66 L27,46 L5,63 L-8,42 L-33,58 L-40,36 L-67,46 L-66,23 L-95,28 L-87,7 L-118,0 L-90,-12 L-105,-31 L-78,-30 L-82,-56 L-56,-43 L-40,-63 L-22,-44 L0,-61 L13,-40 L38,-57 L44,-35 L70,-48 L71,-25 L98,-30 L90,-9 Z" fill="#FFD400" stroke="#0A0A08" stroke-width="6"/><text x="0" y="${txt.length > 6 ? 12 : 16}" text-anchor="middle" style="font-size:${txt.length > 6 ? 34 : 46}px">${esc(txt)}</text></svg></span>`;
+
   /* ---------- following (stored on this device only) ---------- */
   const FKEY = "statlab.follow.v1";
   const loadFollow = () => {
@@ -185,7 +228,7 @@
       ...follow.drivers.filter((id) => driver[id] && DSmap[id]).map((id) => {
         const d = driver[id], s = DSmap[id], ahead = DS[s.rank - 2];
         const last = driverRounds(id).filter((x) => x.raced).slice(-1)[0];
-        return `<a class="fav-card" href="#/driver/${id}" style="--tc:${tc(d.team)}">
+        return `<a class="fav-card has-helmet" href="#/driver/${id}" style="--tc:${tc(d.team)}">${helmet(id, { size: 56, look: 3 })}
           <span class="mono dim">P${s.rank} · ${s.points} PTS</span><b>${esc(d.last)}</b>
           <span class="note">${last ? `R${last.round} ${((S.RACE_INFO || {})[last.round] || {}).short || ""}: ${last.dnf ? "DNF" : "P" + last.pos}${last.points ? " · +" + last.points : ""}` : "No race yet"}${ahead ? ` · ${ahead.points - s.points} to P${s.rank - 1}` : " · leads"}</span>
           <span class="forms">${formGuide(id)}</span></a>`;
@@ -221,19 +264,23 @@
     }).join("");
 
     return `
-      <section class="hero reveal" style="--tc:${tc(ld.team)}">
+      <section class="hero t-night reveal" style="--tc:${tc(ld.team)}">
+        ${sticker(remaining * 25 < leader.points - second.points ? "CHAMPION!" : "LEADER")}
         <span class="kicker">Championship leader · after R${S.RESULTS.length}</span>
         <div class="hero-num mono" aria-hidden="true">${ld.num}</div>
         <h1 style="--len:${[...ld.last].length}"><span>${esc(ld.first)}</span>${esc(ld.last)}</h1>
-        <div class="hero-stats">
-          <div><b class="mono">${leader.points}</b><span>pts</span></div>
-          <div><b class="mono">${leader.wins}</b><span>wins</span></div>
-          <div><b class="mono">+${leader.points - second.points}</b><span>gap to P2</span></div>
-          <div><b class="mono">${remaining * 25}</b><span>pts left</span></div>
+        <div class="hero-row">
+          <div class="hero-stats">
+            <div><b class="mono">${leader.points}</b><span>pts</span></div>
+            <div><b class="mono">${leader.wins}</b><span>wins</span></div>
+            <div><b class="mono">+${leader.points - second.points}</b><span>gap to P2</span></div>
+            <div><b class="mono">${remaining * 25}</b><span>pts left</span></div>
+          </div>
+          ${helmet(ld.id, { size: 104, look: -4 })}
         </div>
       </section>
 
-      ${upcoming ? `<div class="next reveal">
+      ${upcoming ? `<div class="next t-wet reveal">
         <a href="#/schedule"><span class="kicker">Next · Round ${upcoming.round}</span>
         <b>${upcoming.flag} ${esc(upcoming.name)}</b>
         <span class="mono countdown" data-date="${upcoming.date}" data-start="${upcoming.raceStart || ""}"></span>
@@ -361,11 +408,12 @@
     const stat = (v, k) => `<div><b class="mono">${v}</b><span>${k}</span></div>`;
     return `
       <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Standings</a>
-      <section class="hero reveal" style="--tc:${col}">
+      <section class="hero t-team reveal" style="--tc:${col}">
+        ${s.rank <= 3 ? sticker("P" + s.rank + "!") : ""}
         <span class="kicker">${esc(t.name)} · P${s.rank} in the championship</span>
         <div class="hero-num mono" aria-hidden="true">${d.num}</div>
         <h1 style="--len:${[...d.last].length}"><span>${esc(d.first)}</span>${esc(d.last)}</h1>
-        <div class="hero-stats">${stat(s.points, "pts")}${stat(s.wins, "wins")}${stat(s.podiums, "podiums")}${stat(s.poles, "poles")}</div>
+        <div class="hero-row"><div class="hero-stats">${stat(s.points, "pts")}${stat(s.wins, "wins")}${stat(s.podiums, "podiums")}${stat(s.poles, "poles")}</div>${helmet(d.id, { size: 104, look: -4 })}</div>
         <div class="actions">${starBtn("drivers", d.id, d.last)}<button class="ghost" type="button" data-share="${esc(d.first + " " + d.last)}: P${s.rank}, ${s.points} pts in 2026">Share</button></div>
       </section>
       ${sectionHead("Last five races", "Form", `<div class="forms big">${formGuide(id, 5, true) || '<span class="note">No races yet</span>'}</div>`)}
@@ -392,12 +440,12 @@
     const bars = perRound.map((r) => { const h = (r.pts / maxR) * (H - B - 8); return `<rect x="${(L + (r.round - 1) * bw + 2).toFixed(1)}" y="${(H - B - h).toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${t.color}"/>`; }).join("");
     const ticks = [1, 6, 12, 18, S.CALENDAR.length].map((r) => `<text x="${L + (r - 0.5) * bw}" y="${H - 4}" text-anchor="middle">R${r}</text>`).join("");
     const cards = ds.map((d) => { const s = DSmap[d.id]; return `<a class="dcard" href="#/driver/${d.id}" style="--tc:${t.color}">
-      <div class="dcard-top"><span class="big">${d.num}</span><small>P${s.rank}</small></div><b class="dname">${esc(d.last)}</b>
+      <div class="dcard-top">${helmet(d.id, { size: 58, look: 3 })}<small>P${s.rank}</small></div><b class="dname">${esc(d.last)}</b>
       <div class="dstats"><div><b>${s.points}</b><small>PTS</small></div><div><b>${s.wins}</b><small>WINS</small></div></div><div class="forms">${formGuide(d.id)}</div></a>`; }).join("");
     const best = perRound.reduce((a, r) => (r.pts > a.pts ? r : a), { pts: -1 });
     return `
       <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Standings</a>
-      <section class="hero reveal" style="--tc:${t.color}">
+      <section class="hero t-team reveal" style="--tc:${t.color}">
         <span class="kicker">Constructors · P${rank}</span>
         <h1 style="--len:${[...t.name].length}">${esc(t.name)}</h1>
         <div class="hero-stats"><div><b class="mono">${t.points}</b><span>pts</span></div><div><b class="mono">${t.wins}</b><span>wins</span></div>
@@ -486,8 +534,8 @@
         <label style="--tc:${cb}"><span class="sr">Driver B</span><select id="pb">${options(b.id)}</select></label>
       </div>
       <div class="duel-head reveal">
-        <div style="--tc:${ca}"><span class="mono big">${a.num}</span><b>${esc(a.last)}</b><small>${esc(team[a.team].name)}</small></div>
-        <div style="--tc:${cb}"><span class="mono big">${b.num}</span><b>${esc(b.last)}</b><small>${esc(team[b.team].name)}</small></div>
+        <div style="--tc:${ca}">${helmet(a.id, { size: 72, look: 8 })}<b>${esc(a.last)}</b><small>${esc(team[a.team].name)}</small></div>
+        <div style="--tc:${cb}" class="r-side">${helmet(b.id, { size: 72, look: -8 })}<b>${esc(b.last)}</b><small>${esc(team[b.team].name)}</small></div>
       </div>
       <div class="tug reveal" aria-label="Qualifying ${q.a} to ${q.b}">
         <span class="kicker">Qualifying</span>
