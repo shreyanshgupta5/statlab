@@ -1,0 +1,212 @@
+<title>Stat Lab Points Race</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Saira+Stencil+One&family=Big+Shoulders+Display:wght@800;900&family=Doto:wght@800;900&family=Caveat+Brush&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a 9:16 broadcast stage (the thing you'd post) beside a compact control desk; desk drops below on phones. */
+:root {
+  --bg: #0E0F12; --card: #17191E; --card-2: #1E2128; --line: #2A2D33;
+  --fg: #F2F2F0; --soft: #C9CDD2; --muted: #9AA0A6; --red: #dc2c2c; --red-text: #FF5A4E;
+  --asphalt: #1B1D22; --grass: #10251A; --kerb-a: #dc2c2c; --kerb-b: #E9E9E4;
+  --display: 'Archivo', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--display);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px; }
+.wrap { display: grid; grid-template-columns: minmax(0, auto) minmax(260px, 340px); gap: 24px; justify-content: center; align-items: start; }
+.stage { position: relative; height: calc(100vh - 32px); max-height: 1920px; aspect-ratio: 9 / 16; max-width: 100%; border-radius: 18px; overflow: hidden; background: var(--grass); box-shadow: 0 0 0 1px var(--line); }
+.stage svg { display: block; width: 100%; height: 100%; }
+.desk { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.brand { display: inline-block; align-self: flex-start; padding: 3px 12px; background: var(--red); transform: skewX(-16deg); }
+.brand span { display: inline-block; transform: skewX(16deg); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 14px; color: var(--bg); }
+.desk h1 { margin: 0; font-size: 30px; font-weight: 900; font-style: italic; font-stretch: 125%; line-height: 1; text-wrap: balance; }
+.desk p { margin: 0; color: var(--soft); font-size: 14px; line-height: 1.5; }
+.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button, select { font: inherit; color: var(--fg); background: var(--card-2); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 0 14px; cursor: pointer; }
+#sound[aria-pressed="true"] { border-color: #FFB000; color: #FFB000; }
+button.primary { background: var(--red); border-color: var(--red); color: var(--bg); font-weight: 900; font-style: italic; font-stretch: 125%; min-width: 108px; }
+button:focus-visible, select:focus-visible, input:focus-visible, .chip:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.scrub { display: grid; gap: 6px; }
+.scrub input { width: 100%; accent-color: var(--red); }
+.scrub .ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-weight: 800; font-style: italic; font-stretch: 125%; font-size: 13px; cursor: pointer; }
+.chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); }
+.chip[aria-pressed="true"] { background: var(--card-2); border-color: var(--fg); }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
+.panel { background: var(--card); border-radius: 14px; padding: 14px; display: grid; gap: 10px; }
+.note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .stage { height: auto; width: 100%; max-height: none; }
+}
+/* stage text */
+.t-title { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 92px; fill: var(--fg); letter-spacing: -1px; }
+.t-title .hl { fill: #FFD400; }
+.t-kick { font-family: var(--mono); font-size: 26px; letter-spacing: 5px; fill: var(--muted); }
+.t-round { font-family: var(--mono); font-weight: 700; font-size: 34px; fill: var(--fg); letter-spacing: 2px; }
+.t-code { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 40px; fill: var(--fg); }
+.t-pts { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 54px; fill: var(--fg); }
+.t-rank { font-family: var(--mono); font-weight: 700; font-size: 24px; }
+.t-num { font-family: var(--display); font-weight: 900; font-style: italic; font-size: 15px; }
+.t-toast { font-family: var(--mono); font-weight: 700; font-size: 28px; fill: var(--bg); letter-spacing: 1px; }
+.t-end-h { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 64px; fill: var(--fg); }
+.t-end { font-family: var(--mono); font-size: 30px; fill: var(--soft); }
+.t-end-b { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 44px; fill: var(--fg); }
+.t-pop { font-family: var(--mono); font-weight: 700; font-size: 26px; }
+.t-gap { font-family: var(--mono); font-weight: 700; font-size: 22px; fill: #6B717A; letter-spacing: 1px; }
+.t-bump-h { font-family: var(--mono); font-size: 20px; letter-spacing: 4px; fill: var(--muted); }
+.t-bump { font-family: var(--mono); font-size: 18px; fill: #6B717A; }
+.t-bump-code { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 24px; }
+/* result tags: colour by kind (win, podium, dnf, other) */
+.pop-bg { fill: #2A2D33; } .pop-tx { fill: #F2F2F0; }
+[data-kind="win"] .pop-bg { fill: #FFD400; } [data-kind="win"] .pop-tx, [data-kind="pod"] .pop-tx, [data-kind="dnf"] .pop-tx { fill: #0E0F12; }
+[data-kind="pod"] .pop-bg { fill: #F2F2F0; } [data-kind="dnf"] .pop-bg { fill: #FF5A4E; }
+.deco-tele { display: none; }
+
+/* LOOK: pit wall. Livery stencil kicker, condensed pit-board lettering, boards with printed edges. */
+.look-pit .t-kick { font-family: 'Saira Stencil One', var(--display); font-size: 40px; letter-spacing: 4px; fill: #F2F2F0; }
+.look-pit .t-round, .look-pit .t-toast, .look-pit .t-pop, .look-pit #winTx { font-family: 'Big Shoulders Display', var(--display); font-weight: 900; letter-spacing: 2px; }
+.look-pit .t-round, .look-pit #winTx { font-size: 38px !important; fill: #F2F2F0; }
+.look-pit .t-toast { font-size: 38px; fill: #FFD400; }
+.look-pit .t-pop { font-size: 34px; }
+.look-pit .board { fill: #0B0C0E; stroke: #E9E9E4; stroke-width: 4; filter: url(#rough); }
+.look-pit .pop-bg { fill: #0B0C0E; stroke: #E9E9E4; stroke-width: 3; filter: url(#rough); }
+.look-pit [data-kind] .pop-tx { fill: #F2F2F0; } .look-pit [data-kind="win"] .pop-tx { fill: #FFD400; } .look-pit [data-kind="dnf"] .pop-tx { fill: #FF5A4E; }
+.look-pit .t-gap, .look-pit .t-bump-h { font-family: 'Big Shoulders Display', var(--display); font-weight: 800; letter-spacing: 3px; }
+.look-pit .t-gap { font-size: 28px; } .look-pit .t-bump-h { font-size: 26px; }
+.look-pit .t-foot { font-family: 'Courier Prime', var(--mono); font-weight: 700; font-size: 22px; letter-spacing: 1px; }
+
+/* LOOK: timing screen. Amber dot-matrix on dark LED panels. */
+.look-led .t-kick, .look-led .t-round, .look-led .t-toast, .look-led .t-pop, .look-led .t-gap, .look-led .t-bump-h, .look-led #winTx, .look-led .t-foot { font-family: 'Doto', var(--mono); font-weight: 900; }
+.look-led .t-kick, .look-led .t-round, .look-led .t-toast, .look-led .t-pop, .look-led #winTx, .look-led .t-bump-h { filter: url(#glow); }
+.look-led .t-kick { font-size: 32px; letter-spacing: 3px; fill: #FFB000; }
+.look-led .t-round, .look-led #winTx { font-size: 34px !important; fill: #FFB000; }
+.look-led .t-toast { font-size: 34px; fill: #FFD400; }
+.look-led .t-pop { font-size: 30px; }
+.look-led .board, .look-led .pop-bg { fill: url(#ledDots); stroke: #2B2615; stroke-width: 2; }
+.look-led [data-kind] .pop-tx { fill: #FFB000; } .look-led [data-kind="win"] .pop-tx { fill: #FFE14D; } .look-led [data-kind="dnf"] .pop-tx { fill: #FF5A4E; }
+.look-led .t-gap { font-size: 26px; fill: #8A6A1F; } .look-led .t-bump-h { font-size: 24px; fill: #FFB000; } .look-led .t-foot { font-size: 22px; fill: #8A6A1F; }
+
+/* LOOK: telestrator. A pundit's marker: handwritten notes, swashes, a circled row. */
+.look-tele .t-kick { font-family: 'Caveat Brush', cursive; font-size: 46px; letter-spacing: 0; fill: #FFD400; }
+.look-tele .t-toast { font-family: 'Caveat Brush', cursive; font-size: 46px; fill: #FFD400; }
+.look-tele .toast { fill: none; }
+.look-tele .t-gap { font-family: 'Caveat Brush', cursive; font-size: 30px; fill: #8D939B; }
+.look-tele .t-bump-h { font-family: 'Caveat Brush', cursive; font-size: 34px; letter-spacing: 1px; fill: #C9CDD2; }
+.look-tele .t-pop { font-family: 'Big Shoulders Display', var(--display); font-weight: 900; font-size: 32px; letter-spacing: 1px; }
+.look-tele .pop-bg { filter: url(#rough); }
+.look-tele .deco-tele { display: inline; filter: url(#ink); }
+.look-tele .t-foot { font-family: 'Courier Prime', var(--mono); font-weight: 700; }
+.t-foot { font-family: var(--mono); font-size: 22px; fill: var(--muted); letter-spacing: 2px; }
+</style>
+
+<div class="wrap">
+  <div class="stage"><svg id="svg" viewBox="0 0 1080 1920" role="img" aria-labelledby="stage-label"><title id="stage-label">Animated points race</title>
+    <defs>
+      <!-- Top-down open-wheel car, nose up, 60 x 160 units. Colours come from --body, --dark, --accent. -->
+      <symbol id="car" viewBox="0 0 60 160" overflow="visible">
+        <ellipse cx="30" cy="84" rx="30" ry="74" fill="#000" opacity=".28"/>
+        <!-- front wing -->
+        <path d="M4 10 h52 l2 7 h-56 z" style="fill:var(--dark)"/>
+        <rect x="6" y="12" width="48" height="3" style="fill:var(--accent)"/>
+        <rect x="2" y="6" width="4" height="13" rx="1" style="fill:var(--dark)"/><rect x="54" y="6" width="4" height="13" rx="1" style="fill:var(--dark)"/>
+        <!-- front tyres + arms -->
+        <path d="M12 34 L24 40 M48 34 L36 40 M12 42 L24 46 M48 42 L36 46" stroke="#5E6470" stroke-width="1.6"/>
+        <rect x="1" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/><rect x="47" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/>
+        <rect x="3" y="27" width="2" height="18" rx="1" fill="#2E3238"/><rect x="55" y="27" width="2" height="18" rx="1" fill="#2E3238"/>
+        <!-- nose -->
+        <path d="M26 6 Q30 2 34 6 L37 58 H23 Z" style="fill:var(--body)"/>
+        <path d="M28.5 8 L31.5 8 L32.5 56 H27.5 Z" style="fill:var(--accent)" opacity=".9"/>
+        <!-- sidepods + floor -->
+        <path d="M14 70 Q14 62 22 60 H38 Q46 62 46 70 L48 112 Q48 122 40 126 H20 Q12 122 12 112 Z" style="fill:var(--dark)"/>
+        <path d="M16 72 Q16 65 23 63 H37 Q44 65 44 72 L45 108 Q45 116 39 119 H21 Q15 116 15 108 Z" style="fill:var(--body)"/>
+        <path d="M16 96 L44 96 L45 108 Q45 116 39 119 H21 Q15 116 15 108 Z" style="fill:var(--dark)" opacity=".35"/>
+        <!-- cockpit, halo, airbox -->
+        <ellipse cx="30" cy="76" rx="6.5" ry="11" fill="#07080A"/>
+        <circle cx="30" cy="78" r="4.2" style="fill:var(--accent)"/>
+        <path d="M22 72 Q30 58 38 72 M30 64 V60" stroke="#0B0C0E" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path d="M26 88 H34 L33 130 H27 Z" style="fill:var(--body)"/>
+        <rect x="28.6" y="90" width="2.8" height="38" style="fill:var(--accent)"/>
+        <!-- rear tyres + rear wing -->
+        <rect x="0" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/><rect x="47" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/>
+        <rect x="2" y="119" width="2" height="22" rx="1" fill="#2E3238"/><rect x="56" y="119" width="2" height="22" rx="1" fill="#2E3238"/>
+        <path d="M14 140 H46 V152 H14 Z" style="fill:var(--dark)"/>
+        <rect x="14" y="143" width="32" height="4" style="fill:var(--body)"/>
+        <rect x="11" y="138" width="4" height="17" rx="1" style="fill:var(--dark)"/><rect x="45" y="138" width="4" height="17" rx="1" style="fill:var(--dark)"/>
+        <circle cx="30" cy="156" r="2" fill="#dc2c2c"/>
+      </symbol>
+      <!-- printed / hand-made edges: a little displacement so boards and stickers aren't machine-perfect -->
+      <filter id="rough" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
+      <filter id="ink" x="-5%" y="-20%" width="110%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>
+      <filter id="glow" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <pattern id="ledDots" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#0A0A08"/><circle cx="3" cy="3" r="1.3" fill="#1A1710"/></pattern>
+      <pattern id="dash" width="10" height="120" patternUnits="userSpaceOnUse"><rect x="3" y="0" width="4" height="64" fill="#3A3E46"/></pattern>
+      <pattern id="kerb" width="30" height="80" patternUnits="userSpaceOnUse"><rect width="30" height="40" fill="#dc2c2c"/><rect y="40" width="30" height="40" fill="#E9E9E4"/></pattern>
+      <pattern id="grain" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#1B1D22"/><rect x="1" y="2" width="1" height="1" fill="#22252B"/><rect x="4" y="4" width="1" height="1" fill="#17191D"/><rect x="3" y="0" width="1" height="1" fill="#202329"/></pattern>
+      <linearGradient id="fadeTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E0F12" stop-opacity=".96"/><stop offset=".75" stop-color="#0E0F12" stop-opacity=".6"/><stop offset="1" stop-color="#0E0F12" stop-opacity="0"/></linearGradient>
+      <linearGradient id="fadeBot" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0E0F12" stop-opacity=".9"/><stop offset="1" stop-color="#0E0F12" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="1080" height="1920" fill="#10251A"/>
+    <rect x="96" width="888" height="1920" fill="url(#grain)"/>
+    <g id="scroll">
+      <rect id="kerbL" x="66" y="-80" width="30" height="2080" fill="url(#kerb)"/>
+      <rect id="kerbR" x="984" y="-80" width="30" height="2080" fill="url(#kerb)"/>
+      <g id="lanes"></g>
+    </g>
+    <g id="gaps"></g>
+    <g id="cars"></g>
+    <rect width="1080" height="420" fill="url(#fadeTop)"/>
+    <rect y="1720" width="1080" height="200" fill="url(#fadeBot)"/>
+    <g id="hud">
+      <g transform="translate(60 92)"><path d="M10 0 H176 L166 40 H0 Z" fill="#dc2c2c"/><text x="88" y="30" text-anchor="middle" style="font: italic 900 26px var(--display); font-stretch: 125%; fill: #0E0F12">STAT LAB</text></g>
+      <text id="kick" class="t-kick" x="60" y="182">GRAND PRIX POINTS · 2026</text>
+      <path id="titleSwash" class="deco-tele" fill="none" stroke="#FFD400" stroke-width="7" stroke-linecap="round"/>
+      <text id="title" class="t-title" x="56" y="276"></text>
+      <g id="roundTag" transform="translate(60 312)"><rect id="roundBg" class="board" width="300" height="56" rx="10" fill="#17191E"/><text id="round" class="t-round" x="20" y="39"></text></g>
+      <g id="winner" transform="translate(372 312)"><rect width="0" height="56" rx="10" fill="#17191E" id="winBg" class="board"/><rect x="0" y="0" width="8" height="56" rx="2" id="winBar"/><text id="winTx" x="24" y="38" class="t-round" style="font-size:28px"></text></g>
+      <g id="toast" opacity="0"><rect id="toastBg" class="board toast" x="0" y="0" height="56" rx="10" fill="#FFD400"/><text id="toastTx" class="t-toast" x="18" y="38"></text><path id="toastSwash" class="deco-tele" fill="none" stroke="#FFD400" stroke-width="5" stroke-linecap="round"/></g>
+      <g id="bump"></g>
+      <text class="t-foot" x="540" y="1896" text-anchor="middle">DATA: OPENF1 · UNOFFICIAL FAN PROJECT</text>
+    </g>
+    <!-- start lights: one per countdown beep, then all green on GO -->
+    <g id="lights" opacity="0" transform="translate(540 1180)">
+      <rect x="-230" y="-70" width="460" height="140" rx="24" class="board" fill="#0B0C0E" stroke="#2A2D33" stroke-width="4"/>
+      <circle id="lt0" cx="-130" r="44" fill="#2A1010"/><circle id="lt1" cx="0" r="44" fill="#2A1010"/><circle id="lt2" cx="130" r="44" fill="#2A1010"/>
+    </g>
+    <g id="end" opacity="0"></g>
+  </svg></div>
+
+  <div class="desk">
+    <span class="brand"><span>STAT LAB</span></span>
+    <div><span class="kicker">2026 season · Grand Prix points</span><h1 id="deskTitle">Battle for P2</h1></div>
+    <p id="deskLede"></p>
+    <div class="row">
+      <button id="play" class="primary" type="button">Pause</button>
+      <button id="restart" type="button">Restart</button>
+      <label class="sr" for="speed">Speed</label>
+      <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+      <button id="sound" type="button" aria-pressed="false">Sound off</button>
+    </div>
+    <div class="scrub"><label class="kicker" for="scrub">Round</label><input id="scrub" type="range" min="0" max="20" step="0.01" value="0"><div class="ticks"><span>Start</span><span id="scrubLabel">R00</span><span>Finish</span></div></div>
+    <div class="panel">
+      <label class="kicker" for="look">Look</label>
+      <select id="look"><option value="led">Timing screen</option><option value="pit">Pit wall</option><option value="tele">Telestrator</option><option value="studio">Studio (original)</option></select>
+      <label class="kicker" for="preset">Battle</label>
+      <select id="preset"></select>
+      <span class="kicker">Drivers (2–5)</span>
+      <div class="chips" id="chips"></div>
+    </div>
+    <p class="note">Badges show championship position after each round. Tags above the cars show that race's result. Cars move by Grand Prix points after each round. Sprint points are only available as season totals, so they appear on the final card. Gaps are to scale within each frame: the leader sits at the front and everyone else is placed by how many points they trail.</p>
+    <p class="sr" aria-live="polite" id="live"></p>
+  </div>
+</div>
+
+<script>
+__SCRIPT__
+</script>

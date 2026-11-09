@@ -1,0 +1,630 @@
+<title>Stat Lab Points Race</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Saira+Stencil+One&family=Big+Shoulders+Display:wght@800;900&family=Doto:wght@800;900&family=Caveat+Brush&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a 9:16 broadcast stage (the thing you'd post) beside a compact control desk; desk drops below on phones. */
+:root {
+  --bg: #0E0F12; --card: #17191E; --card-2: #1E2128; --line: #2A2D33;
+  --fg: #F2F2F0; --soft: #C9CDD2; --muted: #9AA0A6; --red: #dc2c2c; --red-text: #FF5A4E;
+  --asphalt: #1B1D22; --grass: #10251A; --kerb-a: #dc2c2c; --kerb-b: #E9E9E4;
+  --display: 'Archivo', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--display);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px; }
+.wrap { display: grid; grid-template-columns: minmax(0, auto) minmax(260px, 340px); gap: 24px; justify-content: center; align-items: start; }
+.stage { position: relative; height: calc(100vh - 32px); max-height: 1920px; aspect-ratio: 9 / 16; max-width: 100%; border-radius: 18px; overflow: hidden; background: var(--grass); box-shadow: 0 0 0 1px var(--line); }
+.stage svg { display: block; width: 100%; height: 100%; }
+.desk { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.brand { display: inline-block; align-self: flex-start; padding: 3px 12px; background: var(--red); transform: skewX(-16deg); }
+.brand span { display: inline-block; transform: skewX(16deg); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 14px; color: var(--bg); }
+.desk h1 { margin: 0; font-size: 30px; font-weight: 900; font-style: italic; font-stretch: 125%; line-height: 1; text-wrap: balance; }
+.desk p { margin: 0; color: var(--soft); font-size: 14px; line-height: 1.5; }
+.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button, select { font: inherit; color: var(--fg); background: var(--card-2); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 0 14px; cursor: pointer; }
+#sound[aria-pressed="true"] { border-color: #FFB000; color: #FFB000; }
+button.primary { background: var(--red); border-color: var(--red); color: var(--bg); font-weight: 900; font-style: italic; font-stretch: 125%; min-width: 108px; }
+button:focus-visible, select:focus-visible, input:focus-visible, .chip:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.scrub { display: grid; gap: 6px; }
+.scrub input { width: 100%; accent-color: var(--red); }
+.scrub .ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-weight: 800; font-style: italic; font-stretch: 125%; font-size: 13px; cursor: pointer; }
+.chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); }
+.chip[aria-pressed="true"] { background: var(--card-2); border-color: var(--fg); }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
+.panel { background: var(--card); border-radius: 14px; padding: 14px; display: grid; gap: 10px; }
+.note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .stage { height: auto; width: 100%; max-height: none; }
+}
+/* stage text */
+.t-title { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 92px; fill: var(--fg); letter-spacing: -1px; }
+.t-title .hl { fill: #FFD400; }
+.t-kick { font-family: var(--mono); font-size: 26px; letter-spacing: 5px; fill: var(--muted); }
+.t-round { font-family: var(--mono); font-weight: 700; font-size: 34px; fill: var(--fg); letter-spacing: 2px; }
+.t-code { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 40px; fill: var(--fg); }
+.t-pts { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 54px; fill: var(--fg); }
+.t-rank { font-family: var(--mono); font-weight: 700; font-size: 24px; }
+.t-num { font-family: var(--display); font-weight: 900; font-style: italic; font-size: 15px; }
+.t-toast { font-family: var(--mono); font-weight: 700; font-size: 28px; fill: var(--bg); letter-spacing: 1px; }
+.t-end-h { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 64px; fill: var(--fg); }
+.t-end { font-family: var(--mono); font-size: 30px; fill: var(--soft); }
+.t-end-b { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 44px; fill: var(--fg); }
+.t-pop { font-family: var(--mono); font-weight: 700; font-size: 26px; }
+.t-gap { font-family: var(--mono); font-weight: 700; font-size: 22px; fill: #6B717A; letter-spacing: 1px; }
+.t-bump-h { font-family: var(--mono); font-size: 20px; letter-spacing: 4px; fill: var(--muted); }
+.t-bump { font-family: var(--mono); font-size: 18px; fill: #6B717A; }
+.t-bump-code { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 24px; }
+/* result tags: colour by kind (win, podium, dnf, other) */
+.pop-bg { fill: #2A2D33; } .pop-tx { fill: #F2F2F0; }
+[data-kind="win"] .pop-bg { fill: #FFD400; } [data-kind="win"] .pop-tx, [data-kind="pod"] .pop-tx, [data-kind="dnf"] .pop-tx { fill: #0E0F12; }
+[data-kind="pod"] .pop-bg { fill: #F2F2F0; } [data-kind="dnf"] .pop-bg { fill: #FF5A4E; }
+.deco-tele { display: none; }
+
+/* LOOK: pit wall. Livery stencil kicker, condensed pit-board lettering, boards with printed edges. */
+.look-pit .t-kick { font-family: 'Saira Stencil One', var(--display); font-size: 40px; letter-spacing: 4px; fill: #F2F2F0; }
+.look-pit .t-round, .look-pit .t-toast, .look-pit .t-pop, .look-pit #winTx { font-family: 'Big Shoulders Display', var(--display); font-weight: 900; letter-spacing: 2px; }
+.look-pit .t-round, .look-pit #winTx { font-size: 38px !important; fill: #F2F2F0; }
+.look-pit .t-toast { font-size: 38px; fill: #FFD400; }
+.look-pit .t-pop { font-size: 34px; }
+.look-pit .board { fill: #0B0C0E; stroke: #E9E9E4; stroke-width: 4; filter: url(#rough); }
+.look-pit .pop-bg { fill: #0B0C0E; stroke: #E9E9E4; stroke-width: 3; filter: url(#rough); }
+.look-pit [data-kind] .pop-tx { fill: #F2F2F0; } .look-pit [data-kind="win"] .pop-tx { fill: #FFD400; } .look-pit [data-kind="dnf"] .pop-tx { fill: #FF5A4E; }
+.look-pit .t-gap, .look-pit .t-bump-h { font-family: 'Big Shoulders Display', var(--display); font-weight: 800; letter-spacing: 3px; }
+.look-pit .t-gap { font-size: 28px; } .look-pit .t-bump-h { font-size: 26px; }
+.look-pit .t-foot { font-family: 'Courier Prime', var(--mono); font-weight: 700; font-size: 22px; letter-spacing: 1px; }
+
+/* LOOK: timing screen. Amber dot-matrix on dark LED panels. */
+.look-led .t-kick, .look-led .t-round, .look-led .t-toast, .look-led .t-pop, .look-led .t-gap, .look-led .t-bump-h, .look-led #winTx, .look-led .t-foot { font-family: 'Doto', var(--mono); font-weight: 900; }
+.look-led .t-kick, .look-led .t-round, .look-led .t-toast, .look-led .t-pop, .look-led #winTx, .look-led .t-bump-h { filter: url(#glow); }
+.look-led .t-kick { font-size: 32px; letter-spacing: 3px; fill: #FFB000; }
+.look-led .t-round, .look-led #winTx { font-size: 34px !important; fill: #FFB000; }
+.look-led .t-toast { font-size: 34px; fill: #FFD400; }
+.look-led .t-pop { font-size: 30px; }
+.look-led .board, .look-led .pop-bg { fill: url(#ledDots); stroke: #2B2615; stroke-width: 2; }
+.look-led [data-kind] .pop-tx { fill: #FFB000; } .look-led [data-kind="win"] .pop-tx { fill: #FFE14D; } .look-led [data-kind="dnf"] .pop-tx { fill: #FF5A4E; }
+.look-led .t-gap { font-size: 26px; fill: #8A6A1F; } .look-led .t-bump-h { font-size: 24px; fill: #FFB000; } .look-led .t-foot { font-size: 22px; fill: #8A6A1F; }
+
+/* LOOK: telestrator. A pundit's marker: handwritten notes, swashes, a circled row. */
+.look-tele .t-kick { font-family: 'Caveat Brush', cursive; font-size: 46px; letter-spacing: 0; fill: #FFD400; }
+.look-tele .t-toast { font-family: 'Caveat Brush', cursive; font-size: 46px; fill: #FFD400; }
+.look-tele .toast { fill: none; }
+.look-tele .t-gap { font-family: 'Caveat Brush', cursive; font-size: 30px; fill: #8D939B; }
+.look-tele .t-bump-h { font-family: 'Caveat Brush', cursive; font-size: 34px; letter-spacing: 1px; fill: #C9CDD2; }
+.look-tele .t-pop { font-family: 'Big Shoulders Display', var(--display); font-weight: 900; font-size: 32px; letter-spacing: 1px; }
+.look-tele .pop-bg { filter: url(#rough); }
+.look-tele .deco-tele { display: inline; filter: url(#ink); }
+.look-tele .t-foot { font-family: 'Courier Prime', var(--mono); font-weight: 700; }
+.t-foot { font-family: var(--mono); font-size: 22px; fill: var(--muted); letter-spacing: 2px; }
+</style>
+
+<div class="wrap">
+  <div class="stage"><svg id="svg" viewBox="0 0 1080 1920" role="img" aria-labelledby="stage-label"><title id="stage-label">Animated points race</title>
+    <defs>
+      <!-- Top-down open-wheel car, nose up, 60 x 160 units. Colours come from --body, --dark, --accent. -->
+      <symbol id="car" viewBox="0 0 60 160" overflow="visible">
+        <ellipse cx="30" cy="84" rx="30" ry="74" fill="#000" opacity=".28"/>
+        <!-- front wing -->
+        <path d="M4 10 h52 l2 7 h-56 z" style="fill:var(--dark)"/>
+        <rect x="6" y="12" width="48" height="3" style="fill:var(--accent)"/>
+        <rect x="2" y="6" width="4" height="13" rx="1" style="fill:var(--dark)"/><rect x="54" y="6" width="4" height="13" rx="1" style="fill:var(--dark)"/>
+        <!-- front tyres + arms -->
+        <path d="M12 34 L24 40 M48 34 L36 40 M12 42 L24 46 M48 42 L36 46" stroke="#5E6470" stroke-width="1.6"/>
+        <rect x="1" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/><rect x="47" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/>
+        <rect x="3" y="27" width="2" height="18" rx="1" fill="#2E3238"/><rect x="55" y="27" width="2" height="18" rx="1" fill="#2E3238"/>
+        <!-- nose -->
+        <path d="M26 6 Q30 2 34 6 L37 58 H23 Z" style="fill:var(--body)"/>
+        <path d="M28.5 8 L31.5 8 L32.5 56 H27.5 Z" style="fill:var(--accent)" opacity=".9"/>
+        <!-- sidepods + floor -->
+        <path d="M14 70 Q14 62 22 60 H38 Q46 62 46 70 L48 112 Q48 122 40 126 H20 Q12 122 12 112 Z" style="fill:var(--dark)"/>
+        <path d="M16 72 Q16 65 23 63 H37 Q44 65 44 72 L45 108 Q45 116 39 119 H21 Q15 116 15 108 Z" style="fill:var(--body)"/>
+        <path d="M16 96 L44 96 L45 108 Q45 116 39 119 H21 Q15 116 15 108 Z" style="fill:var(--dark)" opacity=".35"/>
+        <!-- cockpit, halo, airbox -->
+        <ellipse cx="30" cy="76" rx="6.5" ry="11" fill="#07080A"/>
+        <circle cx="30" cy="78" r="4.2" style="fill:var(--accent)"/>
+        <path d="M22 72 Q30 58 38 72 M30 64 V60" stroke="#0B0C0E" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path d="M26 88 H34 L33 130 H27 Z" style="fill:var(--body)"/>
+        <rect x="28.6" y="90" width="2.8" height="38" style="fill:var(--accent)"/>
+        <!-- rear tyres + rear wing -->
+        <rect x="0" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/><rect x="47" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/>
+        <rect x="2" y="119" width="2" height="22" rx="1" fill="#2E3238"/><rect x="56" y="119" width="2" height="22" rx="1" fill="#2E3238"/>
+        <path d="M14 140 H46 V152 H14 Z" style="fill:var(--dark)"/>
+        <rect x="14" y="143" width="32" height="4" style="fill:var(--body)"/>
+        <rect x="11" y="138" width="4" height="17" rx="1" style="fill:var(--dark)"/><rect x="45" y="138" width="4" height="17" rx="1" style="fill:var(--dark)"/>
+        <circle cx="30" cy="156" r="2" fill="#dc2c2c"/>
+      </symbol>
+      <!-- printed / hand-made edges: a little displacement so boards and stickers aren't machine-perfect -->
+      <filter id="rough" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
+      <filter id="ink" x="-5%" y="-20%" width="110%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>
+      <filter id="glow" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <pattern id="ledDots" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#0A0A08"/><circle cx="3" cy="3" r="1.3" fill="#1A1710"/></pattern>
+      <pattern id="dash" width="10" height="120" patternUnits="userSpaceOnUse"><rect x="3" y="0" width="4" height="64" fill="#3A3E46"/></pattern>
+      <pattern id="kerb" width="30" height="80" patternUnits="userSpaceOnUse"><rect width="30" height="40" fill="#dc2c2c"/><rect y="40" width="30" height="40" fill="#E9E9E4"/></pattern>
+      <pattern id="grain" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#1B1D22"/><rect x="1" y="2" width="1" height="1" fill="#22252B"/><rect x="4" y="4" width="1" height="1" fill="#17191D"/><rect x="3" y="0" width="1" height="1" fill="#202329"/></pattern>
+      <linearGradient id="fadeTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E0F12" stop-opacity=".96"/><stop offset=".75" stop-color="#0E0F12" stop-opacity=".6"/><stop offset="1" stop-color="#0E0F12" stop-opacity="0"/></linearGradient>
+      <linearGradient id="fadeBot" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0E0F12" stop-opacity=".9"/><stop offset="1" stop-color="#0E0F12" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="1080" height="1920" fill="#10251A"/>
+    <rect x="96" width="888" height="1920" fill="url(#grain)"/>
+    <g id="scroll">
+      <rect id="kerbL" x="66" y="-80" width="30" height="2080" fill="url(#kerb)"/>
+      <rect id="kerbR" x="984" y="-80" width="30" height="2080" fill="url(#kerb)"/>
+      <g id="lanes"></g>
+    </g>
+    <g id="gaps"></g>
+    <g id="cars"></g>
+    <rect width="1080" height="420" fill="url(#fadeTop)"/>
+    <rect y="1720" width="1080" height="200" fill="url(#fadeBot)"/>
+    <g id="hud">
+      <g transform="translate(60 92)"><path d="M10 0 H176 L166 40 H0 Z" fill="#dc2c2c"/><text x="88" y="30" text-anchor="middle" style="font: italic 900 26px var(--display); font-stretch: 125%; fill: #0E0F12">STAT LAB</text></g>
+      <text id="kick" class="t-kick" x="60" y="182">GRAND PRIX POINTS · 2026</text>
+      <path id="titleSwash" class="deco-tele" fill="none" stroke="#FFD400" stroke-width="7" stroke-linecap="round"/>
+      <text id="title" class="t-title" x="56" y="276"></text>
+      <g id="roundTag" transform="translate(60 312)"><rect id="roundBg" class="board" width="300" height="56" rx="10" fill="#17191E"/><text id="round" class="t-round" x="20" y="39"></text></g>
+      <g id="winner" transform="translate(372 312)"><rect width="0" height="56" rx="10" fill="#17191E" id="winBg" class="board"/><rect x="0" y="0" width="8" height="56" rx="2" id="winBar"/><text id="winTx" x="24" y="38" class="t-round" style="font-size:28px"></text></g>
+      <g id="toast" opacity="0"><rect id="toastBg" class="board toast" x="0" y="0" height="56" rx="10" fill="#FFD400"/><text id="toastTx" class="t-toast" x="18" y="38"></text><path id="toastSwash" class="deco-tele" fill="none" stroke="#FFD400" stroke-width="5" stroke-linecap="round"/></g>
+      <g id="bump"></g>
+      <text class="t-foot" x="540" y="1896" text-anchor="middle">DATA: OPENF1 · UNOFFICIAL FAN PROJECT</text>
+    </g>
+    <!-- start lights: one per countdown beep, then all green on GO -->
+    <g id="lights" opacity="0" transform="translate(540 1180)">
+      <rect x="-230" y="-70" width="460" height="140" rx="24" class="board" fill="#0B0C0E" stroke="#2A2D33" stroke-width="4"/>
+      <circle id="lt0" cx="-130" r="44" fill="#2A1010"/><circle id="lt1" cx="0" r="44" fill="#2A1010"/><circle id="lt2" cx="130" r="44" fill="#2A1010"/>
+    </g>
+    <g id="end" opacity="0"></g>
+  </svg></div>
+
+  <div class="desk">
+    <span class="brand"><span>STAT LAB</span></span>
+    <div><span class="kicker">2026 season · Grand Prix points</span><h1 id="deskTitle">Battle for P2</h1></div>
+    <p id="deskLede"></p>
+    <div class="row">
+      <button id="play" class="primary" type="button">Pause</button>
+      <button id="restart" type="button">Restart</button>
+      <label class="sr" for="speed">Speed</label>
+      <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+      <button id="sound" type="button" aria-pressed="false">Sound off</button>
+    </div>
+    <div class="scrub"><label class="kicker" for="scrub">Round</label><input id="scrub" type="range" min="0" max="20" step="0.01" value="0"><div class="ticks"><span>Start</span><span id="scrubLabel">R00</span><span>Finish</span></div></div>
+    <div class="panel">
+      <label class="kicker" for="look">Look</label>
+      <select id="look"><option value="led">Timing screen</option><option value="pit">Pit wall</option><option value="tele">Telestrator</option><option value="studio">Studio (original)</option></select>
+      <label class="kicker" for="preset">Battle</label>
+      <select id="preset"></select>
+      <span class="kicker">Drivers (2–5)</span>
+      <div class="chips" id="chips"></div>
+    </div>
+    <p class="note">Badges show championship position after each round. Tags above the cars show that race's result. Cars move by Grand Prix points after each round. Sprint points are only available as season totals, so they appear on the final card. Gaps are to scale within each frame: the leader sits at the front and everyone else is placed by how many points they trail.</p>
+    <p class="sr" aria-live="polite" id="live"></p>
+  </div>
+</div>
+
+<script>
+const DATA = {"rounds":[{"r":1,"short":"AUS","flag":"🇦🇺","name":"Australian Grand Prix","win":"RUS"},{"r":2,"short":"CHN","flag":"🇨🇳","name":"Chinese Grand Prix","win":"ANT"},{"r":3,"short":"JPN","flag":"🇯🇵","name":"Japanese Grand Prix","win":"ANT"},{"r":4,"short":"MIA","flag":"🇺🇸","name":"Miami Grand Prix","win":"ANT"},{"r":5,"short":"CAN","flag":"🇨🇦","name":"Canadian Grand Prix","win":"ANT"},{"r":6,"short":"MON","flag":"🇲🇨","name":"Monaco Grand Prix","win":"ANT"},{"r":7,"short":"BAR","flag":"🇪🇸","name":"Barcelona Grand Prix","win":"HAM"},{"r":8,"short":"AUT","flag":"🇦🇹","name":"Austrian Grand Prix","win":"RUS"},{"r":9,"short":"GBR","flag":"🇬🇧","name":"British Grand Prix","win":"LEC"},{"r":10,"short":"BEL","flag":"🇧🇪","name":"Belgian Grand Prix","win":"ANT"},{"r":11,"short":"HUN","flag":"🇭🇺","name":"Hungarian Grand Prix","win":"NOR"},{"r":12,"short":"NED","flag":"🇳🇱","name":"Dutch Grand Prix","win":"NOR"},{"r":13,"short":"ITA","flag":"🇮🇹","name":"Italian Grand Prix","win":"ANT"},{"r":14,"short":"ESP","flag":"🇪🇸","name":"Spanish Grand Prix","win":"ANT"},{"r":15,"short":"AZE","flag":"🇦🇿","name":"Azerbaijan Grand Prix","win":"RUS"},{"r":16,"short":"MAL","flag":"🇲🇾","name":"Bahrain Grand Prix in Malaysia","win":"VER"},{"r":17,"short":"SIN","flag":"🇸🇬","name":"Singapore Grand Prix","win":"VER"},{"r":18,"short":"USA","flag":"🇺🇸","name":"United States Grand Prix","win":"ANT"},{"r":19,"short":"MEX","flag":"🇲🇽","name":"Mexico City Grand Prix","win":"VER"}],"gp":{"RUS":[25,43,55,67,67,67,85,110,128,128,134,149,167,177,202,202,204,208,216],"ANT":[18,43,68,93,118,143,143,158,158,183,198,216,241,266,276,294,309,334,349],"LEC":[15,27,42,46,58,58,58,62,87,105,117,127,127,139,151,163,181,199,211],"HAM":[12,27,35,43,61,79,104,114,129,141,151,163,171,171,179,194,202,214,232],"VER":[8,8,12,22,37,37,49,67,67,82,100,100,115,133,151,176,201,216,241],"HAD":[0,4,4,4,14,29,37,45,55,63,71,71,71,71,86,96,97,105,105],"NOR":[10,10,20,38,38,38,53,59,71,77,102,127,139,154,154,156,168,178,188],"PIA":[0,0,18,33,33,45,55,67,67,77,77,85,95,99,99,107,117,123,129],"LIN":[4,4,4,4,4,12,14,15,21,23,24,24,28,30,36,37,37,37,37],"LAW":[0,6,8,8,14,24,28,30,38,38,42,48,48,56,56,62,68,70,72],"GAS":[1,9,15,15,19,25,31,31,32,32,32,33,39,39,39,39,39,40,41],"COL":[0,1,1,7,15,15,16,16,18,19,19,19,21,27,27,27,27,27,31],"BEA":[6,16,16,16,17,17,17,17,17,17,17,17,17,17,19,19,19,19,19],"OCO":[0,0,1,1,1,3,3,3,3,3,3,3,3,3,7,7,7,7,7],"BOR":[2,2,2,2,2,2,2,2,6,10,10,10,10,10,10,10,10,10,10],"HUL":[0,0,0,0,0,0,0,0,0,0,2,6,6,7,7,7,11,11,11],"ALB":[0,0,0,1,1,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"SAI":[0,2,2,4,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7],"STR":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ALO":[0,0,0,0,0,1,1,1,1,1,1,3,3,3,3,7,7,7,7],"PER":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"BOT":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"TSU":[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1],"HIR":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},"res":{"RUS":[1,2,4,4,"DNF",12,2,1,2,"DNF",7,3,2,5,1,"DNF",9,8,6],"ANT":[2,1,1,1,1,1,"DNF",3,15,1,3,2,1,1,5,2,3,1,3],"LEC":[3,4,3,8,4,"DNF","DNF",8,1,2,4,5,"DNF",4,4,4,2,2,4],"HAM":[4,3,6,6,2,2,1,5,3,4,5,4,6,"DNF",6,3,6,4,2],"VER":[6,"DNF",8,5,3,"DNF",4,2,"DNF",3,2,"DNF",3,2,2,1,1,3,1],"HAD":["DNF",8,12,"DNF",5,3,6,6,5,6,6,null,null,null,3,5,10,6,12],"NOR":[5,"DNF",5,2,"DNF","DNF",3,7,4,7,1,1,4,3,"DNF",9,4,5,5],"PIA":["DNF","DNF",2,3,11,4,5,4,11,5,"DNF",6,5,8,13,6,5,7,7],"LIN":[8,12,14,14,"DNF",6,9,10,7,9,10,12,8,9,7,10,15,12,"DNF"],"LAW":[13,7,9,"DNF",7,5,8,9,6,12,8,7,14,6,12,7,7,9,9],"GAS":[10,6,7,"DNF",8,7,7,13,10,11,12,10,7,12,"DNF",16,11,10,10],"COL":[14,10,16,7,6,14,10,15,9,10,15,14,9,7,"DNF",13,"DNF","DNF",8],"BEA":[7,5,"DNF",11,10,"DNF","DNF",14,12,14,19,"DNF",15,16,9,14,12,"DNF","DNF"],"OCO":[11,14,10,13,14,9,13,16,13,17,16,"DNF",16,11,8,15,13,14,null],"BOR":[9,"DNF",13,12,13,11,11,11,8,8,11,13,11,13,15,18,"DNF",13,11],"HUL":["DNF",11,11,"DNF",12,13,"DNF",12,"DNF",13,9,8,12,10,11,11,8,11,16],"ALB":[12,"DNF",20,10,"DNF",8,18,17,"DNF",15,17,"DNF",17,15,"DNF","DNF","DNF",17,14],"SAI":[15,9,15,9,9,"DNF",12,"DNF",17,16,18,16,13,"DNF",10,17,14,18,15],"STR":[17,"DNF","DNF",17,15,"DNF","DNF","DNF",19,"DNF",13,"DNF","DNF","DNF","DNF",12,"DNF",15,"DNF"],"ALO":["DNF","DNF",18,15,"DNF",10,"DNF",18,18,19,14,9,"DNF",17,"DNF",8,16,16,"DNF"],"PER":[16,15,17,16,"DNF",15,14,"DNF",14,"DNF","DNF",15,18,"DNF",14,19,17,19,17],"BOT":["DNF",13,19,18,16,"DNF","DNF","DNF",16,18,"DNF","DNF",19,18,"DNF","DNF",19,"DNF","DNF"],"TSU":[null,null,null,null,null,null,null,null,null,null,null,11,10,14,null,null,null,null,null],"HIR":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,13]},"champ":{"RUS":[1,1,2,2,2,3,3,3,3,3,3,3,3,2,2,2,2,4,4],"ANT":[2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"LEC":[3,3,3,3,4,4,4,6,4,4,4,5,5,5,5,5,5,5,5],"HAM":[4,4,4,4,3,2,2,2,2,2,2,2,2,3,3,3,3,3,3],"VER":[6,8,9,7,6,7,7,4,6,5,6,6,6,6,6,4,4,2,2],"HAD":[11,10,11,12,11,8,8,8,8,8,8,8,8,8,8,8,8,8,8],"NOR":[5,6,5,5,5,6,6,7,5,6,5,4,4,4,4,6,6,6,6],"PIA":[12,15,6,6,7,5,5,5,7,7,7,7,7,7,7,7,7,7,7],"LIN":[8,11,12,13,14,13,13,13,11,11,11,11,11,11,11,11,11,11,11],"LAW":[13,9,10,10,12,10,10,10,9,9,9,9,9,9,9,9,9,9,9],"GAS":[10,7,8,9,8,9,9,9,10,10,10,10,10,10,10,10,10,10,10],"COL":[14,14,15,11,10,12,12,12,12,12,12,12,12,12,12,12,12,12,12],"BEA":[7,5,7,8,9,11,11,11,13,13,13,13,13,13,13,13,13,13,13],"OCO":[15,16,16,16,16,16,16,16,17,17,17,18,18,18,15,15,16,16,16],"BOR":[9,12,13,15,15,17,17,17,14,14,14,14,14,14,14,14,15,15,15],"HUL":[16,17,17,18,18,19,19,19,19,19,18,15,15,15,16,16,14,14,14],"ALB":[17,18,18,17,17,15,15,15,16,16,16,17,17,17,18,19,19,19,19],"SAI":[18,13,14,14,13,14,14,14,15,15,15,16,16,16,17,17,17,17,17],"STR":[19,19,19,19,19,20,20,20,20,20,20,20,21,21,21,21,21,21,21],"ALO":[20,20,20,20,20,18,18,18,18,18,19,19,19,19,19,18,18,18,18],"PER":[21,21,21,21,21,21,21,21,21,21,21,21,22,22,22,22,22,22,22],"BOT":[22,22,22,22,22,22,22,22,22,22,22,22,23,23,23,23,23,23,23],"TSU":[23,23,23,23,23,23,23,23,23,23,23,23,20,20,20,20,20,20,20],"HIR":[24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24]},"official":{"ANT":380,"VER":261,"HAM":259,"RUS":250,"LEC":245,"NOR":221,"PIA":144,"HAD":107,"LAW":83,"GAS":42,"LIN":38,"COL":27,"BEA":23,"BOR":14,"HUL":13,"ALO":7,"OCO":7,"SAI":7,"ALB":5,"HIR":1,"TSU":1,"BOT":0,"PER":0,"STR":0},"teams":{"MER":{"name":"Mercedes","color":"#27E0C2"},"FER":{"name":"Ferrari","color":"#E8102E"},"RBR":{"name":"Red Bull","color":"#3B6FD8"},"MCL":{"name":"McLaren","color":"#FF8A1F"},"RB":{"name":"Racing Bulls","color":"#8C9BFF"},"ALP":{"name":"Alpine","color":"#FF6FB5"},"HAA":{"name":"Haas","color":"#B6BAC0"},"AUD":{"name":"Audi","color":"#C9D23A"},"WIL":{"name":"Williams","color":"#4FA3FF"},"AMR":{"name":"Aston Martin","color":"#1FA67A"},"CAD":{"name":"Cadillac","color":"#D4AF37"}},"drivers":{"RUS":{"first":"George","last":"Russell","num":63,"team":"MER"},"ANT":{"first":"Kimi","last":"Antonelli","num":12,"team":"MER"},"LEC":{"first":"Charles","last":"Leclerc","num":16,"team":"FER"},"HAM":{"first":"Lewis","last":"Hamilton","num":44,"team":"FER"},"VER":{"first":"Max","last":"Verstappen","num":3,"team":"RBR"},"HAD":{"first":"Isack","last":"Hadjar","num":6,"team":"RBR"},"NOR":{"first":"Lando","last":"Norris","num":1,"team":"MCL"},"PIA":{"first":"Oscar","last":"Piastri","num":81,"team":"MCL"},"LIN":{"first":"Arvid","last":"Lindblad","num":41,"team":"RB"},"LAW":{"first":"Liam","last":"Lawson","num":30,"team":"RB"},"GAS":{"first":"Pierre","last":"Gasly","num":10,"team":"ALP"},"COL":{"first":"Franco","last":"Colapinto","num":43,"team":"ALP"},"BEA":{"first":"Oliver","last":"Bearman","num":87,"team":"HAA"},"OCO":{"first":"Esteban","last":"Ocon","num":31,"team":"HAA"},"BOR":{"first":"Gabriel","last":"Bortoleto","num":5,"team":"AUD"},"HUL":{"first":"Nico","last":"Hülkenberg","num":27,"team":"AUD"},"ALB":{"first":"Alex","last":"Albon","num":23,"team":"WIL"},"SAI":{"first":"Carlos","last":"Sainz","num":55,"team":"WIL"},"STR":{"first":"Lance","last":"Stroll","num":18,"team":"AMR"},"ALO":{"first":"Fernando","last":"Alonso","num":14,"team":"AMR"},"PER":{"first":"Sergio","last":"Pérez","num":11,"team":"CAD"},"BOT":{"first":"Valtteri","last":"Bottas","num":77,"team":"CAD"},"TSU":{"first":"Yuki","last":"Tsunoda","num":22,"team":"RB"},"HIR":{"first":"Ryo","last":"Hirakawa","num":50,"team":"HAA"}},"total":23}
+;
+const N = DATA.rounds.length;
+const LIVERY = { // generic team colours, no logos
+  MER: { body: "#AEB6BF", dark: "#15171B", accent: "#27E0C2" },
+  FER: { body: "#E8102E", dark: "#1A0A0C", accent: "#F2F2F0" },
+  RBR: { body: "#2A3B85", dark: "#0E1330", accent: "#E8102E" },
+  MCL: { body: "#FF8A1F", dark: "#16181C", accent: "#4FA3FF" },
+};
+const livery = (t) => LIVERY[t] || { body: DATA.teams[t].color, dark: "#15171B", accent: "#F2F2F0" };
+const lineColour = (id) => { const t = DATA.drivers[id].team; return t === "MER" ? "#27E0C2" : t === "RBR" ? "#5B7FFF" : livery(t).body; };
+const off = DATA.official;
+const champOrder = Object.keys(off).sort((a, b) => off[b] - off[a]);
+const champPos = (id) => champOrder.indexOf(id) + 1;
+const PRESETS = [
+  { name: "Battle for P2", ids: ["VER", "HAM", "RUS", "LEC"], hl: "P2", target: 2 },
+  { name: "Title fight", ids: ["ANT", "VER", "HAM"], hl: "TITLE", target: 1 },
+  { name: "Mercedes: Antonelli v Russell", ids: ["ANT", "RUS"] },
+  { name: "Ferrari: Leclerc v Hamilton", ids: ["LEC", "HAM"] },
+  { name: "McLaren: Norris v Piastri", ids: ["NOR", "PIA"] },
+  { name: "Red Bull: Verstappen v Hadjar", ids: ["VER", "HAD"] },
+];
+let sel = PRESETS[0].ids.slice(), preset = 0;
+const target = () => (PRESETS[preset] && PRESETS[preset].target) || 0;
+
+/* ---------- timing: pure function of t, so a video export can render any frame ---------- */
+const STEP = 1.25, INTRO = STEP, MOVE = 0.8, OUTRO = 4.5; // intro = one bar of music: the start-light countdown
+const DURATION = INTRO + N * STEP + OUTRO;
+const ease = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+function roundAt(t) { // fractional round 0..N
+  if (t < INTRO) return 0;
+  const k = Math.floor((t - INTRO) / STEP), f = (t - INTRO - k * STEP) / MOVE;
+  return Math.min(N, k + ease(Math.min(1, f)));
+}
+const ptsAt = (id, r) => { const i = Math.floor(r), f = r - i, v = (j) => (j <= 0 ? 0 : DATA.gp[id][Math.min(j, N) - 1]); return v(i) + (v(i + 1) - v(i)) * f; };
+const champAt = (id, j) => (j <= 0 ? null : DATA.champ[id][Math.min(j, N) - 1]);  // championship position after round j
+const resAt = (id, j) => (j <= 0 ? null : DATA.res[id][j - 1]);                      // that race's finish: number, "DNF" or null
+const gainedAt = (id, j) => (j <= 0 ? 0 : DATA.gp[id][j - 1] - (j > 1 ? DATA.gp[id][j - 2] : 0));
+
+/* ---------- moves in the championship: a selected driver climbs a place ---------- */
+let moves = [];
+function computeMoves() {
+  moves = [];
+  for (let j = 2; j <= N; j++) sel.forEach((id) => { const a = champAt(id, j - 1), b = champAt(id, j); if (b < a) moves.push({ j, id, to: b }); });
+}
+
+/* ---------- build the stage ---------- */
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) if (attrs[k] != null) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const $ = (id) => document.getElementById(id);
+let cars = {}, bump = null;
+const TRACK_L = 96, TRACK_R = 984, LANE_L = 168, CAR_W = 104, CAR_H = 277, LEAD_Y = 600, SPAN = 550; // lanes leave a gutter on the left for gap labels
+function lanesX(n) { const w = TRACK_R - LANE_L; return Array.from({ length: n }, (_, i) => LANE_L + w * (i + .5) / n); }
+function build() {
+  const g = $("cars"); g.textContent = ""; cars = {};
+  const lanes = $("lanes"); lanes.textContent = "";
+  const xs = lanesX(sel.length);
+  xs.slice(0, -1).forEach((x, i) => el("rect", { x: (x + xs[i + 1]) / 2 - 5, y: -120, width: 10, height: 2160, fill: "url(#dash)" }, lanes));
+  sel.forEach((id, i) => {
+    const d = DATA.drivers[id], L = livery(d.team);
+    const grp = el("g", {}, g);
+    el("use", { href: "#car", x: -CAR_W / 2, y: -CAR_H / 2, width: CAR_W, height: CAR_H, style: `--body:${L.body};--dark:${L.dark};--accent:${L.accent}` }, grp);
+    const pop = el("g", { opacity: 0 }, grp);
+    const popBg = el("rect", { class: "pop-bg", y: -24, height: 48, rx: 8 }, pop);
+    const popTx = el("text", { class: "t-pop pop-tx", x: 0, y: 10, "text-anchor": "middle" }, pop);
+    const rankBg = el("rect", { x: -38, y: CAR_H / 2 + 6, width: 76, height: 36, rx: 8, fill: "#F2F2F0" }, grp);
+    const rank = el("text", { class: "t-rank", x: 0, y: CAR_H / 2 + 32, "text-anchor": "middle", fill: "#0E0F12" }, grp);
+    el("text", { class: "t-code", x: 0, y: CAR_H / 2 + 88, "text-anchor": "middle" }, grp).textContent = id;
+    const pts = el("text", { class: "t-pts", x: 0, y: CAR_H / 2 + 146, "text-anchor": "middle" }, grp);
+    cars[id] = { grp, pts, rank, rankBg, pop, popBg, popTx, x: xs[i], phase: i * 1.7, tilt: [-3, 2, -1.5, 2.5, -2][i % 5] };
+  });
+  const p = PRESETS[preset];
+  const titleTxt = p ? p.name.toUpperCase() : "POINTS RACE";
+  const ti = $("title"); ti.textContent = "";
+  if (p && p.hl && titleTxt.includes(p.hl)) {
+    const [a] = titleTxt.split(p.hl);
+    ti.appendChild(document.createTextNode(a)); el("tspan", { class: "hl" }, ti).textContent = p.hl;
+  } else ti.textContent = titleTxt;
+  ti.style.fontSize = titleTxt.length > 16 ? Math.max(48, 92 * 16 / titleTxt.length) + "px" : "";
+  $("deskTitle").textContent = p ? p.name : "Custom battle";
+  buildBump(); computeMoves(); buildEnd(); lede(); if (typeof placeSwash === "function") placeSwash();
+  if (typeof buildSong === "function") { buildSong(); resyncAudio(0); }
+}
+
+/* championship position by round: a small bump chart at the foot of the stage */
+const BX0 = 150, BX1 = 900, BY0 = 1540, BY1 = 1800;
+function buildBump() {
+  const g = $("bump"); g.textContent = "";
+  let lo = 99, hi = 0;
+  sel.forEach((id) => DATA.champ[id].forEach((p) => { lo = Math.min(lo, p); hi = Math.max(hi, p); }));
+  hi = Math.min(hi, lo + 9); // keep at most 10 rows
+  const rows = hi - lo + 1;
+  const bx = (j) => BX0 + (j - 1) / (N - 1) * (BX1 - BX0);
+  const by = (p) => BY0 + (Math.min(p, hi) - lo) / Math.max(1, rows - 1) * (BY1 - BY0);
+  el("rect", { x: 60, y: 1462, width: 960, height: 386, rx: 22, fill: "#0E0F12", opacity: .9 }, g);
+  el("text", { class: "t-bump-h", x: 96, y: 1506 }, g).textContent = "CHAMPIONSHIP POSITION · ROUND BY ROUND";
+  for (let p = lo; p <= hi; p++) {
+    el("line", { x1: BX0, x2: BX1, y1: by(p), y2: by(p), stroke: "#22252B", "stroke-width": 2 }, g);
+    el("text", { class: "t-bump", x: BX0 - 18, y: by(p) + 6, "text-anchor": "end", fill: target() === p ? "#FFD400" : "#6B717A" }, g).textContent = "P" + p;
+  }
+  if (target() >= lo && target() <= hi) el("rect", { x: BX0 - 6, y: by(target()) - 14, width: BX1 - BX0 + 12, height: 28, rx: 14, fill: "#FFD400", opacity: .1 }, g);
+  if (target() >= lo && target() <= hi) el("path", { class: "deco-tele", d: roughLoop(BX0 - 22, by(target()), 34, 20, 3), fill: "none", stroke: "#FFD400", "stroke-width": 4, "stroke-linecap": "round" }, g);
+  const clip = el("clipPath", { id: "bumpClip" }, g);
+  const clipRect = el("rect", { x: BX0 - 14, y: BY0 - 30, width: 0, height: BY1 - BY0 + 60 }, clip);
+  const lines = el("g", { "clip-path": "url(#bumpClip)" }, g);
+  const seen = {};
+  const heads = {};
+  sel.forEach((id) => {
+    const c = lineColour(id), team = DATA.drivers[id].team;
+    const dash = seen[team] ? "10 8" : ""; seen[team] = true;
+    const d = DATA.champ[id].map((p, i) => `${i ? "L" : "M"}${bx(i + 1).toFixed(1)},${by(p).toFixed(1)}`).join("");
+    el("path", { d, fill: "none", stroke: c, "stroke-width": 5, "stroke-linejoin": "round", "stroke-linecap": "round", "stroke-dasharray": dash }, lines);
+    const head = el("g", {}, g);
+    el("circle", { r: 9, fill: c, stroke: "#0E0F12", "stroke-width": 3 }, head);
+    el("text", { class: "t-bump-code", x: 16, y: 8, fill: c }, head).textContent = id;
+    heads[id] = head;
+  });
+  [1, Math.ceil(N / 2), N].forEach((j) => el("text", { class: "t-bump", x: bx(j), y: BY1 + 34, "text-anchor": "middle" }, g).textContent = "R" + j);
+  bump = { clipRect, heads, bx, by };
+}
+function lede() {
+  const fin = sel.slice().sort((a, b) => off[b] - off[a]);
+  const spread = off[fin[0]] - off[fin[fin.length - 1]];
+  $("deskLede").textContent = `${fin.map((id) => `${DATA.drivers[id].last} P${champPos(id)} · ${off[id]}`).join(", ")} after ${N} rounds, sprints included. ${spread} point${spread === 1 ? "" : "s"} cover ${fin.length === 2 ? "the pair" : "all " + fin.length}.`;
+}
+function buildEnd() {
+  const g = $("end"); g.textContent = "";
+  el("rect", { x: 60, y: 1462, width: 960, height: 386, rx: 22, fill: "#0E0F12" }, g);
+  el("text", { class: "t-end-h", x: 100, y: 1540 }, g).textContent = "OFFICIAL STANDINGS";
+  el("text", { class: "t-end", x: 100, y: 1584 }, g).textContent = `After ${N} rounds · sprint points included`;
+  const fin = sel.slice().sort((a, b) => off[b] - off[a]);
+  const rowH = Math.min(60, 220 / fin.length);
+  fin.forEach((id, i) => {
+    const y = 1648 + i * rowH;
+    el("rect", { x: 100, y: y - 34, width: 10, height: 42, fill: lineColour(id) }, g);
+    el("text", { class: "t-end", x: 130, y, fill: champPos(id) === target() ? "#FFD400" : null }, g).textContent = `P${champPos(id)}`;
+    el("text", { class: "t-end-b", x: 230, y: y + 2 }, g).textContent = DATA.drivers[id].last.toUpperCase();
+    el("text", { class: "t-end-b", x: 980, y: y + 2, "text-anchor": "end" }, g).textContent = off[id];
+  });
+}
+
+/* ---------- sound: an original chiptune in the style of an 80s/90s arcade racer, made live with Web Audio ----------
+   192 BPM, so one bar (4 beats x 0.3125 s) = 1.25 s = one round. The intro bar is the start-light countdown.
+   Everything is scheduled against the race clock t, so music, scrubbing and video export stay in sync. */
+const BEAT = STEP / 4, SIX = BEAT / 4;                     // a 16th note
+const NOTE = (n) => { const m = n.match(/^([A-G])(#?)(\d)$/); const k = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0); return 440 * Math.pow(2, (k + 12 * (+m[3] + 1) - 69) / 12); };
+// 8-bar loop in D major. Melody as "note:16ths", R = rest.
+const MELODY = [
+  "A4:2 D5:2 F#5:2 A5:4 F#5:2 E5:2 D5:2", "F#5:2 E5:2 D5:2 B4:4 D5:2 E5:4",
+  "D5:2 F#5:2 G5:2 B5:6 A5:2 G5:2", "F#5:3 E5:3 C#5:2 E5:4 R:4",
+  "A5:2 F#5:2 A5:2 D6:4 C#6:2 B5:2 A5:2", "C#6:2 A5:2 F#5:2 C#5:4 E5:2 F#5:4",
+  "G5:2 F#5:2 E5:2 D5:2 B4:2 D5:2 G5:4", "A5:4 G5:2 F#5:2 E5:2 C#5:2 A4:4",
+];
+const CHORDS = [["D", "F#", "A", "C#"], ["B", "D", "F#", "A"], ["G", "B", "D", "F#"], ["A", "C#", "E", "G"],
+                ["D", "F#", "A", "C#"], ["F#", "A", "C#", "E"], ["G", "B", "D", "F#"], ["A", "C#", "E", "G"]];
+const BASS = ["D2", "B1", "G1", "A1", "D2", "F#1", "G1", "A1"];
+
+let AC = null, master = null, bus = null, pulse25 = null, pulse12 = null, noiseBuf = null;
+let soundOn = false, schedUpTo = 0, events = [];
+function initAudio() {
+  if (AC) return;
+  AC = new (window.AudioContext || window.webkitAudioContext)();
+  const comp = AC.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 3; comp.connect(AC.destination);
+  master = AC.createGain(); master.gain.value = 0.33; master.connect(comp);
+  const pw = (d) => { const n = 64, re = new Float32Array(n), im = new Float32Array(n); for (let k = 1; k < n; k++) re[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * d); return AC.createPeriodicWave(re, im); };
+  pulse25 = pw(0.25); pulse12 = pw(0.125);
+  noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+}
+function newBus() { // a fresh output per play segment, so a scrub or pause can silence what was queued
+  if (bus) { const old = bus; old.gain.setTargetAtTime(0, AC.currentTime, 0.02); setTimeout(() => old.disconnect(), 300); }
+  bus = AC.createGain(); bus.connect(master);
+}
+/* instruments: each takes (when, duration, ...) in AudioContext seconds and the output node */
+function tone(out, when, dur, f, wave, vol, slideTo) {
+  const o = AC.createOscillator(), g = AC.createGain();
+  if (typeof wave === "string") o.type = wave; else o.setPeriodicWave(wave);
+  o.frequency.setValueAtTime(f, when); if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, when + dur);
+  g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(vol, when + 0.005);
+  g.gain.setValueAtTime(vol, when + Math.max(0.01, dur - 0.03)); g.gain.linearRampToValueAtTime(0, when + dur);
+  o.connect(g).connect(out); o.start(when); o.stop(when + dur + 0.02);
+}
+function noise(out, when, dur, vol, hp) {
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = noiseBuf; f.type = "highpass"; f.frequency.value = hp;
+  g.gain.setValueAtTime(vol, when); g.gain.exponentialRampToValueAtTime(0.001, when + dur);
+  s.connect(f).connect(g).connect(out); s.start(when, Math.random() * 0.5); s.stop(when + dur + 0.02);
+}
+const kick = (out, w) => tone(out, w, 0.14, 150, "triangle", 0.9, 40);
+
+/* the song as a list of {at (race seconds), play(when, out)} */
+function buildSong() {
+  const ev = [], add = (at, play) => ev.push({ at, play });
+  // start lights: three short beeps then GO
+  [0, 1, 2].forEach((b) => add(b * BEAT, (w, o) => tone(o, w, 0.12, 440, pulse25, 0.28)));
+  add(3 * BEAT, (w, o) => tone(o, w, 0.32, 880, pulse25, 0.32));
+  const bars = N + 1;                                      // music runs through the race and into the finish
+  for (let b = 0; b < bars; b++) {
+    const t0 = INTRO + b * STEP, k = b % 8, chord = CHORDS[k];
+    // melody (from the second loop on, the first loop is just groove so the start feels like a build)
+    let s = 0;
+    if (b >= 4) MELODY[k].split(" ").forEach((tok) => { const [n, len] = tok.split(":"); const L = +len; if (n !== "R") { const f = NOTE(n); add(t0 + s * SIX, (w, o) => tone(o, w, L * SIX * 0.92, f, pulse25, 0.16)); } s += L; });
+    // arpeggio: chord tones in 16ths
+    for (let i = 0; i < 16; i++) { const n = chord[i % 4] + (i % 8 < 4 ? "4" : "5"); const f = NOTE(n); add(t0 + i * SIX, (w, o) => tone(o, w, SIX * 0.8, f, pulse12, b >= 4 ? 0.045 : 0.06)); }
+    // bass: octave-bouncing 8ths
+    for (let i = 0; i < 8; i++) { const f = NOTE(BASS[k]) * (i % 2 ? 2 : 1); add(t0 + i * 2 * SIX, (w, o) => tone(o, w, 2 * SIX * 0.85, f, "triangle", 0.42)); }
+    // drums: kick 1 & 3, snare 2 & 4, hats on 8ths, a fill every 8th bar
+    [0, 2].forEach((q) => add(t0 + q * BEAT, (w, o) => kick(o, w)));
+    [1, 3].forEach((q) => add(t0 + q * BEAT, (w, o) => noise(o, w, 0.16, 0.32, 1200)));
+    for (let i = 0; i < 8; i++) add(t0 + i * 2 * SIX, (w, o) => noise(o, w, 0.04, 0.09, 7000));
+    if (k === 7) [12, 13, 14, 15].forEach((i) => add(t0 + i * SIX, (w, o) => noise(o, w, 0.08, 0.22, 1500)));
+  }
+  // victory fanfare on the finish card
+  const end = INTRO + N * STEP;
+  ["D5", "E5", "F#5", "A5"].forEach((n, i) => add(end + i * 2 * SIX, (w, o) => tone(o, w, 2 * SIX * 0.9, NOTE(n), pulse25, 0.22)));
+  add(end + 8 * SIX, (w, o) => { ["D5", "F#5", "A5", "D6"].forEach((n) => tone(o, w, 1.6, NOTE(n), pulse25, 0.12)); tone(o, w, 1.6, NOTE("D3"), "triangle", 0.4); kick(o, w); noise(o, w, 1.2, 0.18, 4000); });
+  // game sounds for the selected drivers: win = coin, DNF = fall, move up = arpeggio
+  for (let j = 1; j <= N; j++) {
+    const at = INTRO + (j - 1) * STEP;
+    if (sel.some((id) => resAt(id, j) === 1)) add(at + 0.15, (w, o) => { tone(o, w, 0.07, NOTE("B5"), "square", 0.16); tone(o, w + 0.07, 0.25, NOTE("E6"), "square", 0.16); });
+    if (sel.some((id) => resAt(id, j) === "DNF")) add(at + 0.15, (w, o) => tone(o, w, 0.45, 620, "square", 0.12, 110));
+    if (moves.some((m) => m.j === j)) add(at + 0.5, (w, o) => ["C6", "E6", "G6", "C7"].forEach((n, i) => tone(o, w + i * 0.045, 0.06, NOTE(n), pulse12, 0.12)));
+  }
+  events = ev.sort((a, b) => a.at - b.at);
+}
+/* called every animation frame: queue anything due in the next ~150 ms of race time */
+function pumpAudio(t, playing, speed) {
+  if (!soundOn || !AC || !playing) return;
+  const horizon = t + 0.15 * speed;
+  for (const e of events) {
+    if (e.at < schedUpTo) continue;
+    if (e.at >= horizon) break;
+    e.play(AC.currentTime + Math.max(0, (e.at - t) / speed), bus);
+  }
+  schedUpTo = horizon;
+}
+function resyncAudio(t) { if (AC && soundOn) { newBus(); schedUpTo = t; } }
+function setSound(on) {
+  if (on) { initAudio(); AC.resume(); newBus(); schedUpTo = window.__raceT || 0; }
+  else if (AC) { newBus(); }
+  soundOn = on;
+  const b = document.getElementById("sound"); b.textContent = on ? "Sound on" : "Sound off"; b.setAttribute("aria-pressed", on);
+}
+/* render the whole soundtrack offline (for the video export): returns an AudioBuffer */
+async function renderSoundtrack(sampleRate = 48000) {
+  const OAC = new OfflineAudioContext(2, Math.ceil(DURATION * sampleRate), sampleRate);
+  const saved = AC; AC = OAC;
+  const comp = OAC.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 3; comp.connect(OAC.destination);
+  const m = OAC.createGain(); m.gain.value = 0.33; m.connect(comp);
+  const pw = (d) => { const n = 64, re = new Float32Array(n), im = new Float32Array(n); for (let k = 1; k < n; k++) re[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * d); return OAC.createPeriodicWave(re, im); };
+  const keep = [pulse25, pulse12, noiseBuf]; pulse25 = pw(0.25); pulse12 = pw(0.125);
+  noiseBuf = OAC.createBuffer(1, sampleRate, sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  events.forEach((e) => e.play(e.at, m));
+  const buf = await OAC.startRendering();
+  [pulse25, pulse12, noiseBuf] = keep; AC = saved;
+  return buf;
+}
+
+
+/* ---------- looks ---------- */
+let look = "pit", winLook = "", roundLook = "";
+const textW = (node) => { try { return node.getComputedTextLength(); } catch (e) { return node.textContent.length * 17; } };
+function rnd(seed) { let s = seed; return () => ((s = (s * 16807) % 2147483647) / 2147483647); }
+function roughLine(x1, y1, x2, y2, seed) { // a marker stroke: slight wobble, overshoot at the end
+  const r = rnd(seed), n = 6; let d = `M${x1},${y1}`;
+  for (let i = 1; i <= n; i++) { const f = i / n; d += ` L${(x1 + (x2 - x1) * f + (r() - .5) * 6).toFixed(1)},${(y1 + (y2 - y1) * f + (r() - .5) * 5).toFixed(1)}`; }
+  return d;
+}
+function roughLoop(cx, cy, rx, ry, seed) { // hand-drawn circle that doesn't quite close
+  const r = rnd(seed), pts = []; for (let i = 0; i <= 26; i++) { const a = -2.6 + i / 26 * (Math.PI * 2 + .55); const k = 1 + (r() - .5) * .07; pts.push(`${(cx + Math.cos(a) * rx * k).toFixed(1)},${(cy + Math.sin(a) * ry * k).toFixed(1)}`); }
+  return "M" + pts.join(" L");
+}
+function setLook(v) {
+  look = v; roundLook = ""; $("svg").setAttribute("class", "look-" + v);
+  try { localStorage.setItem("statlab-race-look", v); } catch (e) {}
+  $("look").value = v; winLook = "";
+  Object.values(cars).forEach((c) => (c.popTx.textContent = ""));  // re-measure tags in the new font
+  $("toastTx").textContent = "";
+  document.fonts && document.fonts.ready.then(() => { winLook = ""; Object.values(cars).forEach((c) => (c.popTx.textContent = "")); $("toastTx").textContent = ""; placeSwash(); });
+  placeSwash();
+}
+function placeSwash() { // underline the highlighted word of the title
+  const ti = $("title"), hl = ti.querySelector(".hl");
+  try { const b = (hl || ti).getBBox(); $("titleSwash").setAttribute("d", roughLine(b.x - 6, b.y + b.height + 4, b.x + b.width + 10, b.y + b.height - 2, 5)); } catch (e) {}
+}
+
+/* ---------- draw one frame ---------- */
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let gapStep = 0;
+function drawGaps(lead, scale) {
+  const step = [5, 10, 25, 50, 100].find((s) => s * scale >= 110) || 100;
+  const g = $("gaps");
+  if (step !== gapStep) { g.textContent = ""; gapStep = step; for (let k = 1; k <= 8; k++) { const l = el("g", {}, g); el("line", { x1: TRACK_L + 70, x2: TRACK_R - 10, y1: 0, y2: 0, stroke: "#3A3E46", "stroke-width": 2, "stroke-dasharray": "4 12" }, l); el("text", { class: "t-gap", x: TRACK_L + 62, y: 7, "text-anchor": "end" }, l).textContent = `−${k * step}`; } }
+  [...g.children].forEach((l, k) => { const y = LEAD_Y + (k + 1) * step * scale; l.setAttribute("transform", `translate(0 ${y.toFixed(1)})`); l.setAttribute("opacity", y < 1440 ? 1 : 0); });
+}
+function renderAt(t) {
+  const r = roundAt(t);
+  const shown = t < INTRO ? 0 : Math.min(N, Math.floor((t - INTRO) / STEP) + 1); // the round the cars are moving to
+  const since = t - INTRO - (shown - 1) * STEP;                                    // seconds into that round
+  const landed = Math.max(0, shown && since >= MOVE * .6 ? shown : shown - 1);      // last round whose result is on screen
+  const vals = sel.map((id) => [id, ptsAt(id, r)]);
+  const lead = Math.max(...vals.map((v) => v[1]));
+  const gap = Math.max(1, ...vals.map((v) => lead - v[1]));
+  const scale = Math.min(16, SPAN / gap);
+  drawGaps(lead, scale);
+  vals.forEach(([id, p]) => {
+    const c = cars[id], wob = reduce ? 0 : Math.sin(t * 2.1 + c.phase) * 3;
+    const y = LEAD_Y + (lead - p) * scale;
+    c.grp.setAttribute("transform", `translate(${(c.x + wob).toFixed(1)} ${y.toFixed(1)})`);
+    c.pts.textContent = Math.round(p);
+    const cp = champAt(id, landed);
+    c.rank.textContent = cp ? "P" + cp : "—";
+    c.rankBg.setAttribute("fill", cp && cp === target() ? "#FFD400" : cp === 1 ? "#F2F2F0" : "#F2F2F0");
+    // race result tag above the car
+    const res = resAt(id, shown), pop = c.pop;
+    if (shown && res != null && since > .15 && since < STEP && t < INTRO + N * STEP) {
+      const gained = gainedAt(id, shown);
+      const txt = res === "DNF" ? "DNF" : `P${res}${gained ? " +" + gained : ""}`;
+      pop.setAttribute("opacity", Math.min(1, (since - .15) / .15, (STEP - since) / .2).toFixed(2));
+      pop.setAttribute("transform", `translate(0 ${(-CAR_H / 2 - 34 - Math.min(1, since / .6) * 16).toFixed(1)}) rotate(${look === "tele" || look === "pit" ? c.tilt : 0})`);
+      pop.dataset.kind = res === "DNF" ? "dnf" : res === 1 ? "win" : res <= 3 ? "pod" : "other";
+      if (c.popTx.textContent !== txt) { c.popTx.textContent = txt; const w = textW(c.popTx) + 30; c.popBg.setAttribute("x", -w / 2); c.popBg.setAttribute("width", w); }
+    } else pop.setAttribute("opacity", 0);
+  });
+  $("scroll").setAttribute("transform", `translate(0 ${(reduce ? 0 : (t * 900) % 80).toFixed(1)})`);
+  const info = shown ? DATA.rounds[shown - 1] : null;
+  const rtx = info ? `${info.flag} R${String(shown).padStart(2, "0")}/${DATA.total} ${info.short}` : `R00/${DATA.total} START`;
+  if ($("round").textContent !== rtx || roundLook !== look) { $("round").textContent = rtx; roundLook = look; const w = textW($("round")) + 40; $("roundBg").setAttribute("width", w); $("winner").setAttribute("transform", `translate(${(60 + w + 12).toFixed(0)} 312)`); winLook = ""; }
+  // round winner chip
+  const win = info && landed === shown ? info.win : landed ? DATA.rounds[landed - 1].win : null;
+  const wg = $("winner");
+  if (win) {
+    const tx = `WIN ${win}`;
+    if ($("winTx").textContent !== tx || winLook !== look) { $("winTx").textContent = tx; $("winBg").setAttribute("width", textW($("winTx")) + 44); winLook = look; }
+    $("winBar").setAttribute("fill", lineColour(win));
+    $("winTx").setAttribute("fill", sel.includes(win) ? "#FFD400" : "#F2F2F0");
+    wg.setAttribute("opacity", 1);
+  } else wg.setAttribute("opacity", 0);
+  // championship move banner, once the result has landed
+  const m = moves.filter((x) => x.j === shown).slice(0, 1);
+  const toast = $("toast");
+  if (m.length && since > .5 && since < STEP && t < INTRO + N * STEP) {
+    const txt = m.map((x) => `${x.id} UP TO P${x.to}`).join(" · ");
+    if ($("toastTx").textContent !== txt) { $("toastTx").textContent = txt; const w = textW($("toastTx")) + 36; $("toastBg").setAttribute("width", w); $("toastSwash").setAttribute("d", roughLine(16, 58, w - 10, 54, 11)); }
+    toast.setAttribute("transform", `translate(${(72 + (+$("roundBg").getAttribute("width") || 0) + (+$("winBg").getAttribute("width") || 0) + 14).toFixed(0)} 312) rotate(${look === "tele" ? -3 : look === "pit" ? -1.2 : 0})`); toast.setAttribute("opacity", Math.min(1, (since - .5) / .12, (STEP - since) / .15).toFixed(2));
+  } else toast.setAttribute("opacity", 0);
+  // bump chart reveals up to the current fractional round
+  if (bump) {
+    const rr = Math.max(1, r);
+    bump.clipRect.setAttribute("width", r < 1 ? 0 : (bump.bx(rr) - BX0 + 14).toFixed(1));
+    sel.forEach((id) => {
+      const i = Math.floor(rr), f = rr - i, p0 = DATA.champ[id][i - 1], p1 = DATA.champ[id][Math.min(i, N - 1)];
+      const x = bump.bx(rr), y = bump.by(p0) + (bump.by(p1) - bump.by(p0)) * (i < N ? f : 0);
+      bump.heads[id].setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+      bump.heads[id].setAttribute("opacity", r < 1 ? 0 : 1);
+    });
+  }
+  // start lights, in time with the countdown beeps (beats 0-2 red, beat 3 green), gone shortly after GO
+  const beat = Math.floor(t / (STEP / 4));
+  $("lights").setAttribute("opacity", t < INTRO + .35 ? Math.min(1, (INTRO + .35 - t) / .25).toFixed(2) : 0);
+  [0, 1, 2].forEach((i) => $("lt" + i).setAttribute("fill", beat >= 3 ? "#3DDC84" : beat >= i ? "#FF3B30" : "#2A1010"));
+  const endT = t - (INTRO + N * STEP), e = Math.max(0, Math.min(1, endT / .5));
+  $("end").setAttribute("opacity", e.toFixed(2));
+  $("bump").setAttribute("opacity", (1 - e).toFixed(2));
+  return shown;
+}
+
+/* ---------- playback ---------- */
+let t = 0, playing = !reduce, speed = 1, last = performance.now(), lastShown = -1;
+function frame(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (playing) { t += dt * speed; if (t > DURATION) t = DURATION, setPlaying(false); }
+  const shown = renderAt(t);
+  window.__raceT = t; pumpAudio(t, playing, speed);
+  const sc = $("scrub");
+  if (document.activeElement !== sc) { const e = t - INTRO - N * STEP; sc.value = (e > 0 ? N + Math.min(1, e / OUTRO) : Math.max(0, (t - INTRO) / STEP)).toFixed(2); }
+  $("scrubLabel").textContent = "R" + String(shown).padStart(2, "0");
+  if (shown !== lastShown) {
+    lastShown = shown;
+    const info = shown ? DATA.rounds[shown - 1] : null;
+    $("live").textContent = shown ? `Round ${shown}, ${info.name}, won by ${DATA.drivers[info.win].last}. ` + sel.map((id) => `${id} P${champAt(id, shown)} on ${DATA.gp[id][shown - 1]}`).join(", ") : "Start";
+  }
+  requestAnimationFrame(frame);
+}
+function setPlaying(p) { if (p !== playing) resyncAudio(t); playing = p; $("play").textContent = p ? "Pause" : "Play"; }
+$("play").onclick = () => { if (t >= DURATION) t = 0; setPlaying(!playing); };
+$("restart").onclick = () => { t = 0; resyncAudio(0); setPlaying(true); };
+$("speed").onchange = (e) => { speed = +e.target.value; resyncAudio(t); };
+$("sound").onclick = () => { setSound(!soundOn); if (soundOn && !playing) { if (t >= DURATION) t = 0; setPlaying(true); } };
+$("scrub").oninput = (e) => { const v = +e.target.value; t = v > N ? INTRO + N * STEP + (v - N) * OUTRO : INTRO + v * STEP; setPlaying(false); resyncAudio(t); }; // past the last round: the finish card
+const ps = $("preset");
+PRESETS.forEach((p, i) => { const o = document.createElement("option"); o.value = i; o.textContent = p.name; ps.appendChild(o); });
+const cu = document.createElement("option"); cu.value = -1; cu.textContent = "Custom"; ps.appendChild(cu);
+ps.onchange = () => { preset = +ps.value; if (preset >= 0) sel = PRESETS[preset].ids.slice(); chips(); build(); t = 0; setPlaying(true); };
+function chips() {
+  const box = $("chips"); box.textContent = "";
+  champOrder.forEach((id) => {
+    const d = DATA.drivers[id], on = sel.includes(id);
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.setAttribute("aria-pressed", on);
+    b.style.setProperty("--tc", lineColour(id)); b.innerHTML = `<i></i>${id}`;
+    b.title = `${d.first} ${d.last} · P${champPos(id)} · ${off[id]} pts`;
+    b.disabled = !on && sel.length >= 5;
+    b.onclick = () => {
+      if (on && sel.length <= 2) return;
+      sel = on ? sel.filter((x) => x !== id) : [...sel, id];
+      sel.sort((a, b2) => champOrder.indexOf(a) - champOrder.indexOf(b2));
+      preset = -1; ps.value = -1; chips(); build(); t = 0; setPlaying(true);
+    };
+    box.appendChild(b);
+  });
+}
+chips(); build();
+$("look").onchange = (e) => setLook(e.target.value);
+let saved = null; try { saved = localStorage.getItem("statlab-race-look"); } catch (e) {}
+setLook(saved || "led");
+if (reduce) t = DURATION; // reduced motion: open on the finished race, scrub to step through
+setPlaying(playing);
+requestAnimationFrame(frame);
+window.statlabRace = { renderAt, DURATION, setLook, renderSoundtrack, seek(x) { t = x; setPlaying(false); }, setSelection(ids) { sel = ids; preset = -1; build(); } };
+
+</script>

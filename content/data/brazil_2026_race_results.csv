@@ -1,0 +1,23 @@
+pos,driver,name,team,qualified,grid,places_gained,laps,gap,points,pit_stops,tyres,best_lap,penalty
+1,NOR,Lando Norris,McLaren,1,1,0.0,71,0,25.0,3,Intermediate > Soft > Soft > Intermediate,1:12.983,
+2,VER,Max Verstappen,Red Bull Racing,16,21,19.0,71,14.602,18.0,3,Intermediate > Soft > Soft > Intermediate,1:13.131,
+3,HAD,Isack Hadjar,Red Bull Racing,7,5,2.0,71,24.485,15.0,3,Intermediate > Soft > Soft > Intermediate,1:12.877,
+4,RUS,George Russell,Mercedes,2,7,3.0,71,33.991,12.0,2,Intermediate > Soft > Intermediate,1:14.040,
+5,ANT,Kimi Antonelli,Mercedes,3,2,-3.0,71,41.017,10.0,3,Intermediate > Soft > Soft > Intermediate,1:12.689,
+6,PIA,Oscar Piastri,McLaren,12,10,4.0,71,56.475,8.0,3,Intermediate > Soft > Soft > Intermediate,1:13.018,
+7,LAW,Liam Lawson,Racing Bulls,5,3,-4.0,71,75.402,6.0,3,Intermediate > Soft > Soft > Intermediate,1:13.495,
+8,LEC,Charles Leclerc,Ferrari,4,14,6.0,71,78.586,4.0,2,Intermediate > Soft > Intermediate,1:14.170,
+9,HAM,Lewis Hamilton,Ferrari,11,20,11.0,70,+1 LAP,2.0,3,Intermediate > Soft > Soft > Intermediate,1:13.724,
+10,HUL,Nico Hulkenberg,Audi,6,4,-6.0,70,+1 LAP,1.0,3,Intermediate > Soft > Soft > Intermediate,1:14.000,"10s (left track, gained advantage)"
+11,LIN,Arvid Lindblad,Racing Bulls,14,18,7.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.004,
+12,ALO,Fernando Alonso,Aston Martin,9,8,-4.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.706,
+13,COL,Franco Colapinto,Alpine,17,13,0.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:13.710,
+14,GAS,Pierre Gasly,Alpine,18,15,1.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.462,
+15,ALB,Alexander Albon,Williams,10,9,-6.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.464,5s (unsafe rejoin)
+16,BOR,Gabriel Bortoleto,Audi,22,19,3.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.940,
+17,BEA,Oliver Bearman,Haas F1 Team,8,6,-11.0,70,+1 LAP,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.036,
+18,PER,Sergio Perez,Cadillac,21,22,4.0,69,+2 LAPS,0.0,2,Intermediate > Soft > Intermediate,1:16.123,
+19,SAI,Carlos Sainz,Williams,15,12,-7.0,69,+2 LAPS,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.613,
+20,CAM,Rafael Camara,Haas F1 Team,13,11,-9.0,69,+2 LAPS,0.0,3,Intermediate > Soft > Soft > Intermediate,1:14.369,
+DNF,STR,Lance Stroll,Aston Martin,19,16,,30,,0.0,1,Intermediate > Soft,1:17.430,
+DNS,BOT,Valtteri Bottas,Cadillac,20,17,,0,,0.0,0,Intermediate,,

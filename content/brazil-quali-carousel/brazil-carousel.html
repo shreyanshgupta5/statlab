@@ -1,0 +1,243 @@
+<title>São Paulo Qualifying Carousel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* Layout: five 1080x1350 slides stacked; on screen each scales to the column width. Timing-screen look: amber dot-matrix + Stat Lab type. */
+:root {
+  --bg: #0E0F12; --panel: #0A0A08; --line: #2A2D33; --fg: #F2F2F0; --soft: #C9CDD2; --muted: #8D939B;
+  --amber: #FFB000; --amber-dim: #8A6A1F; --yellow: #FFD400; --rain: #4FA3FF; --red: #dc2c2c;
+  --display: 'Archivo', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --led: 'Doto', 'JetBrains Mono', monospace; --hand: 'Caveat Brush', 'Comic Sans MS', cursive;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #060607; color: var(--fg); font-family: var(--display);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px; }
+.deck { display: grid; gap: 24px; justify-items: center; }
+.frame { width: min(100%, 540px); aspect-ratio: 1080 / 1350; position: relative; overflow: hidden; border-radius: 12px; }
+.slide { position: absolute; top: 0; left: 0; width: 1080px; height: 1350px; transform-origin: 0 0; background: var(--bg); overflow: hidden; padding: 72px 72px 64px; display: flex; flex-direction: column; }
+.slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 40%, transparent 60%, rgba(0,0,0,.45)); }
+/* shared bits */
+.brand { display: inline-block; align-self: flex-start; padding: 6px 20px; background: var(--red); transform: skewX(-16deg); }
+.brand span { display: inline-block; transform: skewX(16deg); font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 26px; color: var(--bg); }
+.top { display: flex; justify-content: space-between; align-items: center; }
+.pg { font-family: var(--led); font-weight: 900; font-size: 30px; color: var(--amber-dim); letter-spacing: 3px; }
+.kick { font-family: var(--led); font-weight: 900; font-size: 34px; letter-spacing: 3px; color: var(--amber); text-shadow: 0 0 8px rgba(255,176,0,.45); margin-top: 34px; }
+.h { font-weight: 900; font-style: italic; font-stretch: 125%; line-height: .92; margin: 14px 0 0; text-transform: uppercase; }
+.panel { background: radial-gradient(circle at 3px 3px, #1A1710 1.3px, transparent 1.6px) 0 0 / 6px 6px, var(--panel); border: 2px solid #2B2615; border-radius: 14px; }
+.led { font-family: var(--led); font-weight: 900; color: var(--amber); text-shadow: 0 0 8px rgba(255,176,0,.5); }
+.hand { font-family: var(--hand); color: var(--yellow); }
+.foot { margin-top: auto; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 20px; color: var(--muted); letter-spacing: 2px; }
+.swipe { color: var(--amber); }
+.tc { display: inline-block; width: 10px; height: 100%; background: var(--c); border-radius: 2px; }
+
+/* 1 · cover */
+.s1 { background: repeating-linear-gradient(105deg, transparent 0 46px, rgba(79,163,255,.06) 46px 48px), var(--bg); }
+.s1 .h { font-size: 124px; }
+.s1 .h em { font-style: italic; color: var(--yellow); }
+.pole { display: grid; grid-template-columns: auto 1fr; gap: 6px 28px; align-items: end; margin-top: 46px; padding: 30px 34px; }
+.pole .led.big { font-size: 112px; line-height: .9; }
+.pole .who { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 64px; line-height: 1; }
+.pole .sub { font-family: var(--mono); font-size: 24px; color: var(--soft); letter-spacing: 1px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 22px; }
+.stat { padding: 22px 24px; }
+.stat .led { font-size: 64px; display: block; line-height: 1; }
+.stat span:last-child { display: block; margin-top: 10px; font-family: var(--mono); font-size: 21px; color: var(--soft); letter-spacing: 1px; text-transform: uppercase; }
+.note1 { position: absolute; right: 70px; top: 470px; transform: rotate(-6deg); font-size: 52px; text-align: right; line-height: 1; }
+.note1 svg { display: block; margin: 4px 0 0 auto; }
+
+/* 2 · grid */
+.s2 .h { font-size: 86px; }
+.grid { position: relative; display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; margin-top: 34px; }
+.slot { position: relative; display: grid; grid-template-columns: 54px 10px 1fr auto; align-items: center; gap: 14px; height: 62px; margin-bottom: 8px; padding-right: 16px; border-top: 3px solid #3A3E46; }
+.slot:nth-child(even) { transform: translateY(35px); }
+.slot .n { font-family: var(--led); font-weight: 900; font-size: 34px; color: var(--amber); text-align: right; text-shadow: 0 0 6px rgba(255,176,0,.4); }
+.slot b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 34px; }
+.slot small { font-family: var(--mono); font-size: 19px; color: var(--muted); }
+.slot.hot { background: rgba(255,212,0,.08); border-top-color: var(--yellow); }
+.slot.hot b { color: var(--yellow); }
+.slot .tag { position: absolute; right: 12px; top: -30px; font-family: var(--hand); font-size: 30px; color: var(--yellow); transform: rotate(-4deg); }
+.s2 .fine { margin-top: 44px; font-family: var(--mono); font-size: 19px; color: var(--muted); line-height: 1.5; }
+
+/* 3 · battle for P2 */
+.s3 .h { font-size: 104px; white-space: nowrap; }
+.s3 .h em { font-style: italic; color: var(--yellow); }
+.lede { margin: 18px 0 0; font-size: 30px; line-height: 1.35; color: var(--soft); max-width: 880px; }
+.p2 { margin-top: 40px; display: grid; gap: 16px; }
+.p2row { display: grid; grid-template-columns: 74px 1fr 200px 170px; align-items: center; gap: 22px; height: 132px; padding: 0 26px; }
+.p2row svg { width: 52px; height: 112px; }
+.p2row b { display: block; font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 46px; line-height: 1; }
+.p2row small { font-family: var(--mono); font-size: 21px; color: var(--muted); letter-spacing: 1px; }
+.p2row .col { text-align: right; }
+.p2row .col .led { font-size: 66px; line-height: 1; display: block; }
+.p2row .col small { display: block; margin-top: 6px; }
+.p2row.best { border-color: var(--yellow); }
+.note3 { position: absolute; right: 64px; bottom: 150px; transform: rotate(-4deg); font-size: 46px; line-height: 1.05; text-align: right; }
+
+/* 4 · comebacks */
+.s4 .h { font-size: 112px; }
+.chart4 { margin-top: 36px; padding: 28px 24px 20px; }
+.chart4 svg { display: block; width: 100%; height: auto; }
+.chart4 text { font-family: var(--mono); }
+.s4 .lede b { color: var(--fg); }
+
+/* 5 · Norris + pole times */
+.s5 .h { font-size: 104px; }
+.s5 .h em { font-style: italic; color: var(--yellow); }
+.chart5 { margin-top: 34px; padding: 30px 26px 22px; }
+.chart5 svg { display: block; width: 100%; height: auto; }
+.cta { margin-top: 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.cta .hand { font-size: 66px; transform: rotate(-3deg); line-height: 1; }
+.cta .led { font-size: 30px; letter-spacing: 2px; }
+.desk { width: min(100%, 540px); font-size: 14px; color: var(--soft); line-height: 1.5; }
+.desk h1 { font-size: 22px; font-style: italic; font-weight: 900; font-stretch: 125%; margin: 0 0 6px; color: var(--fg); }
+</style>
+
+<div class="deck">
+  <div class="desk"><h1>São Paulo GP qualifying · carousel</h1>Five 1080×1350 slides. Data: OpenF1 (2026 qualifying, race control, weather) and Jolpica (past Interlagos results).</div>
+
+  <!-- 1 · cover -->
+  <div class="frame"><section class="slide s1" aria-label="Slide 1: cover">
+    <div class="top"><span class="brand"><span>STAT LAB</span></span><span class="pg">01/05</span></div>
+    <div class="kick">SÃO PAULO GP · QUALIFYING</div>
+    <h2 class="h">Rain.<br>Red flags.<br><em>Norris.</em></h2>
+    <div class="note1 hand">Q2 never<br>restarted<svg width="150" height="60" viewBox="0 0 150 60"><path d="M140 6 C 120 30, 70 48, 14 50 M28 36 L12 50 L30 60" fill="none" stroke="#FFD400" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pole panel">
+      <span class="led big">P1</span>
+      <div><div class="who">Lando Norris</div><div class="sub">1:27.470 · McLaren · +0.204 to Russell</div></div>
+    </div>
+    <div class="stats">
+      <div class="stat panel"><span class="led">2</span><span>red flags</span></div>
+      <div class="stat panel"><span class="led">84'</span><span>Q1 delay</span></div>
+      <div class="stat panel"><span class="led">0.7s</span><span>Q2 lap beat pole</span></div>
+    </div>
+    <div class="foot"><span>DATA: OPENF1</span><span class="swipe">SWIPE →</span></div>
+  </section></div>
+
+  <!-- 2 · grid -->
+  <div class="frame"><section class="slide s2" aria-label="Slide 2: provisional starting grid">
+    <div class="top"><span class="brand"><span>STAT LAB</span></span><span class="pg">02/05</span></div>
+    <div class="kick">PROVISIONAL GRID</div>
+    <h2 class="h">Sunday's grid</h2>
+    <div class="grid" id="grid"></div>
+    <p class="fine">Russell qualified P2 and drops five places for a new engine. Hamilton and Verstappen, both in the fight for P2, start 11th and 16th. Official grid not yet published.</p>
+    <div class="foot"><span>DATA: OPENF1</span><span class="swipe">SWIPE →</span></div>
+  </section></div>
+
+  <!-- 3 · battle for P2 -->
+  <div class="frame"><section class="slide s3" aria-label="Slide 3: the battle for P2">
+    <div class="top"><span class="brand"><span>STAT LAB</span></span><span class="pg">03/05</span></div>
+    <div class="kick">BATTLE FOR P2 · 16 PTS APART</div>
+    <h2 class="h">Grid <em>flipped</em></h2>
+    <p class="lede">The championship order is reversed on the grid. The driver in front on points starts furthest back.</p>
+    <div class="p2" id="p2"></div>
+    <div class="note3 hand">16 points<br>cover all four</div>
+    <div class="foot"><span>POINTS INCL. SPRINTS · AFTER R19</span><span class="swipe">SWIPE →</span></div>
+  </section></div>
+
+  <!-- 4 · comebacks -->
+  <div class="frame"><section class="slide s4" aria-label="Slide 4: comebacks at Interlagos">
+    <div class="top"><span class="brand"><span>STAT LAB</span></span><span class="pg">04/05</span></div>
+    <div class="kick">INTERLAGOS HISTORY</div>
+    <h2 class="h">Grid slot?<br>Doesn't matter.</h2>
+    <p class="lede">2 of the last 5 winners here started <b>10th or lower</b>. Verstappen has started 17th and 19th the last two years. He finished <b>1st and 3rd</b>.</p>
+    <div class="chart4 panel"><svg id="c4" viewBox="0 0 900 520" role="img" aria-label="Grid to finish: Hamilton 2021 from 10th to 1st, Verstappen 2024 from 17th to 1st, Verstappen 2025 from 19th to 3rd, Verstappen 2026 from 16th"></svg></div>
+    <div class="foot"><span>DATA: JOLPICA · OPENF1</span><span class="swipe">SWIPE →</span></div>
+  </section></div>
+
+  <!-- 5 · Norris + CTA -->
+  <div class="frame"><section class="slide s5" aria-label="Slide 5: Norris and pole times">
+    <div class="top"><span class="brand"><span>STAT LAB</span></span><span class="pg">05/05</span></div>
+    <div class="kick">POLE AT INTERLAGOS · 2016–2026</div>
+    <h2 class="h">Norris owns <em>Saturday</em></h2>
+    <p class="lede">Three poles here in a row, two of them in the rain. This year's lap was 18 seconds slower than his dry pole in 2025.</p>
+    <div class="chart5 panel"><svg id="c5" viewBox="0 0 900 470" role="img" aria-label="Pole lap time by year. Dry years around 1:07 to 1:11. Wet years: 2024 1:23.405 and 2026 1:27.470, both Norris"></svg></div>
+    <div class="cta"><span class="hand">Who wins today?</span><span class="led">COMMENT BELOW</span></div>
+    <div class="foot"><span>DATA: JOLPICA · OPENF1</span><span>@STATLAB</span></div>
+  </section></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="car" viewBox="0 0 60 160">
+    <path d="M4 10 h52 l2 7 h-56 z" style="fill:var(--dark)"/><rect x="6" y="12" width="48" height="3" style="fill:var(--accent)"/>
+    <rect x="1" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/><rect x="47" y="24" width="12" height="24" rx="3.5" fill="#0B0C0E"/>
+    <path d="M26 6 Q30 2 34 6 L37 58 H23 Z" style="fill:var(--body)"/><path d="M28.5 8 L31.5 8 L32.5 56 H27.5 Z" style="fill:var(--accent)"/>
+    <path d="M14 70 Q14 62 22 60 H38 Q46 62 46 70 L48 112 Q48 122 40 126 H20 Q12 122 12 112 Z" style="fill:var(--dark)"/>
+    <path d="M16 72 Q16 65 23 63 H37 Q44 65 44 72 L45 108 Q45 116 39 119 H21 Q15 116 15 108 Z" style="fill:var(--body)"/>
+    <ellipse cx="30" cy="76" rx="6.5" ry="11" fill="#07080A"/><circle cx="30" cy="78" r="4.2" style="fill:var(--accent)"/>
+    <path d="M26 88 H34 L33 130 H27 Z" style="fill:var(--body)"/>
+    <rect x="0" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/><rect x="47" y="116" width="13" height="28" rx="4" fill="#0B0C0E"/>
+    <path d="M14 140 H46 V152 H14 Z" style="fill:var(--dark)"/><rect x="14" y="143" width="32" height="4" style="fill:var(--body)"/>
+  </symbol>
+</defs></svg>
+
+<script>
+const TEAM = { MER: "#27E0C2", FER: "#E8102E", RBR: "#3B6FD8", MCL: "#FF8A1F", RB: "#8C9BFF", ALP: "#FF6FB5", HAA: "#B6BAC0", AUD: "#C9D23A", WIL: "#4FA3FF", AMR: "#1FA67A", CAD: "#D4AF37" };
+// qualifying order (OpenF1 session 11408) with each driver's best time; grid = provisional, Russell +5 places
+const QUALI = [["NOR","MCL","1:27.470"],["RUS","MER","1:27.674"],["ANT","MER","1:28.095"],["LEC","FER","1:28.289"],["LAW","RB","1:28.321"],["HUL","AUD","1:28.668"],["HAD","RBR","1:28.763"],["BEA","HAA","1:29.831"],["ALO","AMR","1:30.311"],["ALB","WIL","1:30.456"],["HAM","FER","Q2 1:30.001"],["PIA","MCL","Q2 1:30.369"],["CAM","HAA","Q2 1:31.515"],["LIN","RB","Q2 1:31.687"],["SAI","WIL","Q2 1:31.785"],["VER","RBR","Q1 1:31.238"],["COL","ALP","Q1 1:33.327"],["GAS","ALP","Q1 1:33.449"],["STR","AMR","Q1 1:33.653"],["BOT","CAD","Q1 1:33.774"],["PER","CAD","Q1 1:34.509"],["BOR","AUD","Q1 1:41.564"]];
+const grid = QUALI.filter((q) => q[0] !== "RUS"); grid.splice(6, 0, QUALI[1]);       // RUS: P2 + 5 = P7
+const HOT = { RUS: "P2 → 7 · engine", HAM: "out in Q2", VER: "no Q2 lap" };
+const g = document.getElementById("grid");
+grid.forEach(([id, team, time], i) => {
+  const s = document.createElement("div"); s.className = "slot" + (["VER","HAM","RUS","LEC"].includes(id) ? " hot" : "");
+  s.innerHTML = `<span class="n">${i + 1}</span><span class="tc" style="--c:${TEAM[team]}"></span><span><b>${id}</b></span><small>${time.replace(/^Q\d /, "")}</small>${HOT[id] ? `<span class="tag">${HOT[id]}</span>` : ""}`;
+  g.appendChild(s);
+});
+// battle for P2: championship order with tomorrow's grid slot
+const LIV = { RBR: ["#2A3B85","#0E1330","#E8102E"], FER: ["#E8102E","#1A0A0C","#F2F2F0"], MER: ["#AEB6BF","#15171B","#27E0C2"] };
+const P2 = [["VER","Verstappen","RBR",261,16,"P2"],["HAM","Hamilton","FER",259,11,"P3"],["RUS","Russell","MER",250,7,"P4"],["LEC","Leclerc","FER",245,3,"P5"]];
+const p2 = document.getElementById("p2");
+P2.forEach(([id, name, team, pts, slot, pos]) => {
+  const [body, dark, accent] = LIV[team];
+  const r = document.createElement("div"); r.className = "p2row panel" + (slot === 3 ? " best" : "");
+  r.innerHTML = `<svg viewBox="0 0 60 160" style="--body:${body};--dark:${dark};--accent:${accent}"><use href="#car"/></svg>
+    <div><b>${name}</b><small>${pos} IN CHAMPIONSHIP</small></div>
+    <div class="col"><span class="led">${pts}</span><small>POINTS</small></div>
+    <div class="col"><span class="led" style="color:${slot <= 3 ? "#FFD400" : slot >= 10 ? "#FF5A4E" : ""}">${slot}</span><small>STARTS</small></div>`;
+  p2.appendChild(r);
+});
+// chart 4: grid -> finish for the comebacks (y = position, 1 at top)
+(() => {
+  const NS = "http://www.w3.org/2000/svg", svg = document.getElementById("c4");
+  const el = (t, a, p = svg) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+  const X0 = 90, X1 = 860, Y0 = 40, Y1 = 470, y = (p) => Y0 + (p - 1) / 19 * (Y1 - Y0);
+  [1, 5, 10, 15, 20].forEach((p) => { el("line", { x1: X0, x2: X1, y1: y(p), y2: y(p), stroke: "#22252B", "stroke-width": 2 }); el("text", { x: X0 - 16, y: y(p) + 7, "text-anchor": "end", "font-size": 20, fill: "#8D939B" }).textContent = "P" + p; });
+  const C = [["2021", "HAM", 10, 1, "#E8102E"], ["2024", "VER", 17, 1, "#5B7FFF"], ["2025", "VER", 19, 3, "#5B7FFF"], ["2026", "VER", 16, null, "#FFB000"]];
+  C.forEach(([yr, who, g0, f, col], i) => {
+    const x = X0 + 90 + i * 190;
+    el("text", { x, y: Y1 + 40, "text-anchor": "middle", "font-size": 22, fill: "#C9CDD2" }).textContent = yr + " · " + who;
+    if (f) {
+      el("line", { x1: x, x2: x, y1: y(g0), y2: y(f) + 18, stroke: col, "stroke-width": 10, "stroke-linecap": "round" });
+      el("path", { d: `M${x - 18},${y(f) + 26} L${x},${y(f) + 2} L${x + 18},${y(f) + 26} Z`, fill: col });
+      el("text", { x: x + 26, y: y(f) + 8, "font-size": 26, "font-weight": 700, fill: "#F2F2F0" }).textContent = "P" + f;
+    } else {
+      el("path", { d: `M${x},${y(g0)} L${x},${y(5)}`, stroke: col, "stroke-width": 8, "stroke-dasharray": "4 14", "stroke-linecap": "round", fill: "none" });
+      el("text", { x, y: y(3) + 4, "text-anchor": "middle", "font-size": 64, fill: "#FFD400", style: "font-family: var(--hand)" }).textContent = "?";
+    }
+    el("circle", { cx: x, cy: y(g0), r: 13, fill: "#0A0A08", stroke: col, "stroke-width": 5 });
+    el("text", { x: x + 26, y: y(g0) + 8, "font-size": 24, fill: "#8D939B" }).textContent = "P" + g0;
+  });
+})();
+// chart 5: pole time by year (bars grow down from a 1:05 baseline), wet years in rain blue
+(() => {
+  const NS = "http://www.w3.org/2000/svg", svg = document.getElementById("c5");
+  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
+  const D = [[2016, "HAM", 70.736], [2017, "BOT", 68.322], [2018, "HAM", 67.281], [2019, "VER", 67.508], [2021, "HAM", 67.934], [2022, "MAG", 71.674], [2023, "VER", 70.727], [2024, "NOR", 83.405, 1], [2025, "NOR", 69.511], [2026, "NOR", 87.470, 1]];
+  const X0 = 96, X1 = 880, B = 360, lo = 60, hi = 90, h = (s) => (s - lo) / (hi - lo) * (B - 40);
+  [60, 70, 80, 90].forEach((s) => { const yy = B - h(s); el("line", { x1: X0, x2: X1, y1: yy, y2: yy, stroke: "#22252B", "stroke-width": 2 }); el("text", { x: X0 - 14, y: yy + 7, "text-anchor": "end", "font-size": 20, fill: "#8D939B", "font-family": "JetBrains Mono" }).textContent = `1:${String(s - 60).padStart(2, "0")}`; });
+  const w = (X1 - X0) / D.length;
+  D.forEach(([yr, who, s, wet], i) => {
+    const x = X0 + i * w + 10, bw = w - 20, hh = h(s), col = wet ? "#4FA3FF" : who === "NOR" ? "#FF8A1F" : "#3A3E46";
+    el("rect", { x, y: B - hh, width: bw, height: hh, rx: 6, fill: col });
+    el("text", { x: x + bw / 2, y: B + 32, "text-anchor": "middle", "font-size": 19, fill: "#C9CDD2", "font-family": "JetBrains Mono" }).textContent = String(yr).slice(2);
+    el("text", { x: x + bw / 2, y: B + 60, "text-anchor": "middle", "font-size": 18, fill: who === "NOR" ? "#FFD400" : "#8D939B", "font-family": "JetBrains Mono", "font-weight": 700 }).textContent = who;
+    if (wet) el("text", { x: x + bw / 2, y: B - hh - 14, "text-anchor": "middle", "font-size": 30, fill: "#4FA3FF", "font-family": "Caveat Brush" }).textContent = "wet";
+  });
+  el("text", { x: X1, y: 20, "text-anchor": "end", "font-size": 20, fill: "#8D939B", "font-family": "JetBrains Mono" }).textContent = "TALLER = SLOWER POLE LAP";
+})();
+// scale each 1080px slide to its frame
+const fit = () => document.querySelectorAll(".frame").forEach((f) => (f.firstElementChild.style.transform = `scale(${f.clientWidth / 1080})`));
+addEventListener("resize", fit); fit(); document.fonts && document.fonts.ready.then(fit);
+</script>

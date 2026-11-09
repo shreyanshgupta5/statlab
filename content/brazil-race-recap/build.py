@@ -1,0 +1,6 @@
+# recap.template.html + recap.js + recap-order.json -> recap.html (published) and recap.local.html (local tests)
+t = open("recap.template.html").read(); js = open("recap.js").read(); d = open("recap-order.json").read()
+page = t.replace("__SCRIPT__", js.replace("__DATA__", d))
+open("recap.html", "w").write(page)
+open("recap.local.html", "w").write('<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + page)
+print("built", len(page), "bytes")

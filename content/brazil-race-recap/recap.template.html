@@ -1,0 +1,103 @@
+<title>Interlagos Race Recap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* Layout: one 9:16 broadcast stage (the reel) with a small control row under it. Timing-screen look. */
+:root {
+  --bg: #0E0F12; --panel: #0A0A08; --line: #2A2D33; --fg: #F2F2F0; --soft: #C9CDD2; --muted: #8D939B;
+  --amber: #FFB000; --amber-dim: #8A6A1F; --yellow: #FFD400; --rain: #4FA3FF; --slick: #FF5A4E; --red: #dc2c2c;
+  --display: 'Archivo', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace; --led: 'Doto', 'JetBrains Mono', monospace; --hand: 'Caveat Brush', cursive;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: #060607; color: var(--fg); font-family: var(--display);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.stage { height: calc(100vh - 100px); max-height: 1920px; aspect-ratio: 9 / 16; max-width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 1px var(--line); }
+.stage svg { display: block; width: 100%; height: 100%; }
+.ctl { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+button { font: inherit; color: var(--fg); background: #1E2128; border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 0 16px; cursor: pointer; }
+button.primary { background: var(--red); border-color: var(--red); color: var(--bg); font-weight: 900; font-style: italic; font-stretch: 125%; min-width: 100px; }
+button[aria-pressed="true"] { border-color: var(--amber); color: var(--amber); }
+button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+input[type=range] { width: min(520px, 90vw); accent-color: var(--red); }
+@media (max-width: 760px) { .stage { height: auto; width: 100%; } }
+/* stage type */
+.led { font-family: var(--led); font-weight: 900; fill: var(--amber); }
+.glow { filter: url(#glow); }
+.disp { font-family: var(--display); font-weight: 900; font-style: italic; font-stretch: 125%; fill: var(--fg); }
+.mono { font-family: var(--mono); fill: var(--muted); }
+.hand { font-family: var(--hand); fill: var(--yellow); }
+</style>
+
+<div class="stage"><svg id="svg" viewBox="0 0 1080 1920" role="img" aria-labelledby="ttl"><title id="ttl">São Paulo Grand Prix race recap</title>
+  <defs>
+    <filter id="glow" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="ink" x="-5%" y="-20%" width="110%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter>
+    <pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#0A0A08"/><circle cx="3" cy="3" r="1.3" fill="#1A1710"/></pattern>
+    <pattern id="rainLines" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(15)"><rect x="18" width="2" height="22" fill="#4FA3FF" opacity=".35"/></pattern>
+    <radialGradient id="vig" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="#0E0F12"/>
+  <rect id="rain" width="1080" height="1920" fill="url(#rainLines)" opacity="0"/>
+  <!-- header -->
+  <g transform="translate(60 72)"><path d="M10 0 H176 L166 40 H0 Z" fill="#dc2c2c"/><text x="88" y="30" text-anchor="middle" style="font: italic 900 26px var(--display); font-stretch: 125%; fill: #0E0F12">STAT LAB</text></g>
+  <text class="led glow" x="60" y="166" style="font-size:32px;letter-spacing:3px">SÃO PAULO GP · RACE RECAP</text>
+  <text class="disp" x="56" y="250" style="font-size:84px">INTERLAGOS 2026</text>
+  <!-- lap counter + tyre phase -->
+  <g transform="translate(60 290)">
+    <rect width="420" height="110" rx="14" fill="url(#dots)" stroke="#2B2615" stroke-width="2"/>
+    <text class="led glow" x="24" y="80" style="font-size:72px" id="lapTx">GRID</text>
+    <text class="mono" x="300" y="44" style="font-size:20px;letter-spacing:2px">LAP</text>
+    <text class="mono" x="300" y="80" style="font-size:24px;fill:#C9CDD2" id="lapOf">/ 71</text>
+  </g>
+  <g transform="translate(500 290)">
+    <rect width="520" height="110" rx="14" fill="url(#dots)" stroke="#2B2615" stroke-width="2"/>
+    <text class="mono" x="24" y="44" style="font-size:20px;letter-spacing:2px">TYRES · LEADER</text>
+    <circle id="tyreDot" cx="44" cy="76" r="16" fill="none" stroke="#4FA3FF" stroke-width="7"/>
+    <text class="led glow" x="74" y="88" style="font-size:40px" id="tyreTx">INTERS</text>
+    <text class="disp" x="496" y="88" text-anchor="end" style="font-size:40px" id="leadTx"></text>
+  </g>
+  <!-- timing tower -->
+  <g id="tower" transform="translate(60 432)"></g>
+  <!-- event card -->
+  <g id="card" transform="translate(60 1236)" opacity="0">
+    <rect width="960" height="300" rx="18" fill="url(#dots)" stroke="#FFB000" stroke-width="3" id="cardBox"/>
+    <g transform="translate(28 30)"><rect id="kindBg" height="44" rx="8" fill="#FFB000"/><text id="kindTx" x="14" y="32" style="font: 900 26px var(--led); fill: #0A0A08; letter-spacing: 2px"></text></g>
+    <text id="cardLap" class="led" x="932" y="62" text-anchor="end" style="font-size:30px;fill:#8A6A1F"></text>
+    <text id="cardTitle" class="disp" x="28" y="150" style="font-size:58px"></text>
+    <text id="cardBody" class="mono" x="28" y="208" style="font-size:25px;fill:#C9CDD2"></text>
+    <text id="cardBody2" class="mono" x="28" y="246" style="font-size:25px;fill:#C9CDD2"></text>
+    <path id="cardSwash" fill="none" stroke="#FFD400" stroke-width="6" stroke-linecap="round" filter="url(#ink)"/>
+    <rect x="28" y="276" width="904" height="6" rx="3" fill="#2B2615"/><rect id="cardBar" x="28" y="276" width="904" height="6" rx="3" fill="#FFB000"/>
+    <g id="sticker" opacity="0"><path id="stickerBurst" fill="#FFD400" stroke="#0A0A08" stroke-width="5" filter="url(#ink)"/><text id="stickerTx" x="0" y="13" text-anchor="middle" style="font: 40px var(--hand); fill: #0A0A08"></text></g>
+  </g>
+  <!-- race strip: tyre phases, event markers, cursor -->
+  <g transform="translate(60 1600)">
+    <text class="mono" x="0" y="-16" style="font-size:20px;letter-spacing:2px">71 LAPS</text>
+    <g id="strip"></g>
+    <rect id="cursor" x="0" y="-6" width="5" height="72" fill="#F2F2F0"/>
+  </g>
+  <!-- finish cards -->
+  <g id="fin" opacity="0"></g>
+  <text class="mono" x="540" y="1872" text-anchor="middle" style="font-size:22px;letter-spacing:2px">DATA: OPENF1 · UNOFFICIAL FAN PROJECT</text>
+  <!-- start lights -->
+  <g id="lights" opacity="0" transform="translate(540 1386)">
+    <rect x="-230" y="-70" width="460" height="140" rx="24" fill="#0B0C0E" stroke="#2A2D33" stroke-width="4"/>
+    <circle id="lt0" cx="-130" r="44" fill="#2A1010"/><circle id="lt1" cx="0" r="44" fill="#2A1010"/><circle id="lt2" cx="130" r="44" fill="#2A1010"/>
+  </g>
+  <rect width="1080" height="1920" fill="url(#vig)" pointer-events="none"/>
+</svg></div>
+<div class="ctl">
+  <button id="play" class="primary" type="button">Pause</button>
+  <button id="restart" type="button">Restart</button>
+  <button id="sound" type="button" aria-pressed="false">Sound off</button>
+</div>
+<label for="scrub" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Position in the recap</label>
+<input id="scrub" type="range" min="0" max="1000" value="0">
+<script>
+__SCRIPT__
+</script>
