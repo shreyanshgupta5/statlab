@@ -1,6 +1,6 @@
 /* Stat Lab — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v5"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v6"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const app = document.getElementById("app");
@@ -135,6 +135,7 @@
     return { drivers: [], teams: [] };
   };
   let follow = loadFollow();
+  let editingFollow = false; // the picker stays open until Done, so several picks can be made in a row
   const isFollowed = (kind, id) => follow[kind].includes(id);
   function toggleFollow(kind, id) {
     follow[kind] = isFollowed(kind, id) ? follow[kind].filter((x) => x !== id) : [...follow[kind], id];
@@ -227,10 +228,26 @@
           <span class="note">${S.DRIVERS.filter((x) => x.team === id && DSmap[x.id] && DSmap[x.id].history.length).slice(0, 2).map((x) => esc(x.last)).join(" · ")}</span></a>`;
       }),
     ].join("");
-    const pick = DS.slice(0, 8).map((s) => `<button class="pick" type="button" data-follow="drivers:${s.id}" style="--tc:${tc(driver[s.id].team)}">${esc(driver[s.id].last)}</button>`).join("");
-    const following = favCards
-      ? `${sectionHead("Your grid", "Following", `<p class="note">Saved on this device. Tap ★ on any driver or team page.</p>`)}<div class="favs reveal">${favCards}</div>`
-      : `<section class="onboard reveal"><span class="kicker">Make it yours</span><h2>Who do you follow?</h2><p class="note">Pick drivers to pin their form and gaps to the top.</p><div class="picks">${pick}</div></section>`;
+    // picker: every driver on the grid and every team; tap toggles, selections stay until tapped again
+    const pickBtn = (kind, id, label, color) => {
+      const on = isFollowed(kind, id);
+      return `<button class="pick ${on ? "on" : ""}" type="button" data-follow="${kind}:${id}" aria-pressed="${on}" style="--tc:${color}">${on ? "★ " : ""}${esc(label)}</button>`;
+    };
+    const driverPicks = DS.filter((s) => s.points > 0 || s.history.length).map((s) => pickBtn("drivers", s.id, driver[s.id].last, tc(driver[s.id].team))).join("");
+    const teamPicks = TS.map((t) => pickBtn("teams", t.id, t.name, t.color)).join("");
+    const nFollow = follow.drivers.length + follow.teams.length;
+    const showPicker = editingFollow || !nFollow;
+    const picker = `<section class="onboard reveal">
+        ${nFollow ? "" : `<span class="kicker">Make it yours</span><h2>Who do you follow?</h2>`}
+        <p class="note">${nFollow ? "Tap to follow or unfollow. Your picks stay saved on this device." : "Pick as many drivers and teams as you like. Tap again to unfollow."}</p>
+        <span class="kicker sub">Drivers</span><div class="picks">${driverPicks}</div>
+        <span class="kicker sub">Teams</span><div class="picks">${teamPicks}</div>
+        ${nFollow ? `<button class="done" type="button" data-edit-follow="close">Done</button>` : ""}
+      </section>`;
+    const editBtn = nFollow ? `<button class="edit" type="button" data-edit-follow="${showPicker ? "close" : "open"}">${showPicker ? "Done" : "Edit"}</button>` : "";
+    const following = `${nFollow ? `<div class="sh sh-row"><div><span class="kicker">Your grid</span><h2>Following</h2></div>${editBtn}</div>` : ""}
+      ${showPicker ? picker : ""}
+      ${favCards ? `<div class="favs reveal">${favCards}</div>` : ""}`;
 
     const battles = S.TEAMS.map((t) => {
       const [a, b] = S.DRIVERS.filter((d) => d.team === t.id);
@@ -775,7 +792,14 @@
     const f = e.target.closest("[data-follow]");
     if (f) {
       const [kind, id] = f.dataset.follow.split(":");
+      if (f.classList.contains("pick")) editingFollow = true; // keep the picker open after a pick
       toggleFollow(kind, id);
+      const y = window.scrollY; route(); window.scrollTo(0, y);
+      return;
+    }
+    const ed = e.target.closest("[data-edit-follow]");
+    if (ed) {
+      editingFollow = ed.dataset.editFollow === "open";
       const y = window.scrollY; route(); window.scrollTo(0, y);
       return;
     }

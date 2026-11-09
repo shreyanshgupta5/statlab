@@ -370,3 +370,13 @@ h1, .sh h2 { text-transform: uppercase; }
 .seg a[aria-current="page"] { background: var(--amber); color: var(--bg); }
 .tabs a[aria-current="page"] svg { stroke: var(--amber); }
 .foot .ver { display: inline-block; margin-top: 8px; font-family: var(--led); font-weight: 900; font-size: 13px; color: var(--amber); }
+
+/* follow picker: always reachable from Season via Edit */
+.sh-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.edit, .done { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--amber); background: transparent; color: var(--amber); font: 900 14px var(--display); font-style: italic; font-stretch: 125%; cursor: pointer; }
+.done { margin-top: 16px; background: var(--amber); color: var(--bg); }
+.onboard .kicker.sub { margin-top: 14px; font-size: 12px; color: var(--muted); text-shadow: none; }
+.onboard .picks { margin-top: 8px; }
+.pick { color: var(--soft); }
+.pick.on { background: var(--tc); border-color: var(--tc); color: #0A0A0A; text-shadow: 0 1px 0 rgba(255,255,255,.25); }
+.onboard + .favs { margin-top: 10px; }
