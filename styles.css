@@ -48,7 +48,7 @@ main { display: block; max-width: 640px; margin: 0 auto; padding: 0 var(--gutter
 
 .tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   height: calc(var(--nav-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   background: rgba(14, 15, 18, 0.96);
@@ -113,7 +113,7 @@ small { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .next b { font-size: 22px; font-weight: 900; font-style: italic; font-stretch: 125%; }
 .next .countdown { font-size: 13px; color: var(--soft); }
 
-.standings, .teams, .result, .calendar, .stories, .pace { background: var(--card); border-radius: var(--radius); overflow: hidden; }
+.standings, .teams, .result, .stories, .pace { background: var(--card); border-radius: var(--radius); overflow: hidden; }
 .row, .rrow { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr) 56px; align-items: center; gap: 10px; min-height: 56px; padding: 0 14px; border-top: 1px solid var(--line); }
 .row:first-child, .rrow:first-child, .trow:first-child,
 .standings li:first-child .row, .result li:first-child .rrow, .teams li:first-child .trow { border-top: 0; }
@@ -138,20 +138,6 @@ small { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .split i:first-child { background: var(--ca, var(--tc)); }
 .split i:last-child { background: var(--cb, #F2F2F0); }
 
-/* ---------- Schedule ---------- */
-.progress { height: 8px; margin: 14px 0 16px; border-radius: 4px; overflow: hidden; background: var(--card); }
-.progress i { display: block; height: 100%; background: var(--red); transform-origin: left; }
-.race { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 64px; padding: 10px 14px; border-top: 1px solid var(--line); }
-.calendar li:first-child .race { border-top: 0; }
-.rnd { font-size: 12px; color: var(--muted); }
-.rinfo { display: flex; flex-direction: column; min-width: 0; }
-.rinfo b { font-weight: 800; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rinfo small { margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rres { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-.chev { width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.race.future { opacity: 0.55; }
-.race.is-next { background: var(--card-2); box-shadow: inset 4px 0 0 var(--red); }
-a.race:active { background: var(--card-2); }
 
 /* ---------- Race ---------- */
 .podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; margin-top: 14px; }
@@ -349,8 +335,8 @@ h1, .sh h2 { text-transform: uppercase; }
 
 /* follow picker: always reachable from Season via Edit */
 .sh-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-.edit, .done { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--amber); background: transparent; color: var(--amber); font: 900 14px var(--display); font-style: italic; font-stretch: 125%; cursor: pointer; }
-.done { margin-top: 16px; background: var(--amber); color: var(--bg); }
+.edit, .follow-done { min-height: 40px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--amber); background: transparent; color: var(--amber); font: 900 14px var(--display); font-style: italic; font-stretch: 125%; cursor: pointer; }
+.follow-done { margin-top: 16px; background: var(--amber); color: var(--bg); }
 .onboard .kicker.sub { margin-top: 14px; font-size: 12px; color: var(--muted); text-shadow: none; }
 .onboard .picks { margin-top: 8px; }
 .pick { color: var(--soft); }

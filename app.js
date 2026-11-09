@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v14"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v15"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -243,7 +243,7 @@
         <p class="note">${nFollow ? "Tap to follow or unfollow. Your picks stay saved on this device." : "Pick as many drivers and teams as you like. Tap again to unfollow."}</p>
         <span class="kicker sub">Drivers</span><div class="picks">${driverPicks}</div>
         <span class="kicker sub">Teams</span><div class="picks">${teamPicks}</div>
-        ${nFollow ? `<button class="done" type="button" data-edit-follow="close">Done</button>` : ""}
+        ${nFollow ? `<button class="follow-done" type="button" data-edit-follow="close">Done</button>` : ""}
       </section>`;
     const editBtn = nFollow ? `<button class="edit" type="button" data-edit-follow="${showPicker ? "close" : "open"}">${showPicker ? "Done" : "Edit"}</button>` : "";
     const following = `${nFollow ? `<div class="sh sh-row"><div><span class="kicker">Your grid</span><h2>Following</h2></div>${editBtn}</div>` : ""}
@@ -301,25 +301,6 @@
     `;
   }
 
-  function viewSchedule() {
-    const items = S.CALENDAR.map((r, i) => {
-      const res = S.RESULTS.find((x) => x.round === r.round);
-      const isNext = upcoming && r.round === upcoming.round;
-      const winner = res && driver[res.race[0].id];
-      const inner = `
-        <span class="rnd mono">R${String(r.round).padStart(2, "0")}</span>
-        <span class="rinfo"><b>${r.flag} ${esc(r.name)}</b><small>${esc(r.place)} · ${fmtDate(r.date)}</small></span>
-        <span class="rres">${winner ? `${chip(winner)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>` : isNext ? `<span class="badge">Next</span>` : awaiting.includes(r) ? `<span class="mono dim">Results soon</span>` : `<span class="mono dim">${r.laps} laps</span>`}</span>`;
-      return res
-        ? `<li class="reveal" style="--i:${Math.min(i, 12)}"><a class="race done" href="#/race/${r.round}">${inner}</a></li>`
-        : `<li class="reveal" style="--i:${Math.min(i, 12)}"><a class="race ${isNext ? "is-next" : "future"}" href="#/race/${r.round}">${inner}</a></li>`;
-    }).join("");
-    return `
-      <div class="page-title reveal"><span class="kicker">${S.RESULTS.length} of ${S.CALENDAR.length} complete</span><h1>Schedule</h1></div>
-      <div class="progress reveal"><i style="transform:scaleX(${S.RESULTS.length / S.CALENDAR.length})"></i></div>
-      <ol class="calendar">${items}</ol>`;
-  }
-
   function viewRace(round) {
     const r = raceByRound[round];
     const res = S.RESULTS.find((x) => x.round === round);
@@ -351,7 +332,7 @@
 
     const pole = res.quali[0];
     return `
-      <a class="back" href="#/schedule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Schedule</a>
+      <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Season</a>
       <div class="page-title reveal"><span class="kicker">Round ${r.round} · ${fmtDate(r.date, { day: "numeric", month: "long" })}</span><h1>${r.flag} ${esc(r.name)}</h1><p class="dim">${esc(r.place)} · ${r.laps} laps</p></div>
       <div class="podium reveal">
         ${[1, 0, 2].map((k) => `<div class="pod p${k + 1}" style="--tc:${tc(podium[k].team)}"><span class="mono">P${k + 1}</span><b>${esc(podium[k].last)}</b><i></i></div>`).join("")}
@@ -492,7 +473,7 @@
     const fact = (k, v, sub) => `<div><span class="kicker">${k}</span><b class="mono">${v}</b>${sub ? `<span class="mono dim">${sub}</span>` : ""}</div>`;
 
     return `
-      <a class="back" href="#/schedule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Schedule</a>
+      <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Season</a>
       <div class="page-title reveal"><span class="kicker">Round ${r.round} · Race preview</span><h1>${r.flag} ${esc(r.name)}</h1><p class="dim">${esc(P ? P.circuit : r.place)}${P ? " · " + esc(P.locality) : ""}</p></div>
       <div class="next t-wet reveal">
         <span class="kicker">Lights out</span>
@@ -718,8 +699,8 @@
     const [p0, p1, p2, p3, p4] = parts;
     let html, tab;
     if (!p0) { html = viewSeason(); tab = "season"; }
-    else if (p0 === "schedule") { html = viewSchedule(); tab = "schedule"; }
-    else if (p0 === "race") { html = viewRace(Number(p1)); tab = "schedule"; }
+    else if (p0 === "schedule") { html = viewSeason(); tab = "season"; } // old links
+    else if (p0 === "race") { html = viewRace(Number(p1)); tab = "season"; }
     else if (p0 === "driver") { html = viewDriver(p1); tab = "season"; }
     else if (p0 === "team") { html = viewTeam(p1); tab = "season"; }
     else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = "news"; }
@@ -742,8 +723,10 @@
       pb.addEventListener("change", go);
     }
 
-    const strip = document.querySelector(".tchips"), cur = strip && strip.querySelector('[aria-current="true"]');
-    if (strip && cur) strip.scrollLeft = cur.offsetLeft - (strip.clientWidth - cur.offsetWidth) / 2;
+    document.querySelectorAll(".tchips").forEach((strip) => {
+      const cur = strip.querySelector('[aria-current="true"]');
+      if (cur) strip.scrollLeft = cur.offsetLeft - (strip.clientWidth - cur.offsetWidth) / 2;
+    });
 
     clearInterval(timer);
     const cd = document.querySelector(".countdown");
