@@ -113,7 +113,7 @@ small { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .next b { font-size: 22px; font-weight: 900; font-style: italic; font-stretch: 125%; }
 .next .countdown { font-size: 13px; color: var(--soft); }
 
-.standings, .teams, .result, .calendar, .stories, .metrics, .pace { background: var(--card); border-radius: var(--radius); overflow: hidden; }
+.standings, .teams, .result, .calendar, .stories, .pace { background: var(--card); border-radius: var(--radius); overflow: hidden; }
 .row, .rrow { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr) 56px; align-items: center; gap: 10px; min-height: 56px; padding: 0 14px; border-top: 1px solid var(--line); }
 .row:first-child, .rrow:first-child, .trow:first-child,
 .standings li:first-child .row, .result li:first-child .rrow, .teams li:first-child .trow { border-top: 0; }
@@ -197,21 +197,6 @@ a.race:active { background: var(--card-2); }
 }
 .vs { font-weight: 900; font-style: italic; font-stretch: 125%; color: var(--muted); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.duel-head { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
-.duel-head div { display: flex; flex-direction: column; padding: 14px; background: var(--card); border-radius: var(--radius); border-top: 5px solid var(--tc); min-width: 0; }
-.duel-head .big { font-family: var(--display); font-size: 34px; font-weight: 900; font-style: italic; font-stretch: 125%; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px var(--tc); }
-.duel-head b { margin-top: 6px; font-size: 18px; font-weight: 900; font-style: italic; font-stretch: 125%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tug { margin-top: 10px; padding: 16px; background: var(--card); border-radius: var(--radius); }
-.split.big { height: 30px; margin: 8px 0 14px; border-radius: 8px; }
-.split.big:last-child { margin-bottom: 0; }
-.split.big i { display: flex; align-items: center; padding: 0 10px; min-width: 30px; }
-.split.big b { font-size: 13px; color: var(--bg); }
-.metrics { margin-top: 10px; }
-.metrics li { display: grid; grid-template-columns: 76px minmax(0, 1fr) 76px; align-items: center; min-height: 44px; padding: 0 14px; border-top: 1px solid var(--line); text-align: center; }
-.metrics li:first-child { border-top: 0; }
-.metrics span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.metrics b { font-family: var(--display); font-size: 18px; font-weight: 900; font-style: italic; font-stretch: 125%; color: var(--muted); }
-.metrics b.win { color: var(--fg); }
 .chart { margin: 0; padding: 16px; background: var(--card); border-radius: var(--radius); }
 .chart svg { display: block; width: 100%; height: auto; }
 .chart .grid line { stroke: var(--line); }
@@ -229,9 +214,6 @@ a.race:active { background: var(--card-2); }
 @media (min-width: 560px) { :root { --gutter: 24px; } }
 
 /* ---------- Duel: tabs + race-by-race telemetry (Stat Lab addition) ---------- */
-.seg { display: flex; gap: 4px; margin-top: 14px; padding: 4px; background: var(--card); border-radius: 999px; }
-.seg a { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 40px; border-radius: 999px; font-size: 13px; font-weight: 700; color: var(--muted); }
-.seg a[aria-current="page"] { background: var(--fg); color: var(--bg); }
 .tchips { display: flex; gap: 8px; overflow-x: auto; margin: 14px calc(var(--gutter) * -1) 0; padding: 2px var(--gutter) 8px; scrollbar-width: none; }
 .tchips::-webkit-scrollbar { display: none; }
 .tchip { position: relative; flex: none; display: flex; flex-direction: column; justify-content: center; min-width: 58px; min-height: 52px; padding: 6px 10px; border-radius: 12px; background: var(--card); border: 2px solid transparent; }
@@ -318,8 +300,6 @@ h1, .sh h2 { text-transform: uppercase; }
 .hero-stats b, .facts b.mono, .gapbig, .dstats b, .fav-card .mono, .countdown { font-family: var(--led); font-weight: 900; font-style: normal; }
 .hero-stats b { font-size: 26px; color: var(--amber); text-shadow: 0 0 10px var(--glow); }
 .hero-row .hero-stats > div { min-width: 0; }
-.metrics b.win { color: var(--amber); text-shadow: 0 0 8px var(--glow); }
-.metrics b { font-family: var(--led); font-style: normal; font-size: 20px; }
 .gapbig { text-shadow: 0 0 14px currentColor; }
 .foot { font-family: var(--mono); }
 
@@ -357,9 +337,6 @@ h1, .sh h2 { text-transform: uppercase; }
 /* helmets in cards */
 .fav-card.has-helmet { position: relative; padding-right: 76px; }
 .fav-card .helmet { position: absolute; right: 12px; top: 12px; }
-.duel-head .helmet { margin: -4px 0 4px -4px; }
-.duel-head .r-side { align-items: flex-end; text-align: right; }
-.duel-head .r-side .helmet { margin: -4px -4px 4px 0; }
 .dcard-top .helmet { margin: -6px 0 0 -6px; }
 
 /* timing-tower rows */
@@ -367,7 +344,6 @@ h1, .sh h2 { text-transform: uppercase; }
 .row .bar { height: 3px; opacity: .9; }
 .sh h2 em, h1 em { font-style: inherit; color: var(--yellow); }
 .tchip[aria-current="true"] { border-color: var(--amber); }
-.seg a[aria-current="page"] { background: var(--amber); color: var(--bg); }
 .tabs a[aria-current="page"] svg { stroke: var(--amber); }
 .foot .ver { display: inline-block; margin-top: 8px; font-family: var(--led); font-weight: 900; font-size: 13px; color: var(--amber); }
 

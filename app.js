@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v12"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v13"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -548,92 +548,12 @@
       </article>`;
   }
 
-  function viewDuel(aId, bId) {
-    const a = driver[aId] || driver[DS[0].id];
-    const b = driver[bId] && bId !== a.id ? driver[bId] : driver[DS.find((s) => s.id !== a.id).id];
-    const sa = DSmap[a.id], sb = DSmap[b.id];
-    const q = qualiH2H(a.id, b.id), rc = raceH2H(a.id, b.id);
-    const avg = (s) => (s.finishes.length ? (s.finishes.reduce((x, y) => x + y, 0) / s.finishes.length).toFixed(1) : "—");
-
-    const options = (sel) =>
-      DS.map((s) => {
-        const d = driver[s.id];
-        return `<option value="${d.id}" ${d.id === sel ? "selected" : ""}>${esc(d.first)} ${esc(d.last)}</option>`;
-      }).join("");
-
-    const metric = (label, va, vb, lowerBetter = false) => {
-      const na = parseFloat(va), nb = parseFloat(vb);
-      const aWin = !isNaN(na) && !isNaN(nb) && (lowerBetter ? na < nb : na > nb);
-      const bWin = !isNaN(na) && !isNaN(nb) && (lowerBetter ? nb < na : nb > na);
-      return `<li><b class="mono ${aWin ? "win" : ""}">${va}</b><span>${label}</span><b class="mono ${bWin ? "win" : ""}">${vb}</b></li>`;
-    };
-
-    // Cumulative points chart
-    const W = 340, H = 170, P = 8;
-    const lastCum = (s) => (s.history.length ? s.history[s.history.length - 1].cum : 0); // Stat Lab patch: chart is GP points
-    const maxP = Math.max(lastCum(sa), lastCum(sb), 1);
-    const n = S.RESULTS.length;
-    // Stat Lab patch: place points by round number, so drivers who missed rounds line up correctly
-    const pts = (s) => [{ round: 0, cum: 0 }, ...s.history].map((h) => `${P + (h.round / n) * (W - 2 * P)},${H - P - (h.cum / maxP) * (H - 2 * P)}`).join(" ");
-    const grid = [0.25, 0.5, 0.75].map((f) => `<line x1="${P}" x2="${W - P}" y1="${H - P - f * (H - 2 * P)}" y2="${H - P - f * (H - 2 * P)}"/>`).join("");
-
-    const ca = tc(a.team);
-    let cb = tc(b.team);
-    const sameTeam = a.team === b.team;
-
-    return `
-      <div class="page-title reveal"><span class="kicker">Head-to-head</span><h1>Duel</h1></div>
-      ${duelTabs(a.id, b.id, "season")}
-      <div class="pickers reveal">
-        <label style="--tc:${ca}"><span class="sr">Driver A</span><select id="pa">${options(a.id)}</select></label>
-        <span class="vs">VS</span>
-        <label style="--tc:${cb}"><span class="sr">Driver B</span><select id="pb">${options(b.id)}</select></label>
-      </div>
-      <div class="duel-head reveal">
-        <div style="--tc:${ca}">${helmet(a.id, { size: 72, look: 8 })}<b>${esc(a.last)}</b><small>${esc(team[a.team].name)}</small></div>
-        <div style="--tc:${cb}" class="r-side">${helmet(b.id, { size: 72, look: -8 })}<b>${esc(b.last)}</b><small>${esc(team[b.team].name)}</small></div>
-      </div>
-      <div class="tug reveal" aria-label="Qualifying ${q.a} to ${q.b}">
-        <span class="kicker">Qualifying</span>
-        <div class="split big" style="--ca:${ca};--cb:${cb}"><i style="flex:${q.a || 0.001}"><b class="mono">${q.a}</b></i><i style="flex:${q.b || 0.001}"><b class="mono">${q.b}</b></i></div>
-        <span class="kicker">Race</span>
-        <div class="split big" style="--ca:${ca};--cb:${cb}"><i style="flex:${rc.a || 0.001}"><b class="mono">${rc.a}</b></i><i style="flex:${rc.b || 0.001}"><b class="mono">${rc.b}</b></i></div>
-      </div>
-      <ul class="metrics reveal">
-        ${metric("Points", sa.points, sb.points)}
-        ${metric("Wins", sa.wins, sb.wins)}
-        ${metric("Podiums", sa.podiums, sb.podiums)}
-        ${metric("Poles", sa.poles, sb.poles)}
-        ${metric("Avg finish", avg(sa), avg(sb), true)}
-        ${metric("Best finish", sa.best ? "P" + sa.best : "—", sb.best ? "P" + sb.best : "—")}
-        ${metric("DNFs", sa.dnfs, sb.dnfs, true)}
-        ${metric("Champ. pos", "P" + sa.rank, "P" + sb.rank)}
-      </ul>
-      ${sectionHead("Grand Prix points over the season", "Momentum")}
-      <figure class="chart reveal">
-        <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative points by round">
-          <g class="grid">${grid}</g>
-          <polyline points="${pts(sb)}" style="stroke:${cb}" ${sameTeam ? 'stroke-dasharray="5 4"' : ""}/>
-          <polyline points="${pts(sa)}" style="stroke:${ca}"/>
-        </svg>
-        <figcaption><span style="--tc:${ca}">${esc(a.last)}</span><span style="--tc:${cb}" class="${sameTeam ? "dashed" : ""}">${esc(b.last)}</span><span class="mono dim">R1 → R${n}</span></figcaption>
-      </figure>`;
-  }
-
   /* ---------- Stat Lab addition: race-by-race qualifying duel with telemetry ---------- */
   const QS = ["q3", "q2", "q1"];
   const DUELS = S.DUELS || {};
   const telRounds = Object.keys(DUELS).map(Number).sort((x, y) => x - y);
   const lapOrDash = (s) => (s == null ? "–" : lapTime(s));
   const lastName = (id) => (driver[id] ? driver[id].last : id);
-
-  function duelTabs(aId, bId, active, round) {
-    const r = round || telRounds[telRounds.length - 1] || S.RESULTS[S.RESULTS.length - 1].round;
-    return `<div class="seg reveal" role="group" aria-label="Duel view">
-      <a href="#/duel/${aId}/${bId}" ${active === "season" ? 'aria-current="page"' : ""}>Season</a>
-      <a href="#/duel/${aId}/${bId}/race/${r}" ${active === "race" ? 'aria-current="page"' : ""}>Race by race</a>
-    </div>`;
-  }
 
   function trackMapSvg(D, a, b, ca, cb) {
     const T = D.track;
@@ -765,7 +685,6 @@
 
     return `
       <div class="page-title reveal"><span class="kicker">Head-to-head</span><h1>Duel</h1></div>
-      ${duelTabs(qa.id, qb.id, "race", round)}
       <div class="tchips">${chips}</div>
       <div class="ttitle"><b>${cal.flag} ${esc(cal.name)}</b><small>ROUND ${round} · ${esc(cal.place).toUpperCase()}</small></div>
       <div class="pickers reveal" data-round="${round}">
@@ -801,7 +720,7 @@
     else if (p0 === "driver") { html = viewDriver(p1); tab = "season"; }
     else if (p0 === "team") { html = viewTeam(p1); tab = "season"; }
     else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = "news"; }
-    else if (p0 === "duel") { html = p3 === "race" ? viewDuelRace(p1, p2, Number(p4)) : viewDuel(p1, p2); tab = "duel"; }
+    else if (p0 === "duel") { html = viewDuelRace(p1, p2, p3 === "race" ? Number(p4) : undefined); tab = "duel"; }
     else { html = viewMissing("That page doesn't exist."); tab = ""; }
 
     app.innerHTML = html;
