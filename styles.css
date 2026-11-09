@@ -115,9 +115,10 @@ small { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 .standings, .teams, .result, .calendar, .stories, .metrics, .pace { background: var(--card); border-radius: var(--radius); overflow: hidden; }
 .row, .rrow { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr) 56px; align-items: center; gap: 10px; min-height: 56px; padding: 0 14px; border-top: 1px solid var(--line); }
-.row:first-child, .rrow:first-child, .trow:first-child { border-top: 0; }
+.row:first-child, .rrow:first-child, .trow:first-child,
+.standings li:first-child .row, .result li:first-child .rrow, .teams li:first-child .trow { border-top: 0; }
 .row .bar { position: absolute; left: 0; bottom: 0; height: 2px; width: var(--w); background: var(--tc); opacity: 0.7; }
-.row:first-child .pos { color: var(--fg); }
+.standings li:first-child .pos { color: var(--fg); }
 
 .trow { display: grid; grid-template-columns: 24px 118px minmax(0, 1fr) 48px; gap: 10px; align-items: center; min-height: 44px; padding: 0 14px; border-top: 1px solid var(--line); }
 .tname { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 4px solid var(--tc); padding-left: 10px; }
@@ -265,3 +266,49 @@ a.race:active { background: var(--card-2); }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-family: var(--mono); font-size: 11px; color: var(--soft); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend span::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--tc); }
+
+/* ---------- v2: following, driver + team pages, fights, calendar ---------- */
+a.row:active, a.trow:active, a.rrow:active, a.drow:active { background: var(--card-2); }
+.row.fav .who b::after, .trow.fav .tname::after { content: " ★"; color: #FFD400; font-style: normal; font-size: 13px; }
+.drows li:first-child .drow { border-top: 0; }
+
+.next { position: relative; }
+.next > a { display: flex; flex-direction: column; gap: 4px; }
+.next > a .dim { font-size: 12px; }
+.cal, .star, .ghost, .pick { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--line); background: transparent; color: var(--fg); font: 700 14px var(--display); cursor: pointer; }
+.cal { align-self: flex-start; margin-top: 10px; }
+.cal svg, .star svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.star.on { background: #FFD400; border-color: #FFD400; color: var(--bg); }
+.star.on svg { fill: currentColor; }
+.actions { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+.onboard { margin-top: 10px; padding: 18px; background: var(--card); border-radius: var(--radius); border: 1px dashed var(--line); }
+.onboard h2 { margin-top: 6px; }
+.picks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pick { min-height: 40px; padding: 0 14px; border-color: var(--tc); font-style: italic; font-weight: 900; font-stretch: 125%; }
+
+.favs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 10px; }
+.fav-card { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: var(--card); border-radius: var(--radius); border-left: 5px solid var(--tc); }
+.fav-card b { font-size: 22px; font-weight: 900; font-style: italic; font-stretch: 125%; }
+.fav-card .mono { font-size: 11px; letter-spacing: 0.08em; }
+.fav-card .note { margin: 0; }
+
+.forms { display: flex; gap: 5px; margin-top: 6px; }
+.form { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 26px; padding: 0 5px; border-radius: 6px; font: 700 12px var(--mono); background: var(--line); color: var(--soft); }
+.form.pod { background: #FFD400; color: var(--bg); }
+.form.pts { background: #1F5E3A; color: #CFF5DD; }
+.form.dnf { background: #5A1F1C; color: var(--down); font-size: 10px; }
+.forms.big { margin-top: 10px; } .forms.big .form { min-width: 40px; height: 34px; font-size: 14px; }
+
+.fights { display: grid; gap: 10px; }
+.fight { padding: 14px 16px; background: var(--card); border-radius: var(--radius); }
+.fight-top { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 0.08em; color: var(--red-text); }
+.fight-top .dim { color: var(--muted); }
+.fight ol { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.fight li a { display: inline-flex; align-items: baseline; gap: 8px; min-height: 40px; padding: 8px 12px; border-radius: 10px; background: var(--card-2); border-left: 4px solid var(--tc); }
+.fight li b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 16px; }
+.fight li .mono { font-size: 12px; color: var(--soft); }
+
+a.dcard { display: block; }
+.dcard .forms { margin-top: 4px; }
+.dcard .form { min-width: 24px; height: 22px; font-size: 11px; }

@@ -80,6 +80,72 @@
   const DSmap = Object.fromEntries(DS.map((s) => [s.id, s]));
   const TS = teamStats(DS);
   const nextRace = S.CALENDAR.find((r) => !S.RESULTS.some((x) => x.round === r.round));
+  // the next race by the clock: results for a race that just finished can arrive later than the race
+  const upcoming = S.CALENDAR.find((r) => new Date(r.raceStart || r.date + "T23:59:00Z") > Date.now());
+  const awaiting = S.CALENDAR.filter((r) => !S.RESULTS.some((x) => x.round === r.round) && (!upcoming || r.round < upcoming.round));
+
+  /* ---------- following (stored on this device only) ---------- */
+  const FKEY = "statlab.follow.v1";
+  const loadFollow = () => {
+    try { const f = JSON.parse(localStorage.getItem(FKEY)); if (f && Array.isArray(f.drivers) && Array.isArray(f.teams)) return f; } catch (e) {}
+    return { drivers: [], teams: [] };
+  };
+  let follow = loadFollow();
+  const isFollowed = (kind, id) => follow[kind].includes(id);
+  function toggleFollow(kind, id) {
+    follow[kind] = isFollowed(kind, id) ? follow[kind].filter((x) => x !== id) : [...follow[kind], id];
+    try { localStorage.setItem(FKEY, JSON.stringify(follow)); } catch (e) {}
+  }
+  const starBtn = (kind, id, label) => {
+    const on = isFollowed(kind, id);
+    return `<button class="star ${on ? "on" : ""}" type="button" data-follow="${kind}:${id}" aria-pressed="${on}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>${on ? "Following" : "Follow"}<span class="sr"> ${esc(label)}</span></button>`;
+  };
+
+  /* ---------- per-driver season detail ---------- */
+  function driverRounds(id) {
+    return S.RESULTS.map((res) => {
+      const qi = res.quali.findIndex((q) => q.id === id);
+      const r = res.race.find((x) => x.id === id);
+      if (qi < 0 && !r) return null;
+      return { round: res.round, quali: qi < 0 ? null : qi + 1, grid: r ? r.grid : null, pos: r ? r.pos : null, dnf: r ? !!r.dnf || !r.pos : false, points: r ? r.points : 0, raced: !!r };
+    }).filter(Boolean);
+  }
+  const formChip = (x, link) => {
+    const cls = !x.raced ? "ns" : x.dnf ? "dnf" : x.pos <= 3 ? "pod" : x.pos <= 10 ? "pts" : "out";
+    const txt = !x.raced ? "–" : x.dnf ? "DNF" : x.pos;
+    return link ? `<a class="form ${cls}" href="#/race/${x.round}" title="Round ${x.round}">${txt}</a>` : `<span class="form ${cls}" title="Round ${x.round}">${txt}</span>`;
+  };
+  // link = false inside cards that are already links (no nested anchors)
+  const formGuide = (id, n = 5, link = false) => driverRounds(id).filter((x) => x.raced).slice(-n).map((x) => formChip(x, link)).join("");
+  const teammates = (d) => S.DRIVERS.filter((x) => x.team === d.team && x.id !== d.id && DSmap[x.id] && (DSmap[x.id].history.length || DSmap[x.id].points));
+
+  /* ---------- championship fights still open ---------- */
+  function closeFights() {
+    const left = S.CALENDAR.length - S.RESULTS.length;
+    const swing = 26; // one Grand Prix win plus fastest-lap-free margin: within one race of each other
+    const groups = [];
+    let cur = [DS[0]];
+    for (let i = 1; i < Math.min(DS.length, 10) && DS[i].points > 0; i++) { // points positions only
+      if (cur[cur.length - 1].points - DS[i].points <= swing) cur.push(DS[i]);
+      else { if (cur.length > 1) groups.push(cur); cur = [DS[i]]; }
+    }
+    if (cur.length > 1) groups.push(cur);
+    return { left, groups: groups.slice(0, 3) };
+  }
+
+  /* ---------- add the next race to a calendar ---------- */
+  function icsFor(r) {
+    const start = new Date(r.raceStart || r.date + "T14:00:00Z");
+    const end = new Date(start.getTime() + 2 * 36e5);
+    const f = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Stat Lab//F1 2026//EN", "BEGIN:VEVENT",
+      `UID:statlab-2026-r${r.round}@statlab`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(start)}`, `DTEND:${f(end)}`,
+      `SUMMARY:${r.name} (F1 R${r.round})`, `LOCATION:${r.place}`, "DESCRIPTION:Race start. Standings and duels in Stat Lab.",
+      "BEGIN:VALARM", "TRIGGER:-PT30M", "ACTION:DISPLAY", "DESCRIPTION:Lights out in 30 minutes", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+  }
+  const localStart = (r) => r.raceStart ? new Date(r.raceStart).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : fmtDate(r.date);
 
   /* ---------- small components ---------- */
   const chip = (d) =>
@@ -97,21 +163,51 @@
 
     const standings = DS.map((s, i) => {
       const d = driver[s.id];
-      return `<li class="row reveal" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}">
+      return `<li class="reveal" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}"><a class="row ${isFollowed("drivers", d.id) ? "fav" : ""}" href="#/driver/${d.id}">
         <span class="pos mono">${String(s.rank).padStart(2, "0")}</span>
         <span class="bar" style="--w:${(s.points / maxPts) * 100}%"></span>
         <span class="who">${dName(d)}<small>${esc(team[d.team].name)}</small></span>
         <span class="pts mono">${s.points}</span>
-      </li>`;
+      </a></li>`;
     }).join("");
 
     const teamMax = TS[0].points || 1;
-    const teams = TS.map((t, i) => `<li class="trow reveal" style="--i:${i};--tc:${t.color}">
+    const teams = TS.map((t, i) => `<li class="reveal" style="--i:${i};--tc:${t.color}"><a class="trow ${isFollowed("teams", t.id) ? "fav" : ""}" href="#/team/${t.id}">
         <span class="pos mono">${i + 1}</span>
         <span class="tname">${esc(t.name)}</span>
         <span class="tbar"><i style="transform:scaleX(${t.points / teamMax})"></i></span>
         <span class="pts mono">${t.points}</span>
-      </li>`).join("");
+      </a></li>`).join("");
+
+    // Following: your drivers and teams first, like a "My teams" feed
+    const lastRound = S.RESULTS.length ? S.RESULTS[S.RESULTS.length - 1].round : null;
+    const favCards = [
+      ...follow.drivers.filter((id) => driver[id] && DSmap[id]).map((id) => {
+        const d = driver[id], s = DSmap[id], ahead = DS[s.rank - 2];
+        const last = driverRounds(id).filter((x) => x.raced).slice(-1)[0];
+        return `<a class="fav-card" href="#/driver/${id}" style="--tc:${tc(d.team)}">
+          <span class="mono dim">P${s.rank} · ${s.points} PTS</span><b>${esc(d.last)}</b>
+          <span class="note">${last ? `R${last.round} ${((S.RACE_INFO || {})[last.round] || {}).short || ""}: ${last.dnf ? "DNF" : "P" + last.pos}${last.points ? " · +" + last.points : ""}` : "No race yet"}${ahead ? ` · ${ahead.points - s.points} to P${s.rank - 1}` : " · leads"}</span>
+          <span class="forms">${formGuide(id)}</span></a>`;
+      }),
+      ...follow.teams.filter((id) => team[id]).map((id) => {
+        const t = TS.find((x) => x.id === id), rank = TS.indexOf(t) + 1;
+        return `<a class="fav-card" href="#/team/${id}" style="--tc:${t.color}">
+          <span class="mono dim">P${rank} · ${t.points} PTS</span><b>${esc(t.name)}</b>
+          <span class="note">${S.DRIVERS.filter((x) => x.team === id && DSmap[x.id] && DSmap[x.id].history.length).slice(0, 2).map((x) => esc(x.last)).join(" · ")}</span></a>`;
+      }),
+    ].join("");
+    const pick = DS.slice(0, 8).map((s) => `<button class="pick" type="button" data-follow="drivers:${s.id}" style="--tc:${tc(driver[s.id].team)}">${esc(driver[s.id].last)}</button>`).join("");
+    const following = favCards
+      ? `${sectionHead("Your grid", "Following", `<p class="note">Saved on this device. Tap ★ on any driver or team page.</p>`)}<div class="favs reveal">${favCards}</div>`
+      : `<section class="onboard reveal"><span class="kicker">Make it yours</span><h2>Who do you follow?</h2><p class="note">Pick drivers to pin their form and gaps to the top.</p><div class="picks">${pick}</div></section>`;
+
+    const cf = closeFights();
+    const fights = cf.groups.map((g) => {
+      const top = g[0];
+      return `<div class="fight"><div class="fight-top"><span class="mono">P${top.rank}–P${g[g.length - 1].rank}</span><span class="mono dim">${top.points - g[g.length - 1].points} pts spread</span></div>
+        <ol>${g.map((s) => `<li style="--tc:${tc(driver[s.id].team)}"><a href="#/driver/${s.id}"><b>${esc(driver[s.id].last)}</b><span class="mono">${s === top ? s.points : "−" + (top.points - s.points)}</span></a></li>`).join("")}</ol></div>`;
+    }).join("");
 
     const battles = S.TEAMS.map((t) => {
       const [a, b] = S.DRIVERS.filter((d) => d.team === t.id);
@@ -137,11 +233,18 @@
         </div>
       </section>
 
-      ${nextRace ? `<a class="next reveal" href="#/schedule">
-        <span class="kicker">Next · Round ${nextRace.round}</span>
-        <b>${nextRace.flag} ${esc(nextRace.name)}</b>
-        <span class="mono countdown" data-date="${nextRace.date}" data-start="${nextRace.raceStart || ""}"></span>
-      </a>` : ""}
+      ${upcoming ? `<div class="next reveal">
+        <a href="#/schedule"><span class="kicker">Next · Round ${upcoming.round}</span>
+        <b>${upcoming.flag} ${esc(upcoming.name)}</b>
+        <span class="mono countdown" data-date="${upcoming.date}" data-start="${upcoming.raceStart || ""}"></span>
+        <span class="mono dim">Lights out ${esc(localStart(upcoming))} your time</span>
+        ${awaiting.length ? `<span class="note">Results for ${awaiting.map((r) => esc(((S.RACE_INFO || {})[r.round] || {}).short || r.name)).join(", ")} are on the way.</span>` : ""}</a>
+        <button class="cal" type="button" data-ics="${upcoming.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
+      </div>` : ""}
+
+      ${following}
+
+      ${fights ? `${sectionHead(`${cf.left} rounds left`, "Close fights", `<p class="note">Drivers within one race win (26 pts) of the car ahead.</p>`)}<div class="fights reveal">${fights}</div>` : ""}
 
       ${sectionHead("Drivers", "Standings")}
       <ol class="standings">${standings}</ol>
@@ -158,12 +261,12 @@
   function viewSchedule() {
     const items = S.CALENDAR.map((r, i) => {
       const res = S.RESULTS.find((x) => x.round === r.round);
-      const isNext = nextRace && r.round === nextRace.round;
+      const isNext = upcoming && r.round === upcoming.round;
       const winner = res && driver[res.race[0].id];
       const inner = `
         <span class="rnd mono">R${String(r.round).padStart(2, "0")}</span>
         <span class="rinfo"><b>${r.flag} ${esc(r.name)}</b><small>${esc(r.place)} · ${fmtDate(r.date)}</small></span>
-        <span class="rres">${winner ? `${chip(winner)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>` : isNext ? `<span class="badge">Next</span>` : `<span class="mono dim">${r.laps} laps</span>`}</span>`;
+        <span class="rres">${winner ? `${chip(winner)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>` : isNext ? `<span class="badge">Next</span>` : awaiting.includes(r) ? `<span class="mono dim">Results soon</span>` : `<span class="mono dim">${r.laps} laps</span>`}</span>`;
       return res
         ? `<li class="reveal" style="--i:${Math.min(i, 12)}"><a class="race done" href="#/race/${r.round}">${inner}</a></li>`
         : `<li class="reveal" style="--i:${Math.min(i, 12)}"><div class="race ${isNext ? "is-next" : "future"}">${inner}</div></li>`;
@@ -187,12 +290,12 @@
     const rows = res.race.map((x, i) => {
       const d = driver[x.id];
       const delta = x.grid - (x.pos || x.grid);
-      return `<li class="rrow reveal" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}">
+      return `<li class="reveal" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}"><a class="rrow" href="#/driver/${d.id}">
         <span class="pos mono">${x.pos || "DNF"}</span>
         <span class="who">${dName(d)}<small>${esc(team[d.team].name)}</small></span>
         <span class="mono gain ${x.dnf ? "" : delta > 0 ? "up" : delta < 0 ? "down" : ""}">${x.dnf ? "—" : delta > 0 ? "▲" + delta : delta < 0 ? "▼" + -delta : "·"}</span>
         <span class="pts mono">${x.points ? "+" + x.points : ""}</span>
-      </li>`;
+      </a></li>`;
     }).join("");
 
     const paceRows = !hasPace ? "" : [...finishers].sort((a, b) => a.pace - b.pace).map((x) => {
@@ -218,6 +321,95 @@
       <ol class="result">${rows}</ol>
       ${hasPace ? `${sectionHead("Average lap", "Race pace", `<p class="note">Gap to the fastest average lap.</p>`)}
       <ol class="pace">${paceRows}</ol>` : ""}`;
+  }
+
+  function positionChart(rounds, color) {
+    const W = 340, H = 150, L = 26, R = 8, T = 10, B = 22, n = S.CALENDAR.length, maxP = 22;
+    const x = (r) => L + ((r - 1) / (n - 1)) * (W - L - R), y = (p) => T + ((p - 1) / (maxP - 1)) * (H - T - B);
+    const grid = [1, 5, 10, 15, 20].map((p) => `<line x1="${L}" x2="${W - R}" y1="${y(p)}" y2="${y(p)}"/><text x="${L - 6}" y="${y(p) + 3}" text-anchor="end">P${p}</text>`).join("");
+    const fin = rounds.filter((r) => r.raced && !r.dnf);
+    const line = fin.map((r) => `${x(r.round).toFixed(1)},${y(r.pos).toFixed(1)}`).join(" ");
+    const q = rounds.filter((r) => r.quali).map((r) => `<circle cx="${x(r.round).toFixed(1)}" cy="${y(r.quali).toFixed(1)}" r="3" fill="none" stroke="var(--muted)" stroke-width="1.5"/>`).join("");
+    const dots = fin.map((r) => `<circle cx="${x(r.round).toFixed(1)}" cy="${y(r.pos).toFixed(1)}" r="${r.pos <= 3 ? 4.5 : 3.5}" fill="${r.pos <= 3 ? "#FFD400" : color}"/>`).join("");
+    const dnfs = rounds.filter((r) => r.raced && r.dnf).map((r) => `<text x="${x(r.round)}" y="${H - B + 14}" text-anchor="middle" style="fill:var(--down)">✕</text>`).join("");
+    const ticks = [1, 6, 12, 18, n].map((r) => `<text x="${x(r)}" y="${H - 4}" text-anchor="middle">R${r}</text>`).join("");
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Finishing position by round"><g class="grid">${grid}</g>${q}<polyline points="${line}" style="stroke:${color}"/>${dots}${dnfs}${ticks}</svg>`;
+  }
+
+  function viewDriver(id) {
+    const d = driver[id], s = DSmap[id];
+    if (!d || !s) return viewMissing("We couldn't find that driver.");
+    const t = team[d.team], col = t.color;
+    const rounds = driverRounds(id);
+    const raced = rounds.filter((r) => r.raced);
+    const avg = s.finishes.length ? (s.finishes.reduce((a, b) => a + b, 0) / s.finishes.length).toFixed(1) : "–";
+    const avgQ = rounds.filter((r) => r.quali).length ? (rounds.filter((r) => r.quali).reduce((a, r) => a + r.quali, 0) / rounds.filter((r) => r.quali).length).toFixed(1) : "–";
+    const gained = raced.filter((r) => !r.dnf && r.grid).reduce((a, r) => a + (r.grid - r.pos), 0);
+    const mates = teammates(d);
+    const h2h = mates.map((m) => {
+      const q = qualiH2H(d.id, m.id), rc = raceH2H(d.id, m.id);
+      return `<a class="battle" href="#/duel/${d.id}/${m.id}" style="--tc:${col}">
+        <div class="b-top"><span>vs ${esc(m.last)}</span><span class="mono dim">open duel →</span></div>
+        <div class="b-names"><b class="${q.a >= q.b ? "lead" : ""}">Quali</b><span class="mono">${q.a}–${q.b}</span><b class="${rc.a >= rc.b ? "lead" : ""}">Race</b><span class="mono">${rc.a}–${rc.b}</span></div></a>`;
+    }).join("");
+    const rows = [...rounds].reverse().map((r) => {
+      const c = raceByRound[r.round];
+      return `<li><a class="drow" href="#/race/${r.round}" style="grid-template-columns:44px minmax(0,1fr) 44px 52px 40px">
+        <span class="mono dim">R${String(r.round).padStart(2, "0")}</span><b>${c.flag} ${esc(((S.RACE_INFO || {})[r.round] || {}).location || c.place)}</b>
+        <span class="mono r">${r.quali ? "Q" + r.quali : "–"}</span><span class="mono r">${!r.raced ? "–" : r.dnf ? "DNF" : "P" + r.pos}</span><span class="mono r">${r.points ? "+" + r.points : ""}</span></a></li>`;
+    }).join("");
+    const stat = (v, k) => `<div><b class="mono">${v}</b><span>${k}</span></div>`;
+    return `
+      <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Standings</a>
+      <section class="hero reveal" style="--tc:${col}">
+        <span class="kicker">${esc(t.name)} · P${s.rank} in the championship</span>
+        <div class="hero-num mono" aria-hidden="true">${d.num}</div>
+        <h1 style="--len:${[...d.last].length}"><span>${esc(d.first)}</span>${esc(d.last)}</h1>
+        <div class="hero-stats">${stat(s.points, "pts")}${stat(s.wins, "wins")}${stat(s.podiums, "podiums")}${stat(s.poles, "poles")}</div>
+        <div class="actions">${starBtn("drivers", d.id, d.last)}<button class="ghost" type="button" data-share="${esc(d.first + " " + d.last)}: P${s.rank}, ${s.points} pts in 2026">Share</button></div>
+      </section>
+      ${sectionHead("Last five races", "Form", `<div class="forms big">${formGuide(id, 5, true) || '<span class="note">No races yet</span>'}</div>`)}
+      <div class="facts reveal">
+        <div><span class="kicker">Avg finish</span><b>${avg}</b><span class="mono dim">${s.dnfs} DNF${s.dnfs === 1 ? "" : "s"}</span></div>
+        <div><span class="kicker">Avg quali</span><b>${avgQ}</b><span class="mono dim">places gained ${gained >= 0 ? "+" : ""}${gained}</span></div>
+      </div>
+      ${sectionHead("Finishing position by round", "Season", `<p class="note">Dots: race finish (yellow = podium). Rings: qualifying.</p>`)}
+      <figure class="chart reveal">${positionChart(rounds, col)}</figure>
+      ${h2h ? `${sectionHead("Teammate", "Head-to-head")}<div class="battles reveal">${h2h}</div>` : ""}
+      ${sectionHead("Round by round", "Results")}
+      <ul class="drows reveal"><li class="drow head" style="grid-template-columns:44px minmax(0,1fr) 44px 52px 40px"><span>Rnd</span><span>Grand Prix</span><span class="r">Quali</span><span class="r">Race</span><span class="r">Pts</span></li>${rows}</ul>
+      <p class="foot">${esc(S.NOTE || "")}</p>`;
+  }
+
+  function viewTeam(id) {
+    const t = TS.find((x) => x.id === id);
+    if (!t) return viewMissing("We couldn't find that team.");
+    const rank = TS.indexOf(t) + 1;
+    const ds = S.DRIVERS.filter((d) => d.team === id && DSmap[d.id] && (DSmap[d.id].history.length || DSmap[d.id].points)).sort((a, b) => DSmap[b.id].points - DSmap[a.id].points);
+    const perRound = S.RESULTS.map((res) => ({ round: res.round, pts: res.race.filter((r) => driver[r.id] && driver[r.id].team === id).reduce((a, r) => a + r.points, 0) }));
+    const maxR = Math.max(43, ...perRound.map((r) => r.pts));
+    const W = 340, H = 130, L = 8, B = 18, bw = (W - 2 * L) / S.CALENDAR.length;
+    const bars = perRound.map((r) => { const h = (r.pts / maxR) * (H - B - 8); return `<rect x="${(L + (r.round - 1) * bw + 2).toFixed(1)}" y="${(H - B - h).toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${t.color}"/>`; }).join("");
+    const ticks = [1, 6, 12, 18, S.CALENDAR.length].map((r) => `<text x="${L + (r - 0.5) * bw}" y="${H - 4}" text-anchor="middle">R${r}</text>`).join("");
+    const cards = ds.map((d) => { const s = DSmap[d.id]; return `<a class="dcard" href="#/driver/${d.id}" style="--tc:${t.color}">
+      <div class="dcard-top"><span class="big">${d.num}</span><small>P${s.rank}</small></div><b class="dname">${esc(d.last)}</b>
+      <div class="dstats"><div><b>${s.points}</b><small>PTS</small></div><div><b>${s.wins}</b><small>WINS</small></div></div><div class="forms">${formGuide(d.id)}</div></a>`; }).join("");
+    const best = perRound.reduce((a, r) => (r.pts > a.pts ? r : a), { pts: -1 });
+    return `
+      <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Standings</a>
+      <section class="hero reveal" style="--tc:${t.color}">
+        <span class="kicker">Constructors · P${rank}</span>
+        <h1 style="--len:${[...t.name].length}">${esc(t.name)}</h1>
+        <div class="hero-stats"><div><b class="mono">${t.points}</b><span>pts</span></div><div><b class="mono">${t.wins}</b><span>wins</span></div>
+          <div><b class="mono">${rank > 1 ? "−" + (TS[rank - 2].points - t.points) : "+" + (t.points - (TS[1] ? TS[1].points : 0))}</b><span>${rank > 1 ? "to P" + (rank - 1) : "lead"}</span></div></div>
+        <div class="actions">${starBtn("teams", t.id, t.name)}</div>
+      </section>
+      ${sectionHead("Line-up", "Drivers")}
+      <div class="dcards reveal">${cards}</div>
+      ${sectionHead("Grand Prix points per round", "Haul", best.pts > 0 ? `<p class="note">Best weekend: R${best.round} ${((S.RACE_INFO || {})[best.round] || {}).short || ""}, ${best.pts} pts.</p>` : "")}
+      <figure class="chart reveal"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Team points per round">${bars}${ticks}</svg></figure>
+      ${ds.length >= 2 ? `<a class="btn" href="#/duel/${ds[0].id}/${ds[1].id}">Compare ${esc(ds[0].last)} v ${esc(ds[1].last)} →</a>` : ""}
+      <p class="foot">${esc(S.NOTE || "")}</p>`;
   }
 
   function viewNews() {
@@ -502,6 +694,8 @@
     if (!p0) { html = viewSeason(); tab = "season"; }
     else if (p0 === "schedule") { html = viewSchedule(); tab = "schedule"; }
     else if (p0 === "race") { html = viewRace(Number(p1)); tab = "schedule"; }
+    else if (p0 === "driver") { html = viewDriver(p1); tab = "season"; }
+    else if (p0 === "team") { html = viewTeam(p1); tab = "season"; }
     else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = "news"; }
     else if (p0 === "duel") { html = p3 === "race" ? viewDuelRace(p1, p2, Number(p4)) : viewDuel(p1, p2); tab = "duel"; }
     else { html = viewMissing("That page doesn't exist."); tab = ""; }
@@ -540,6 +734,31 @@
     }
   }
   window.addEventListener("hashchange", route);
+
+  // one listener for follow stars, share and calendar buttons
+  app.addEventListener("click", (e) => {
+    const f = e.target.closest("[data-follow]");
+    if (f) {
+      const [kind, id] = f.dataset.follow.split(":");
+      toggleFollow(kind, id);
+      const y = window.scrollY; route(); window.scrollTo(0, y);
+      return;
+    }
+    const sh = e.target.closest("[data-share]");
+    if (sh) {
+      const data = { title: "Stat Lab", text: sh.dataset.share, url: location.href };
+      if (navigator.share) navigator.share(data).catch(() => {});
+      else if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(() => { sh.textContent = "Link copied"; }).catch(() => {});
+      return;
+    }
+    const ic = e.target.closest("[data-ics]");
+    if (ic) {
+      const r = raceByRound[Number(ic.dataset.ics)];
+      const url = URL.createObjectURL(new Blob([icsFor(r)], { type: "text/calendar" }));
+      const a = Object.assign(document.createElement("a"), { href: url, download: `statlab-r${r.round}.ics` });
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  });
   route();
 })();
 
