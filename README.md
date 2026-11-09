@@ -40,3 +40,12 @@ If you change `styles.css` or `app.js`, also bump `VERSION` in `sw.js` (for exam
 
 Repository **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, folder `/ (root)` → Save.**
 The site appears at `https://<your-username>.github.io/<repo-name>/`.
+
+## After each race
+
+```bash
+python3 tools/add_round.py 21 path/to/race_results.csv --short LVG --location "Las Vegas"   # adds the round to data.js
+python3 tools/build_previews.py                                                             # refreshes previews.js for the races still to come
+```
+
+`add_round.py` takes the race order from a curated results CSV and Q1–Q3 times from OpenF1. `build_previews.py` writes the race preview pages (track layout from OpenF1, past winners and each current driver's record at the venue from Jolpica). When you change `app.js` or `styles.css`, bump `VERSION` in `sw.js` and `APP_VERSION` in `app.js` so installed apps update.

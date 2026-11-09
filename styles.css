@@ -380,3 +380,17 @@ h1, .sh h2 { text-transform: uppercase; }
 .pick { color: var(--soft); }
 .pick.on { background: var(--tc); border-color: var(--tc); color: #0A0A0A; text-shadow: 0 1px 0 rgba(255,255,255,.25); }
 .onboard + .favs { margin-top: 10px; }
+
+/* race preview */
+.facts.four { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px; }
+.facts.four b.mono { font-size: 26px; color: var(--amber); text-shadow: 0 0 8px var(--glow); }
+.chart.track svg { max-height: 300px; }
+.drow.king { grid-template-columns: 36px minmax(0, 1fr) 30px 30px 38px 32px; gap: 6px; min-height: 52px; }
+.drow.king .helmet { margin: -2px 0 -2px -4px; }
+.drow.king b { font-weight: 900; font-style: italic; font-stretch: 112%; font-size: 15px; border-left: 4px solid var(--tc); padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drow.king.fav b::after { content: " ★"; color: var(--yellow); font-style: normal; font-size: 12px; }
+.drow.king .mono.r.w { color: var(--amber); font-family: var(--led); font-weight: 900; font-size: 16px; }
+.drow.past { grid-template-columns: 56px minmax(0, 1fr) 70px; min-height: 54px; }
+.drow.past .yr { font-family: var(--led); font-weight: 900; font-size: 18px; color: var(--amber); }
+.drow.past .who b { font-weight: 900; font-style: italic; font-stretch: 125%; font-size: 16px; }
+.next > .kicker + .countdown { margin-top: 2px; }

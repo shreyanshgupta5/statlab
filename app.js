@@ -1,8 +1,9 @@
 /* Stat Lab — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v6"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v7"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
+  const PREVIEWS = window.PREVIEWS || {};
   const app = document.getElementById("app");
 
   const team = Object.fromEntries(S.TEAMS.map((t) => [t.id, t]));
@@ -278,7 +279,7 @@
       </section>
 
       ${upcoming ? `<div class="next t-wet reveal">
-        <a href="#/schedule"><span class="kicker">Next · Round ${upcoming.round}</span>
+        <a href="#/race/${upcoming.round}"><span class="kicker">Next · Round ${upcoming.round} · tap for preview</span>
         <b>${upcoming.flag} ${esc(upcoming.name)}</b>
         <span class="mono countdown" data-date="${upcoming.date}" data-start="${upcoming.raceStart || ""}"></span>
         <span class="mono dim">Lights out ${esc(localStart(upcoming))} your time</span>
@@ -311,7 +312,7 @@
         <span class="rres">${winner ? `${chip(winner)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>` : isNext ? `<span class="badge">Next</span>` : awaiting.includes(r) ? `<span class="mono dim">Results soon</span>` : `<span class="mono dim">${r.laps} laps</span>`}</span>`;
       return res
         ? `<li class="reveal" style="--i:${Math.min(i, 12)}"><a class="race done" href="#/race/${r.round}">${inner}</a></li>`
-        : `<li class="reveal" style="--i:${Math.min(i, 12)}"><div class="race ${isNext ? "is-next" : "future"}">${inner}</div></li>`;
+        : `<li class="reveal" style="--i:${Math.min(i, 12)}"><a class="race ${isNext ? "is-next" : "future"}" href="#/race/${r.round}">${inner}</a></li>`;
     }).join("");
     return `
       <div class="page-title reveal"><span class="kicker">${S.RESULTS.length} of ${S.CALENDAR.length} complete</span><h1>Schedule</h1></div>
@@ -322,7 +323,8 @@
   function viewRace(round) {
     const r = raceByRound[round];
     const res = S.RESULTS.find((x) => x.round === round);
-    if (!r || !res) return viewMissing("That round hasn't been run yet.");
+    if (r && !res) return viewPreview(round);
+    if (!r || !res) return viewMissing("We couldn't find that round.");
     const podium = res.race.slice(0, 3).map((x) => driver[x.id]);
     const finishers = res.race.filter((x) => !x.dnf);
     const hasPace = finishers.some((x) => typeof x.pace === "number"); // Stat Lab patch: pace data is optional
@@ -453,6 +455,65 @@
       <figure class="chart reveal"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Team points per round">${bars}${ticks}</svg></figure>
       ${ds.length >= 2 ? `<a class="btn" href="#/duel/${ds[0].id}/${ds[1].id}">Compare ${esc(ds[0].last)} v ${esc(ds[1].last)} →</a>` : ""}
       <p class="foot">${esc(S.NOTE || "")}</p>`;
+  }
+
+  function previewTrack(T) {
+    const W = Math.max(...T.map((p) => p[0])), H = Math.max(...T.map((p) => p[1]));
+    const pts = T.map((p) => p.join(",")).join(" ");
+    const [x0, y0] = T[0], [x1, y1] = T[3] || T[1];
+    const ang = (Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
+    return `<svg viewBox="-20 -20 ${W + 40} ${H + 40}" role="img" aria-label="Track layout">
+      <polyline points="${pts}" fill="none" stroke="#2A2D33" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="${pts}" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" style="filter: drop-shadow(0 0 4px rgba(255,176,0,.6))"/>
+      <g transform="translate(${x0} ${y0}) rotate(${ang.toFixed(0)})"><rect x="-3" y="-13" width="6" height="26" fill="#F2F2F0"/><path d="M14 0 l-9 -7 v14 z" fill="#F2F2F0"/></g></svg>`;
+  }
+
+  function viewPreview(round) {
+    const r = raceByRound[round], P = PREVIEWS[round];
+    const hist = P ? P.history : [];
+    const codeName = (c, fallback) => (driver[c] ? driver[c].last : fallback || c);
+    const codeCol = (c) => (driver[c] && team[driver[c].team] ? team[driver[c].team].color : "#5E6470");
+    const poleWins = hist.filter((h) => h.pole === h.winner).length;
+    const avgGrid = hist.length ? (hist.reduce((a, h) => a + h.grid, 0) / hist.length).toFixed(1) : null;
+    const best = P && P.drivers.length ? P.drivers[0] : null;
+    const fastest = hist.filter((h) => h.fastest).sort((a, b) => a.fastest.time.localeCompare(b.fastest.time))[0];
+    const span = P && P.editions > hist.length ? `last ${hist.length} of ${P.editions} editions` : `all ${hist.length} edition${hist.length === 1 ? "" : "s"}`;
+
+    const kings = P ? P.drivers.slice(0, 8).map((d, i) => `<li><a class="drow king ${isFollowed("drivers", d.id) ? "fav" : ""}" href="#/driver/${d.id}" style="--tc:${codeCol(d.id)}">
+        ${i < 3 ? helmet(d.id, { size: 40, look: 3 }) : `<span class="pos mono">${i + 1}</span>`}
+        <b>${esc(codeName(d.id))}</b><span class="mono r w">${d.wins}</span><span class="mono r">${d.podiums}</span><span class="mono r">${d.poles}</span><span class="mono r">${d.avg ?? "–"}</span></a></li>`).join("") : "";
+
+    const past = hist.map((h) => `<li class="drow past" style="--tc:${codeCol(h.winner)}">
+        <span class="yr">${h.year}</span>
+        <span class="who"><b>${esc(codeName(h.winner, h.winnerName))}</b><small>${esc(h.team)} · from P${h.grid}</small></span>
+        <span class="mono r dim">Pole ${esc(h.pole || "–")}</span></li>`).join("");
+
+    const mine = P ? follow.drivers.map((id) => P.drivers.find((d) => d.id === id)).filter(Boolean) : [];
+    const fact = (k, v, sub) => `<div><span class="kicker">${k}</span><b class="mono">${v}</b>${sub ? `<span class="mono dim">${sub}</span>` : ""}</div>`;
+
+    return `
+      <a class="back" href="#/schedule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Schedule</a>
+      <div class="page-title reveal"><span class="kicker">Round ${r.round} · Race preview</span><h1>${r.flag} ${esc(r.name)}</h1><p class="dim">${esc(P ? P.circuit : r.place)}${P ? " · " + esc(P.locality) : ""}</p></div>
+      <div class="next t-wet reveal">
+        <span class="kicker">Lights out</span>
+        <span class="mono countdown" data-date="${r.date}" data-start="${r.raceStart || ""}"></span>
+        <span class="mono dim">${esc(localStart(r))} your time</span>
+        <button class="cal" type="button" data-ics="${r.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
+      </div>
+      ${P && P.track ? `${sectionHead("Circuit", "Track layout")}<figure class="chart track reveal">${previewTrack(P.track)}<figcaption><span class="mono dim">Start/finish and direction of travel marked</span></figcaption></figure>` : ""}
+      <div class="facts four reveal">
+        ${fact("Length", P && P.lengthKm ? P.lengthKm.toFixed(3) : "–", "km")}
+        ${fact("Laps", r.laps || "–", P && P.lengthKm && r.laps ? (P.lengthKm * r.laps).toFixed(1) + " km race" : "")}
+        ${fact("First GP", P && P.firstYear ? P.firstYear : "–", P ? P.editions + " held" : "")}
+        ${fact("Pole → win", hist.length ? `${poleWins}/${hist.length}` : "–", avgGrid ? `winners start P${avgGrid} avg` : "")}
+      </div>
+      ${fastest ? `<p class="note">Fastest race lap across ${P.editions > hist.length ? "the " : ""}${esc(span)}: ${esc(codeName(fastest.fastest.code, fastest.fastest.name))} ${esc(fastest.fastest.time)} (${fastest.year}).</p>` : ""}
+      ${mine.length ? `${sectionHead("Your drivers here", "Following")}<div class="favs reveal">${mine.map((d) => `<a class="fav-card has-helmet" href="#/driver/${d.id}" style="--tc:${codeCol(d.id)}">${helmet(d.id, { size: 56, look: 3 })}<span class="mono dim">${d.starts} START${d.starts === 1 ? "" : "S"} HERE</span><b>${esc(codeName(d.id))}</b><span class="note">${d.wins} win${d.wins === 1 ? "" : "s"} · ${d.podiums} podium${d.podiums === 1 ? "" : "s"} · best ${d.best ? "P" + d.best : "–"} · avg ${d.avg ?? "–"}</span></a>`).join("")}</div>` : ""}
+      ${kings ? `${sectionHead(`Current grid · ${span}`, "Best on this track", best ? `<p class="note">${esc(codeName(best.id))} leads with ${best.wins} win${best.wins === 1 ? "" : "s"} and ${best.podiums} podium${best.podiums === 1 ? "" : "s"}.</p>` : "")}
+        <ul class="drows reveal"><li class="drow head king"><span></span><span>Driver</span><span class="r">Wins</span><span class="r">Pod</span><span class="r">Poles</span><span class="r">Avg</span></li>${kings}</ul>` : ""}
+      ${past ? `${sectionHead("Winners", "Past results")}<ul class="drows reveal">${past}</ul>` : ""}
+      ${!P ? `<div class="panel reveal" style="margin-top:20px"><p class="note">Track history for this round isn't loaded yet.</p></div>` : ""}
+      <p class="foot">Data: Jolpica (results history) and OpenF1 (track layout) · unofficial fan project.</p>`;
   }
 
   function viewNews() {

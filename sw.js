@@ -2,8 +2,8 @@
    - The page and data.js: network first, so new results show up as soon as you deploy; cached copy when offline.
    - Everything else (styles, script, icons, fonts): cache first, refreshed in the background.
    Bump VERSION when you change styles.css or app.js so phones pick up the new files. */
-const VERSION = "statlab-v6";
-const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
+const VERSION = "statlab-v7";
+const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "previews.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   // cache: "reload" skips the browser's HTTP cache, so a new version never stores the previous files
@@ -24,7 +24,7 @@ self.addEventListener("fetch", (e) => {
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (!sameOrigin && !isFont) return;
 
-  const fresh = req.mode === "navigate" || url.pathname.endsWith("/data.js");
+  const fresh = req.mode === "navigate" || url.pathname.endsWith("/data.js") || url.pathname.endsWith("/previews.js");
   if (fresh) {
     e.respondWith(
       fetch(req)
