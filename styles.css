@@ -403,3 +403,4 @@ h1, .sh h2 { text-transform: uppercase; }
 /* ONE F1 wordmark (artwork from brand/onef1-reference-1.png); lighten blends its dark backdrop into the header */
 .brand.logo { padding: 0; background: none; transform: none; display: inline-flex; align-items: center; }
 .brand.logo img { display: block; height: 30px; width: auto; mix-blend-mode: lighten; }
+.brand.logo .wm { display: block; height: 34px; width: auto; }

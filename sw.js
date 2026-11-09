@@ -1,9 +1,9 @@
-/* ONE F1 service worker: works offline and keeps data fresh.
+/* 1F1 service worker: works offline and keeps data fresh.
    - The page and data.js: network first, so new results show up as soon as you deploy; cached copy when offline.
    - Everything else (styles, script, icons, fonts): cache first, refreshed in the background.
    Bump VERSION when you change styles.css or app.js so phones pick up the new files. */
-const VERSION = "statlab-v10";
-const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "previews.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "brand/onef1-wordmark.png"];
+const VERSION = "statlab-v11";
+const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "previews.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   // cache: "reload" skips the browser's HTTP cache, so a new version never stores the previous files
