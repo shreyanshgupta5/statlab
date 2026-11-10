@@ -1,22 +1,22 @@
 // Reel cover options for the Las Vegas preview: 1080x1920, key content inside the middle 1080x1440 (y 240-1680) the profile grid shows.
 // Reuses the reel page's styles, track and helmet() so each cover matches the video.
 // Usage: node vegas-preview-carousel/export-cover.js  -> video/covers/onef1-vegas-cover-<id>.png (+ -grid.png) and contact sheet
-//        option "neon" is also copied to video/onef1-vegas-reel-cover.png
+//        option "decoded" (matches the final reel) is also copied to video/onef1-vegas-reel-cover.png
 const { chromium } = require('playwright'), path = require('path'), fs = require('fs');
 const OUT = path.join(__dirname, 'video', 'covers'); fs.mkdirSync(OUT, { recursive: true });
 
 // each builder runs inside the reel page (TRACK and helmet() are available there)
 const COVERS = {
   // A: neon night, the four contenders
-  neon: () => { const pts = TRACK.map((q) => q.join(",")).join(" "); return `
+  neon: () => { const pts = LAP.map((q) => q[0] + "," + q[1]).join(" "); return `
     <style>.cv{position:absolute;inset:0;padding:250px 72px 0}.cv .track{position:absolute;right:-60px;top:330px;width:640px;height:1040px;opacity:.9}
       .cv .kick{margin:0;font-size:36px}.cv .h{font-size:178px;line-height:.88;margin-top:18px}.cv .h em{display:block;text-shadow:0 0 30px rgba(255,212,0,.35)}
       .row4{position:absolute;left:52px;right:52px;top:1080px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;z-index:3}
       .row4 .panel{display:flex;flex-direction:column;align-items:center;padding:18px 6px 14px}.row4 .led{font-size:44px;margin-top:4px}
       .chips2{display:flex;gap:14px;position:absolute;left:72px;top:860px;z-index:3}.chips2 .panel{padding:14px 22px}.chips2 .led{font-size:52px;line-height:1}.chips2 .lbl{font-size:18px;display:block;margin-top:4px}</style>
     <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="pg" style="color:#FF3EA5">PREVIEW</span></div>
-    <div class="cv"><svg class="track" viewBox="-30 -30 240 360"><polyline points="${pts}" fill="none" stroke="#2A1530" stroke-width="20" stroke-linejoin="round"/>
-      <polyline points="${pts}" fill="none" stroke="#FF3EA5" stroke-width="5" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px #FF3EA5) drop-shadow(0 0 14px #FF3EA5)"/></svg>
+    <div class="cv"><svg class="track" viewBox="-44 -44 683 1088"><polyline points="${pts}" fill="none" stroke="#2A1530" stroke-width="60" stroke-linejoin="round"/>
+      <polyline points="${pts}" fill="none" stroke="#FF3EA5" stroke-width="15" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px #FF3EA5) drop-shadow(0 0 14px #FF3EA5)"/></svg>
       <div class="kick">LAS VEGAS GP · 22 NOV</div><h1 class="h">Who<br>wins<em>Vegas?</em></h1>
       <div class="chips2"><div class="panel"><b class="led">347</b><span class="lbl">km/h top speed</span></div>
         <div class="panel"><b class="led" style="color:#7FD3FF;text-shadow:0 0 10px rgba(127,211,255,.6)">14°C</b><span class="lbl">coldest quali track</span></div></div>
@@ -80,19 +80,38 @@ const COVERS = {
     <div class="hand4">${[["VER", "♦", "#C8102E", -12, 6, -330, 40], ["RUS", "♠", "#14161A", -4, 3, -110, 0], ["ANT", "♣", "#14161A", 4, -3, 110, 0], ["HAM", "♥", "#C8102E", 12, -6, 330, 40]].map(([c, s, col, r, l, dx, dy]) =>
       `<div class="card" style="transform:translate(${dx}px,${dy}px) rotate(${r}deg)"><span class="cn tl" style="color:${col}">${s}</span><span class="cn br" style="color:${col}">${s}</span>${helmet(c, { size: 170, look: l })}<b>${c}</b></div>`).join("")}</div>
     <div style="position:absolute;left:0;right:0;top:1360px;text-align:center"><span class="hand" style="font-size:88px;color:#FFD400">pick your card 👇</span></div>`,
+  // F: matches the final reel (skyline, marquee lights, the three things it explains, the four contenders). Built on top of the reel's own stage.
+  decoded: () => { const pts = LAP.map((q) => q[0] + "," + q[1]).join(" "); return `
+    <style>.cv{position:absolute;inset:0;z-index:4}.cv .track{position:absolute;right:-30px;top:250px;width:560px;height:892px;opacity:.5}
+      .cv .kick{position:absolute;left:72px;top:262px;margin:0;font-size:36px}.cv .h{position:absolute;left:72px;top:318px;font-size:150px;line-height:.9;margin:0}.cv .h em{display:block;text-shadow:0 0 30px rgba(255,212,0,.4)}
+      .tz{position:absolute;left:72px;right:72px;top:650px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+      .tz .panel{padding:22px 20px 20px;text-align:center}.tz b{display:block;font-size:76px;line-height:1;white-space:nowrap}.tz .lbl{display:block;margin-top:10px;font-size:19px;letter-spacing:2px}
+      .row4{position:absolute;left:72px;right:72px;top:930px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+      .row4 .panel{display:flex;flex-direction:column;align-items:center;padding:18px 6px 14px}.row4 .led{font-size:42px;margin-top:4px}</style>
+    <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="pg" style="color:#FF3EA5">RACE PREVIEW</span></div>
+    <div class="cv"><svg class="track" viewBox="-44 -44 683 1088"><polyline points="${pts}" fill="none" stroke="#2A1530" stroke-width="60" stroke-linejoin="round"/>
+      <polyline points="${pts}" fill="none" stroke="#FF3EA5" stroke-width="15" stroke-linejoin="round" style="filter:drop-shadow(0 0 12px #FF3EA5) drop-shadow(0 0 30px #FF3EA5)"/></svg>
+      <div class="kick">LAS VEGAS GP · 22 NOV</div><h1 class="h">Vegas<em>decoded</em></h1>
+      <div class="tz"><div class="panel" style="border-color:#2B5AA8"><b class="led" style="color:#7FD3FF;text-shadow:0 0 12px rgba(127,211,255,.6)">18°C</b><span class="lbl">cold track</span></div>
+        <div class="panel"><b class="led" style="color:#F2F2F0;text-shadow:0 0 12px rgba(255,255,255,.4)">81%</b><span class="lbl">hard tyre laps</span></div>
+        <div class="panel" style="border-color:#8A6A1F"><b class="led" style="word-spacing:-24px">1 or 2</b><span class="lbl">pit stops?</span></div></div>
+      <div class="row4">${[["VER", 6], ["RUS", 3], ["ANT", -3], ["HAM", -6]].map(([c, l]) => `<div class="panel">${helmet(c, { size: 178, look: l })}<b class="led">${c}</b></div>`).join("")}</div>
+      <div style="position:absolute;left:72px;top:1265px;display:flex;align-items:center;gap:20px"><span class="hand" style="font-size:104px;transform:rotate(-4deg);display:inline-block">who hits the jackpot?</span><span style="font-size:84px">🎰</span></div></div>`; },
 };
 
 (async () => {
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
   for (const [id, fn] of Object.entries(COVERS)) {
     await p.goto('file://' + path.join(__dirname, 'vegas-reel.html')); await p.evaluate(() => document.fonts.ready);
-    await p.evaluate((src) => { const st = document.querySelector('.stage'); st.innerHTML = (0, eval)('(' + src + ')')() + '<div class="ftr"><span>@F1STATLAB</span><span>DATA: OPENF1 · JOLPICA</span></div>'; }, fn.toString());
+    await p.evaluate(([id, src]) => { const st = document.querySelector('.stage'), html = (0, eval)('(' + src + ')')(), ftr = '<div class="ftr"><span>@F1STATLAB</span><span>DATA: OPENF1 · JOLPICA</span></div>';
+      if (id === 'decoded') { window.reel.seek(3); st.querySelectorAll('.scene,.sweep,.snow,.hdr,.ftr').forEach((e) => e.remove()); st.insertAdjacentHTML('beforeend', html + ftr); }   // keep the skyline and marquee lights
+      else st.innerHTML = html + ftr; }, [id, fn.toString()]);
     await p.waitForTimeout(300);
     await p.screenshot({ path: path.join(OUT, `onef1-vegas-cover-${id}.png`) });
     await p.screenshot({ path: path.join(OUT, `onef1-vegas-cover-${id}-grid.png`), clip: { x: 0, y: 240, width: 1080, height: 1440 } });
   }
-  fs.copyFileSync(path.join(OUT, 'onef1-vegas-cover-neon.png'), path.join(__dirname, 'video', 'onef1-vegas-reel-cover.png'));
-  fs.copyFileSync(path.join(OUT, 'onef1-vegas-cover-neon-grid.png'), path.join(__dirname, 'video', 'onef1-vegas-reel-cover-grid.png'));
+  fs.copyFileSync(path.join(OUT, 'onef1-vegas-cover-decoded.png'), path.join(__dirname, 'video', 'onef1-vegas-reel-cover.png'));
+  fs.copyFileSync(path.join(OUT, 'onef1-vegas-cover-decoded-grid.png'), path.join(__dirname, 'video', 'onef1-vegas-reel-cover-grid.png'));
   // contact sheet of all options
   const ids = Object.keys(COVERS);
   await p.setViewportSize({ width: 360 * ids.length + 20 * (ids.length + 1), height: 720 });
