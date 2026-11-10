@@ -353,17 +353,10 @@ async function renderSoundtrack(rate) {
   }
   // --- cues from the animation timeline ---
   T0.slice(1).forEach((c) => whoosh(c - TR));
-  anims.forEach((list, i) => list.forEach((a) => {
-    const t = T0[i] + a.s;
-    if (a.type === "grow") {
-      let fill = 1;
-      if (a.el.classList.contains("grow-y")) fill = (+a.el.getAttribute("height")) / 300;          // thermometer: to the temperature
-      else if (a.el.closest(".p2row")) fill = parseFloat(a.el.style.width) / 100;                  // P2 bar: to the points
-      if (a.el.classList.contains("grow-y") && a.el.getAttribute("fill") === "#7FD3FF") return;     // one riser per thermometer pair (track)
-      riser(t, a.d, fill);
-    } else if (a.type === "count" && !a.el.closest(".p2row")) reel(t, a.d);
-  }));
-  riser(T0[1] + 1.6, 2.2, 0.69);                         // gauge filling to 69%
+  // fill sounds only on the last scene: the P2 fight bars charge up like slot payouts; earlier scenes stay music-only
+  const p2 = anims[4].filter((a) => a.type === "grow" && a.el.closest(".p2row"));
+  p2.forEach((a, k) => { riser(T0[4] + a.s, a.d, parseFloat(a.el.style.width) / 100); });
+  const lastP2 = p2[p2.length - 1]; if (lastP2) bell(T0[4] + lastP2.s + lastP2.d + 0.1, 0.22);
   bell(T0[4] + 6.6, 0.35); coin(T0[4] + 6.7, 0.5); coin(T0[4] + 6.85, 0.45); coin(T0[4] + 7.0, 0.4);   // jackpot on "your pick?"
   return ctx.startRendering();
 }
