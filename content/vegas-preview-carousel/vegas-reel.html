@@ -75,6 +75,7 @@ body { margin:0; background:#060607; color:var(--fg); font-family:var(--display)
 .pc { padding:28px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; }
 .pc .nm { font-weight:900; font-style:italic; font-stretch:125%; font-size:54px; text-transform:uppercase; }
 .pc .ln { font-family:var(--mono); font-size:22px; color:var(--soft); }
+.quad { margin-top:34px; gap:18px; } .quad .pc { padding:20px 18px; gap:4px; } .quad .pc .nm { font-size:42px; } .quad .pc .ln { font-size:21px; }
 .p2 { margin-top:22px; padding:26px 32px; }
 .p2row { display:grid; grid-template-columns:90px 1fr 110px; align-items:center; gap:16px; margin-top:12px; }
 .p2row b { font-weight:900; font-style:italic; font-stretch:125%; font-size:36px; }
@@ -154,9 +155,11 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
   <section class="scene">
     <div class="kick" data-a="fade 0.4 .5">THE MEN TO BEAT</div>
     <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Who wins</span><em data-a="up 0.75 .5" style="display:block">Vegas?</em></h2>
-    <div class="duo">
-      <div class="panel pc" id="pcVER" data-a="drop 1.3 .6"><span class="nm">Verstappen</span><span class="ln">2 wins in 3 · avg P2.3</span></div>
-      <div class="panel pc" id="pcRUS" data-a="drop 1.8 .6"><span class="nm">Russell</span><span class="ln">2024 win from pole</span></div>
+    <div class="duo quad">
+      <div class="panel pc" id="pcVER" data-a="drop 1.2 .6"><span class="nm">Verstappen</span><span class="ln">2 wins in 3 · avg P2.3</span></div>
+      <div class="panel pc" id="pcRUS" data-a="drop 1.5 .6"><span class="nm">Russell</span><span class="ln">2024 win from pole</span></div>
+      <div class="panel pc" id="pcANT" data-a="drop 1.8 .6"><span class="nm">Antonelli</span><span class="ln">P17 → P3 in 2025</span></div>
+      <div class="panel pc" id="pcHAM" data-a="drop 2.1 .6"><span class="nm">Hamilton</span><span class="ln">P10 → P2 in 2024</span></div>
     </div>
     <div class="panel p2" id="p2" data-a="up 3.2 .5"><span class="lbl">and the fight for P2 · 3 races left</span></div>
     <div style="margin-top:26px;display:flex;justify-content:space-between;align-items:flex-end">
@@ -234,8 +237,10 @@ const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}
     const st = STOPS[y], one = st.filter((x) => x === 1).length, two = st.filter((x) => x >= 2).length;
     return `<div class="bar"><span class="yr">${y}</span><div class="stack grow-x" data-a="grow ${s} 1">${segs}</div><span class="stop" data-a="pop ${s + 0.9} .4">${one > two ? one + "/10 ONE" : two + "/10 TWO"}<br><small style="font-size:20px;color:#8D939B">-STOP</small></span></div>`;
   }).join("");
-  document.getElementById("pcVER").insertAdjacentHTML("afterbegin", helmet("VER", { size: 200, look: 6 }));
-  document.getElementById("pcRUS").insertAdjacentHTML("afterbegin", helmet("RUS", { size: 200, look: -6 }));
+  document.getElementById("pcVER").insertAdjacentHTML("afterbegin", helmet("VER", { size: 140, look: 6 }));
+  document.getElementById("pcRUS").insertAdjacentHTML("afterbegin", helmet("RUS", { size: 140, look: -6 }));
+  document.getElementById("pcANT").insertAdjacentHTML("afterbegin", helmet("ANT", { size: 140, look: 6 }));
+  document.getElementById("pcHAM").insertAdjacentHTML("afterbegin", helmet("HAM", { size: 140, look: -6 }));
   const P2 = [["VER", 279, "#3671C6"], ["RUS", 262, "#27F4D2"], ["HAM", 261, "#E8002D"], ["LEC", 249, "#E8002D"], ["NOR", 246, "#FF8000"]];
   document.getElementById("p2").insertAdjacentHTML("beforeend", P2.map(([c, v, col], k) => `<div class="p2row" style="--c:${col}"><b>${c}</b><div class="tk"><i class="grow-x" data-a="grow ${3.6 + k * 0.35} .9" style="width:${(v - 200) / 0.8}%"></i></div><span class="v led" data-count="${v}" data-a="count ${3.6 + k * 0.35} .9">${v}</span></div>`).join(""));
 })();
