@@ -97,72 +97,139 @@ body { padding:0; background:#000; }
 .s1 .trackwrap { top:300px; right:-10px; }
 .grow-x { transform-origin:left; transform:scaleX(var(--p,1)); }
 svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(var(--p,1)); }
+
+/* ---- v2: infographic layers ---- */
+.scene { z-index:3; }
+.hdr, .ftr { z-index:6; }
+.ftr { bottom:318px; }
+.bulbs { position:absolute; left:72px; right:72px; top:176px; height:10px; display:flex; justify-content:space-between; z-index:5; }
+.bulbs i { width:10px; height:10px; border-radius:50%; background:#3A2A18; }
+.bulbs i.on { background:#FFE9A8; box-shadow:0 0 10px #FFC94A, 0 0 22px rgba(255,190,60,.6); }
+.sky { position:absolute; left:0; bottom:0; width:1080px; height:330px; z-index:1; }
+.snow { position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0; }
+.snow i { position:absolute; width:8px; height:8px; border-radius:50%; background:#CFEFFF; box-shadow:0 0 8px #9FE3FF; }
+/* 1 */
+.s1 .map1 { position:absolute; right:20px; top:330px; z-index:1; }
+.s1 .chips { margin-top:44px; width:380px; gap:16px; }
+.tagline { margin-top:22px; position:relative; z-index:2; }
+/* 2 */
+.lapbox { margin-top:34px; height:800px; position:relative; }
+.lapbox .map2 { position:absolute; left:26px; top:14px; }
+.lapbox .side { position:absolute; right:26px; top:26px; width:330px; display:flex; flex-direction:column; align-items:center; }
+.dialnum { margin-top:-118px; text-align:center; } .dialnum b { font-size:104px; line-height:1; display:block; } .dialnum span { font-size:20px; }
+.clock { margin-top:64px; width:100%; padding:16px 20px; border-top:2px solid #26221A; border-bottom:2px solid #26221A; display:flex; justify-content:space-between; align-items:baseline; }
+.clock b { font-size:54px; }
+.ped { width:100%; margin-top:22px; display:grid; grid-template-columns:118px 1fr; gap:12px 12px; align-items:center; }
+.ped .lbl { font-size:17px; letter-spacing:2px; } .ped .tk { height:18px; border-radius:5px; background:#1C1C22; overflow:hidden; } .ped .tk i { display:block; height:100%; width:0; }
+.pin { position:absolute; z-index:4; padding:10px 16px; border-radius:12px; background:#0A0A08; border:2px solid var(--c,#FFB000); box-shadow:0 0 18px color-mix(in srgb,var(--c,#FFB000) 45%,transparent); white-space:nowrap; transform-origin:left center; }
+.pin b { font-family:var(--led); font-weight:900; font-size:44px; color:var(--c,#FFB000); line-height:1; } .pin span { display:block; font-family:var(--mono); font-size:16px; letter-spacing:2px; color:var(--soft); margin-top:3px; }
+.strip { margin-top:20px; padding:20px 28px 22px; }
+.strip svg { display:block; width:100%; height:46px; margin-top:12px; border-radius:8px; }
+.split { display:flex; gap:26px; margin-top:16px; align-items:baseline; }
+.split div { display:flex; align-items:baseline; gap:10px; } .split b { font-family:var(--led); font-weight:900; font-size:52px; line-height:1; color:var(--c); text-shadow:0 0 10px color-mix(in srgb,var(--c) 50%,transparent); }
+.split div > span { font-family:var(--mono); font-size:17px; letter-spacing:1.5px; color:var(--soft); text-transform:uppercase; line-height:1.2; }
+/* 3 */
+.therms { margin-top:36px !important; padding:28px 30px 24px !important; }
+.th svg { width:176px !important; height:493px !important; }
+.coldrow { margin-top:20px; padding:20px 28px; display:flex; align-items:center; gap:26px; }
+.coldrow b.led { font-size:120px; line-height:1; color:var(--ice); text-shadow:0 0 16px rgba(127,211,255,.65); }
+.chain { display:flex; align-items:center; gap:12px; margin-top:18px; position:relative; z-index:2; }
+.chain span { padding:12px 16px; border-radius:10px; border:2px solid #2B5AA8; background:rgba(8,20,48,.8); font-family:var(--mono); font-weight:700; font-size:20px; letter-spacing:1.5px; color:#CFEFFF; }
+.chain i { font-style:normal; color:var(--ice); font-size:30px; }
+/* 4 */
+.donuts { margin-top:34px; padding:26px 20px 22px; display:grid; grid-template-columns:repeat(3,1fr); }
+.dn { display:flex; flex-direction:column; align-items:center; gap:8px; } .dn svg { width:250px; height:250px; }
+.dn .yr { font-family:var(--led); font-weight:900; font-size:38px; color:var(--soft); }
+.plan { margin-top:20px; padding:22px 28px 20px; }
+.prow { display:grid; grid-template-columns:120px 1fr 150px; align-items:center; gap:16px; margin-top:14px; }
+.prow .yr { font-family:var(--led); font-weight:900; font-size:34px; color:var(--soft); line-height:1; } .prow .yr small { display:block; font-family:var(--mono); font-size:16px; letter-spacing:2px; color:var(--muted); margin-top:4px; }
+.prow .lane { position:relative; height:46px; } .prow .st { position:absolute; top:0; height:46px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:18px; color:#0A0A0A; }
+.prow .pit { position:absolute; top:-8px; width:4px; height:62px; background:#FF3EA5; box-shadow:0 0 8px #FF3EA5; }
+.prow .stop { font-size:26px; }
+.axis { display:grid; grid-template-columns:120px 1fr 150px; gap:16px; margin-top:8px; font-family:var(--mono); font-size:15px; color:var(--muted); letter-spacing:1px; } .axis div { display:flex; justify-content:space-between; }
+.trend { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; position:relative; z-index:2; }
+.trend .panel { padding:18px 22px; } .trend b { display:block; font-size:54px; line-height:1; margin-top:6px; }
+/* 5 */
+.quad .pc { padding:16px 12px 16px !important; }
+.res { display:flex; gap:8px; margin-top:8px; }
+.res i { font-style:normal; display:flex; flex-direction:column; align-items:center; gap:3px; font-family:var(--mono); font-size:14px; color:var(--muted); letter-spacing:1px; }
+.res i b { min-width:62px; padding:6px 0; border-radius:8px; font-family:var(--led); font-weight:900; font-size:28px; line-height:1; text-align:center; border:2px solid #3A3D44; color:#8D939B; }
+.res i b.w { background:#FFD400; border-color:#FFD400; color:#0A0A0A; box-shadow:0 0 14px rgba(255,212,0,.5); } .res i b.p { border-color:#FFB000; color:#FFB000; }
+.p2row { grid-template-columns:90px 1fr 96px 84px !important; }
+.p2row .gap { font-family:var(--mono); font-size:20px; color:var(--muted); text-align:right; }
 </style>
 <div class="stage">
+  <svg class="sky" id="sky" viewBox="0 0 1080 330"></svg>
+  <div class="snow" id="snow"></div>
   <div class="hdr"><span class="brand"><span>ONE F1</span></span><div class="dots"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div></div>
+  <div class="bulbs" id="bulbs"></div>
 
-  <!-- 1 cover -->
+  <!-- 1 hook -->
   <section class="scene s1">
     <div class="kick" data-a="fade -0.6 .6">LAS VEGAS GP · ROUND 21 · 19–21 NOV</div>
     <h1 class="h" style="font-size:132px"><span data-a="up -0.5 .6" style="display:block">Las</span><span data-a="up -0.35 .6" style="display:block">Vegas</span><em data-a="up .5 .6" style="display:block">decoded</em></h1>
-    <div class="trackwrap"><svg id="track" viewBox="-30 -30 240 360" width="560" height="900"></svg></div>
+    <div class="map1" id="map1"></div>
     <div class="chips">
       <div class="panel chip" data-a="left 2.2 .5"><b class="led"><span data-count="6.2" data-dec="1" data-a="count 2.3 1">6.2</span><small style="font-size:36px"> KM</small></b><span class="lbl">a lap</span></div>
       <div class="panel chip" data-a="left 3.0 .5"><b class="led" data-count="50" data-a="count 3.1 1">50</b><span class="lbl">laps at night</span></div>
-      <div class="panel chip" data-a="left 3.8 .5"><b class="led" data-count="347" data-a="count 3.9 1.1">347</b><span class="lbl">km/h top speed</span></div>
+      <div class="panel chip" data-a="left 3.8 .5"><b class="led" data-count="17" data-a="count 3.9 .9">17</b><span class="lbl">corners</span></div>
     </div>
+    <div class="tagline" data-a="pop 5.0 .5" style="transform-origin:left"><span class="hand" style="font-size:50px;display:inline-block;transform:rotate(-3deg)">4 numbers decide it 👉</span></div>
   </section>
 
-  <!-- 2 flat out -->
+  <!-- 2 flat out: speed map -->
   <section class="scene">
-    <div class="kick" data-a="fade 0.4 .5">THE POLE LAP · 2024</div>
-    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Mostly</span><em data-a="up 0.75 .5" style="display:block">flat out</em></h2>
-    <div class="panel gauge" data-a="up 1.2 .5">
-      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="82" fill="none" stroke="#221E14" stroke-width="22"/>
-        <circle id="gauge" cx="100" cy="100" r="82" fill="none" stroke="#FFB000" stroke-width="22" stroke-linecap="round" pathLength="100" stroke-dasharray="100 100" stroke-dashoffset="100" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(255,176,0,.6))"/></svg>
-      <div><b class="led big"><span data-count="69" data-a="count 1.6 2.2">69</span><small style="font-size:70px">%</small></b><div class="lbl" style="margin-top:14px;max-width:360px;line-height:1.4">of the lap at full throttle</div></div>
+    <div class="kick" data-a="fade 0.3 .5">THE POLE LAP · RUSSELL 2024</div>
+    <h2 class="h" style="font-size:100px"><span data-a="up 0.4 .5">Mostly </span><em data-a="up 0.6 .5" style="display:inline-block">flat out</em></h2>
+    <div class="panel lapbox" data-a="up 0.9 .5">
+      <div class="map2" id="map2"></div>
+      <div class="side">
+        <svg id="dial" viewBox="0 0 330 260" width="330" height="260"></svg>
+        <div class="dialnum"><b class="led" id="spd">0</b><span class="lbl">km/h</span></div>
+        <div class="clock"><span class="lbl">lap</span><b class="led" id="clk">0:00.0</b></div>
+        <div class="ped"><span class="lbl">throttle</span><div class="tk"><i id="thr" style="background:#FFB000"></i></div><span class="lbl">brake</span><div class="tk"><i id="brk" style="background:#FF3EA5"></i></div></div>
+      </div>
+      <div class="pin" id="pinTop" data-a="pop 7.5 .45" style="--c:#FFB000"><b>347</b><span>KM/H TOP SPEED</span></div>
+      <div class="pin" id="pinFlat" data-a="pop 8.0 .45" style="--c:#F2F2F0"><b>1.8 KM</b><span>FLAT OUT</span></div>
+      <div class="pin" id="pinSlow" data-a="pop 8.5 .45" style="--c:#FF3EA5"><b>89</b><span>KM/H SLOWEST</span></div>
     </div>
-    <div class="stats">
-      <div class="panel stat" data-a="pop 4.0 .45"><span class="lbl">top speed</span><b class="led"><span data-count="347" data-a="count 4.1 1">347</span><small>km/h</small></b></div>
-      <div class="panel stat" data-a="pop 4.6 .45"><span class="lbl">longest flat-out run</span><b class="led"><span data-count="1.8" data-dec="1" data-a="count 4.7 1">1.8</span><small>km</small></b></div>
-      <div class="panel stat" data-a="pop 5.2 .45"><span class="lbl">pole lap</span><b class="led" data-count="92.3" data-fmt="lap" data-a="count 5.3 1.2">1:32.3</b></div>
-      <div class="panel stat" data-a="pop 5.8 .45"><span class="lbl">braking</span><b class="led"><span data-count="14" data-a="count 5.9 .8">14</span><small>% of lap</small></b></div>
-    </div>
-    <p class="note" data-a="fade 6.8 .6" style="margin:18px 0 0">Russell's 2024 pole lap. 2025 qualifying was wet, so its lap is left out.</p>
+    <div class="panel strip" data-a="up 1.1 .5"><span class="lbl">one lap, start to finish</span>
+      <svg id="strip" viewBox="0 0 260 10" preserveAspectRatio="none"></svg>
+      <div class="split"><div style="--c:#FFB000"><b><span id="pcFull">0</span>%</b><span>full<br>throttle</span></div><div style="--c:#FF3EA5"><b><span id="pcBrk">0</span>%</b><span>on the<br>brakes</span></div><div style="--c:#C9CDD2"><b><span id="pcMid">0</span>%</b><span>in<br>between</span></div></div></div>
   </section>
 
   <!-- 3 cold -->
   <section class="scene">
     <div class="kick" data-a="fade 0.4 .5">RACE NIGHT TEMPERATURES</div>
-    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Cold</span><em data-a="up 0.75 .5" style="display:block">tyres</em></h2>
+    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5">Cold </span><em data-a="up 0.75 .5" style="display:inline-block;color:var(--ice)">track</em></h2>
     <div class="panel therms" id="therms" data-a="up 1.2 .5"></div>
-    <div class="panel coldnote" data-a="left 5.4 .5"><b class="led" style="color:var(--ice)"><span data-count="14" data-a="count 5.5 1">14</span>°</b><div><span class="lbl">coldest track in qualifying</span><div class="note" style="margin-top:8px;color:var(--soft)">2024, 10pm local. A cold track makes it hard to get the tyres up to temperature.</div></div></div>
-    <p class="note" data-a="fade 1.6 .5" style="margin:16px 0 0">Median during the race · °C</p>
+    <div class="panel coldrow" data-a="left 5.2 .5">
+      <svg id="tyre" viewBox="0 0 200 200" width="170" height="170" style="flex:none"></svg>
+      <b class="led"><span data-count="14" data-a="count 5.4 1">14</span>°</b>
+      <div><span class="lbl">coldest track in qualifying</span><div class="note" style="margin-top:8px;color:var(--soft)">2024, 10pm local time</div></div>
+    </div>
+    <div class="chain"><span data-a="pop 6.4 .4">COLD TRACK</span><i data-a="fade 6.7 .3">→</i><span data-a="pop 6.9 .4">COLD TYRES</span><i data-a="fade 7.2 .3">→</i><span data-a="pop 7.4 .4">LESS GRIP</span></div>
   </section>
 
   <!-- 4 tyres -->
   <section class="scene">
-    <div class="kick" data-a="fade 0.4 .5">TOP-10 FINISHERS' LAPS</div>
-    <h2 class="h" style="font-size:104px"><span data-a="up 0.5 .5" style="display:block">Hard is</span><em data-a="up 0.75 .5" style="display:block">the race tyre</em></h2>
-    <div class="panel bars" id="bars" data-a="up 1.2 .5"></div>
-    <div class="legend" data-a="fade 2.0 .5"><span style="--c:#E8002D">SOFT</span><span style="--c:#FFD400">MEDIUM</span><span style="--c:#F2F2F0">HARD</span></div>
-    <div class="panel" data-a="up 5.6 .5" style="margin-top:26px;padding:28px 32px"><span class="lbl">the trend</span>
-      <div style="font-weight:900;font-style:italic;font-stretch:125%;font-size:46px;line-height:1.1;margin-top:10px">2023–24: mostly <span class="led">2 STOPS</span><br>2025: mostly <span class="led">1 STOP</span></div>
-      <div class="note" style="margin-top:12px">In 2024 the mediums lost about 0.2 s a lap; the hards held their pace.</div></div>
+    <div class="kick" data-a="fade 0.4 .5">SHARE OF TOP-10 RACE LAPS</div>
+    <h2 class="h" style="font-size:100px"><span data-a="up 0.5 .5" style="display:block">Hard is</span><em data-a="up 0.75 .5" style="display:block">the race tyre</em></h2>
+    <div class="panel donuts" id="donuts" data-a="up 1.2 .5"></div>
+    <div class="panel plan" id="plan" data-a="up 4.2 .5"><span class="lbl">how the winner did it · lap 1 → 50</span></div>
+    <div class="trend">
+      <div class="panel" data-a="pop 7.6 .45"><span class="lbl">2023–24</span><b class="led">2 STOPS</b></div>
+      <div class="panel" data-a="pop 8.0 .45" style="border-color:#FFD400"><span class="lbl">2025 · 9 of top 10</span><b class="led" style="color:#FFD400">1 STOP</b></div>
+    </div>
   </section>
 
-  <!-- 5 pick -->
+  <!-- 5 contenders -->
   <section class="scene">
-    <div class="kick" data-a="fade 0.4 .5">THE MEN TO BEAT</div>
-    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Who wins</span><em data-a="up 0.75 .5" style="display:block">Vegas?</em></h2>
-    <div class="duo quad">
-      <div class="panel pc" id="pcVER" data-a="drop 1.2 .6"><span class="nm">Verstappen</span><span class="ln">2 wins in 3 · avg P2.3</span></div>
-      <div class="panel pc" id="pcRUS" data-a="drop 1.5 .6"><span class="nm">Russell</span><span class="ln">2024 win from pole</span></div>
-      <div class="panel pc" id="pcANT" data-a="drop 1.8 .6"><span class="nm">Antonelli</span><span class="ln">P17 → P3 in 2025</span></div>
-      <div class="panel pc" id="pcHAM" data-a="drop 2.1 .6"><span class="nm">Hamilton</span><span class="ln">P10 → P2 in 2024</span></div>
-    </div>
+    <div class="kick" data-a="fade 0.4 .5">THE MEN TO BEAT · VEGAS RECORD</div>
+    <h2 class="h" style="font-size:88px"><span data-a="up 0.5 .5">Who wins </span><em data-a="up 0.75 .5" style="display:inline-block">Vegas?</em></h2>
+    <div class="duo quad" id="quad"></div>
     <div class="panel p2" id="p2" data-a="up 3.2 .5"><span class="lbl">and the fight for P2 · 3 races left</span></div>
-    <div style="margin-top:26px;display:flex;justify-content:space-between;align-items:flex-end">
+    <div style="margin-top:22px;display:flex;justify-content:space-between;align-items:flex-end">
       <span class="hand" data-a="pop 6.6 .5" style="font-size:72px;transform-origin:left">your pick? 👇</span><span class="note" data-a="fade 7.0 .5">Race: Sun 22 Nov, 09:30 IST</span></div>
   </section>
 
@@ -170,7 +237,9 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
   <div class="ftr"><span>@F1STATLAB</span><span>DATA: OPENF1 · JOLPICA</span></div>
 </div>
 <script>
-const TRACK = [[153, 280], [156, 277], [161, 271], [171, 261], [173, 258], [175, 256], [177, 252], [177, 249], [177, 248], [176, 246], [174, 244], [172, 244], [170, 243], [166, 243], [162, 244], [159, 247], [156, 249], [153, 252], [149, 255], [146, 256], [140, 255], [136, 253], [132, 249], [130, 246], [128, 240], [127, 234], [127, 228], [127, 223], [126, 218], [126, 212], [126, 204], [125, 198], [125, 193], [125, 187], [125, 178], [125, 173], [124, 165], [124, 160], [124, 152], [124, 145], [123, 140], [123, 134], [123, 128], [123, 122], [123, 119], [123, 115], [124, 112], [126, 110], [129, 109], [131, 109], [136, 109], [138, 109], [143, 109], [148, 109], [160, 107], [166, 104], [171, 100], [175, 95], [177, 91], [179, 85], [178, 81], [178, 80], [177, 78], [175, 77], [172, 76], [171, 75], [170, 72], [171, 69], [172, 66], [174, 63], [175, 60], [175, 57], [174, 56], [172, 54], [169, 54], [167, 54], [162, 54], [157, 54], [151, 54], [145, 54], [139, 54], [135, 54], [131, 54], [125, 54], [120, 54], [115, 53], [109, 51], [101, 47], [97, 43], [93, 37], [89, 29], [87, 25], [84, 18], [81, 14], [77, 10], [70, 5], [65, 3], [60, 2], [56, 1], [52, 0], [50, 0], [48, 0], [46, 1], [46, 2], [45, 5], [44, 8], [43, 11], [41, 15], [38, 21], [35, 26], [32, 31], [29, 37], [27, 41], [25, 45], [22, 50], [19, 56], [16, 64], [13, 71], [12, 74], [9, 85], [7, 90], [5, 97], [5, 102], [3, 107], [2, 118], [1, 127], [1, 133], [1, 142], [1, 148], [1, 154], [1, 163], [1, 170], [1, 174], [1, 183], [1, 191], [1, 198], [1, 206], [1, 214], [1, 220], [1, 225], [1, 234], [0, 239], [0, 248], [0, 257], [0, 269], [0, 274], [0, 282], [0, 287], [1, 288], [4, 292], [7, 293], [9, 293], [11, 295], [14, 297], [18, 299], [21, 300], [25, 300], [28, 300], [34, 300], [39, 300], [45, 300], [52, 299], [58, 299], [64, 299], [69, 299], [75, 299], [84, 299], [89, 299], [96, 299], [104, 299], [111, 299], [131, 297], [137, 295], [143, 291], [147, 288], [153, 280]], TEMPS = {"2023": [18.0, 17.8], "2024": [17.9, 17.6], "2025": [16.8, 17.7]}, TYRES = {"2023": {"HARD": 81, "MEDIUM": 19, "SOFT": 1}, "2024": {"MEDIUM": 23, "HARD": 77, "SOFT": 0}, "2025": {"MEDIUM": 39, "SOFT": 0, "HARD": 61}}, STOPS = {"2023": [2, 1, 2, 1, 2, 2, 2, 2, 2, 2], "2024": [2, 2, 2, 2, 2, 3, 2, 2, 2, 2], "2025": [1, 2, 1, 1, 1, 1, 1, 1, 1, 1]};
+const TEMPS = {"2023": [18.0, 17.8], "2024": [17.9, 17.6], "2025": [16.8, 17.7]}, TYRES = {"2023": {"HARD": 81, "MEDIUM": 19, "SOFT": 1}, "2024": {"MEDIUM": 23, "HARD": 77, "SOFT": 0}, "2025": {"MEDIUM": 39, "SOFT": 0, "HARD": 61}}, STOPS = {"2023": [2, 1, 2, 1, 2, 2, 2, 2, 2, 2], "2024": [2, 2, 2, 2, 2, 3, 2, 2, 2, 2], "2025": [1, 2, 1, 1, 1, 1, 1, 1, 1, 1]};
+const LAP = [[510,935,325,100,0],[514,931,325,100,0],[525,919,326,100,0],[536,906,327,100,0],[547,893,328,100,0],[560,879,326,100,0],[568,870,276,63,1],[576,861,218,0,1],[583,854,183,0,1],[588,847,160,0,1],[591,839,144,0,1],[591,833,132,0,1],[590,827,124,0,1],[586,821,117,0,1],[583,817,112,0,0],[577,813,116,42,0],[573,811,122,63,0],[567,810,132,64,0],[558,810,148,78,0],[550,811,162,100,0],[542,814,174,100,0],[534,819,189,100,0],[527,824,201,100,0],[519,831,210,100,0],[508,842,222,100,0],[502,846,228,65,0],[489,852,228,67,0],[479,852,230,72,0],[468,850,234,76,0],[458,845,240,100,0],[446,837,246,100,0],[437,828,250,100,0],[430,814,251,100,0],[427,805,260,100,0],[425,793,265,100,0],[424,776,271,100,0],[423,761,277,100,0],[422,747,283,100,0],[421,735,288,100,0],[421,719,294,100,0],[420,707,301,100,0],[420,690,305,100,0],[419,674,309,100,0],[418,658,313,100,0],[418,644,316,100,0],[417,628,319,100,0],[417,611,321,100,0],[416,594,324,100,0],[415,576,326,100,0],[415,560,329,100,0],[414,540,330,100,0],[414,528,333,100,0],[413,512,335,100,0],[413,495,337,100,0],[412,476,337,100,0],[411,460,336,100,0],[411,444,336,100,0],[410,428,304,100,1],[410,414,253,0,1],[409,403,201,0,1],[409,394,163,0,1],[410,387,143,0,1],[412,380,130,0,1],[413,375,118,0,1],[416,370,112,0,0],[420,366,111,23,0],[425,363,117,43,0],[431,362,125,56,0],[437,362,140,75,0],[446,362,160,100,0],[455,362,175,100,0],[468,362,190,100,0],[476,362,203,100,0],[486,362,212,100,0],[497,362,227,100,0],[509,362,235,100,0],[521,360,245,100,0],[533,357,252,100,0],[546,350,258,100,0],[556,344,264,100,0],[566,336,267,100,0],[578,323,269,100,0],[583,315,266,89,0],[590,303,250,0,0],[594,291,226,0,1],[595,282,180,0,1],[595,274,143,0,1],[594,268,128,0,1],[593,266,117,0,1],[590,261,107,0,1],[587,258,98,0,0],[582,256,93,16,0],[577,255,102,23,0],[573,253,107,29,0],[569,249,103,5,0],[567,245,100,16,0],[566,240,101,22,0],[567,233,105,50,0],[568,229,114,55,0],[571,223,126,72,0],[576,216,137,76,0],[579,211,134,63,1],[580,206,120,0,1],[582,200,111,0,1],[582,195,104,0,1],[581,190,96,0,0],[580,186,89,0,0],[577,182,90,22,0],[572,179,94,38,0],[567,179,104,58,0],[562,179,115,73,0],[556,179,132,86,0],[545,179,156,100,0],[539,179,173,100,0],[530,179,189,100,0],[520,180,199,100,0],[509,180,213,100,0],[498,180,224,100,0],[485,180,235,100,0],[475,180,243,100,0],[462,180,250,100,0],[448,180,259,100,0],[435,180,265,100,0],[419,180,271,100,0],[406,180,278,100,0],[393,178,282,100,0],[379,175,286,100,0],[365,170,290,100,0],[352,165,294,100,0],[335,154,296,100,0],[328,147,298,100,0],[318,136,298,100,0],[309,123,299,100,0],[303,110,303,100,0],[296,96,306,100,0],[290,82,309,100,0],[283,68,311,100,0],[275,54,312,100,0],[265,42,312,100,0],[253,31,312,100,0],[240,22,311,100,0],[225,14,308,100,0],[209,8,303,100,0],[197,6,267,74,0],[185,3,208,0,1],[180,2,174,0,1],[172,1,140,0,1],[166,0,121,0,1],[161,1,108,0,1],[156,4,100,0,0],[153,6,98,27,0],[150,11,106,53,0],[149,17,119,68,0],[147,23,135,83,0],[145,30,156,100,0],[142,37,172,100,0],[138,45,188,100,0],[133,56,203,100,0],[128,66,214,100,0],[121,80,227,100,0],[117,88,237,100,0],[111,98,245,100,0],[105,109,252,100,0],[98,121,261,100,0],[92,131,267,100,0],[86,144,274,100,0],[78,159,279,100,0],[72,169,285,100,0],[64,186,290,100,0],[57,200,292,100,0],[53,209,299,100,0],[47,225,302,100,0],[42,239,305,100,0],[38,252,309,100,0],[33,268,311,100,0],[29,283,313,100,0],[25,298,315,100,0],[21,313,317,100,0],[17,329,318,100,0],[13,348,321,100,0],[11,361,322,100,0],[9,376,324,100,0],[6,398,325,100,0],[5,409,326,100,0],[3,425,327,100,0],[3,442,328,100,0],[2,458,330,100,0],[2,475,331,100,0],[2,498,331,100,0],[2,511,332,100,0],[2,525,332,100,0],[2,546,334,100,0],[2,560,335,100,0],[3,576,337,100,0],[3,601,338,100,0],[3,612,340,100,0],[3,628,340,100,0],[3,649,341,100,0],[2,664,342,100,0],[2,681,343,100,0],[2,699,343,100,0],[2,716,344,100,0],[2,734,344,100,0],[2,751,345,100,0],[2,769,346,100,0],[2,786,346,100,0],[2,803,346,100,0],[1,821,346,100,0],[1,838,346,100,0],[1,861,347,100,0],[1,874,345,100,0],[1,892,345,100,0],[0,896,345,100,0],[0,911,306,100,0],[0,922,225,0,1],[0,932,183,0,1],[0,940,155,0,1],[0,946,124,0,1],[1,952,111,0,1],[2,957,103,0,1],[4,963,94,0,1],[5,966,90,1,1],[9,971,93,16,0],[11,973,105,61,0],[17,976,124,89,0],[23,977,139,85,0],[30,979,150,86,0],[38,983,170,100,0],[45,989,183,100,0],[51,994,195,100,0],[63,999,206,100,0],[71,999,215,100,0],[84,1000,228,100,0],[95,1000,239,100,0],[109,1000,246,100,0],[120,999,258,100,0],[133,999,264,100,0],[150,999,271,100,0],[161,998,277,100,0],[174,998,283,100,0],[192,998,289,100,0],[204,997,293,100,0],[219,997,297,100,0],[236,996,298,100,0],[249,996,305,100,0],[267,996,308,100,0],[280,996,311,100,0],[296,997,313,100,0],[312,997,316,100,0],[328,997,318,100,0],[345,996,320,100,0],[361,996,322,100,0],[387,996,324,100,0],[406,995,325,100,0],[422,993,326,100,0],[440,990,326,100,0],[458,983,326,100,0],[470,976,326,100,0],[481,967,325,100,0],[494,954,322,100,0],[505,941,322,100,0]], LAP_TIME = 92.312;   // Russell 2024 pole lap: x, y, km/h, throttle %, brake (build-lap.py)
+const PLAN = [[2023, "VER", [["MEDIUM", 1, 16], ["HARD", 17, 26], ["HARD", 27, 50]]], [2024, "RUS", [["MEDIUM", 1, 12], ["HARD", 13, 32], ["HARD", 33, 50]]], [2025, "VER", [["MEDIUM", 1, 25], ["HARD", 26, 50]]]];   // race winners' stints (vegas-data.json)
 const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}};const driver={VER:{team:"RBR"},RUS:{team:"MER"}};
   const LOOK = {
     VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
@@ -213,36 +282,97 @@ const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}
   }
 
 
-// ---- scene content (same as the carousel, built with animation hooks) ----
+
+// ---- scene content ----
+const N = LAP.length - 1, PAD = 44, MW = 595 + 2 * PAD, MH = 1000 + 2 * PAD;
+const CLS = LAP.map((p) => (p[4] ? 2 : p[3] >= 99 ? 0 : 1)), CCOL = ["#FFB000", "#C9CDD2", "#FF3EA5"];     // full throttle / in between / braking
+const lapPts = LAP.map((p) => p[0] + "," + p[1]).join(" ");
+const lapAt = (f) => { const i = Math.min(N - 1, Math.floor(f)), k = f - i, a = LAP[i], b = LAP[i + 1]; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3], a[4]]; };
+let flat = [0, 0]; { let s = -1; CLS.concat([9]).forEach((c, i) => { if (c === 0) { if (s < 0) s = i; } else { if (s >= 0 && i - s > flat[1] - flat[0]) flat = [s, i - 1]; s = -1; } }); }
+const iMax = LAP.reduce((m, p, i) => (p[2] > LAP[m][2] ? i : m), 0), iMin = LAP.reduce((m, p, i) => (p[2] < LAP[m][2] ? i : m), 0);
+const sfAng = Math.atan2(LAP[2][1] - LAP[0][1], LAP[2][0] - LAP[0][0]) * 180 / Math.PI;
+const finish = `<g transform="translate(${LAP[0][0]} ${LAP[0][1]}) rotate(${sfAng.toFixed(0)})"><rect x="-5" y="-30" width="10" height="60" fill="#fff"/><rect x="-5" y="-30" width="5" height="15" fill="#0A0A0A"/><rect x="0" y="-15" width="5" height="15" fill="#0A0A0A"/><rect x="-5" y="0" width="5" height="15" fill="#0A0A0A"/><rect x="0" y="15" width="5" height="15" fill="#0A0A0A"/></g>`;
+const car = (id, c) => `<g id="${id}"><circle r="34" fill="${c}" opacity=".25"/><circle r="17" fill="#fff" stroke="${c}" stroke-width="7"/></g>`;
 (() => {
-  const pts = TRACK.map((p) => p.join(",")).join(" "), [x0, y0] = TRACK[0], [x1, y1] = TRACK[3];
-  const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
-  document.getElementById("track").innerHTML =
-    `<polyline points="${pts}" fill="none" stroke="#2A1530" stroke-width="20" stroke-linejoin="round"/>` +
-    `<polyline id="neon" points="${pts}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#FF3EA5" stroke-width="5" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px #FF3EA5) drop-shadow(0 0 14px rgba(255,62,165,.6))"/>` +
-    `<g data-a="pop 2.6 .4" style="transform-box:fill-box;transform-origin:center"><g transform="translate(${x0} ${y0}) rotate(${ang.toFixed(0)})"><rect x="-3" y="-14" width="6" height="28" fill="#fff"/></g></g>`;
+  // 1: neon outline with a car drawing it
+  const H1 = 930, s1 = H1 / MH;
+  document.getElementById("map1").innerHTML = `<svg viewBox="${-PAD} ${-PAD} ${MW} ${MH}" width="${MW * s1}" height="${H1}">
+    <polyline points="${lapPts}" fill="none" stroke="#2A1530" stroke-width="44" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline id="neon" points="${lapPts}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#FF3EA5" stroke-width="13" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 10px #FF3EA5) drop-shadow(0 0 26px #FF3EA5)"/>
+    <polyline id="neonCore" points="${lapPts}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#FFD9EC" stroke-width="4" stroke-linejoin="round"/>
+    <g data-a="pop 2.6 .4" style="transform-box:fill-box;transform-origin:center">${finish}</g>
+    <g data-a="fade 4.4 .6"><text transform="translate(128 500) rotate(-80.6)" text-anchor="middle" font-family="Doto" font-weight="900" font-size="46" letter-spacing="6" fill="#FFD400" style="filter:drop-shadow(0 0 8px rgba(255,212,0,.7))">THE STRIP</text></g>
+    ${car("car1", "#FF3EA5")}</svg>`;
+
+  // 2: speed map + dial + lap strip
+  const H2 = 772, s2 = H2 / MH;
+  const segs = LAP.slice(0, N).map((p, i) => `<line class="sg" x1="${p[0]}" y1="${p[1]}" x2="${LAP[i + 1][0]}" y2="${LAP[i + 1][1]}" stroke="${CCOL[CLS[i]]}"/>`).join("");
+  document.getElementById("map2").innerHTML = `<svg viewBox="${-PAD} ${-PAD} ${MW} ${MH}" width="${MW * s2}" height="${H2}">
+    <polyline points="${lapPts}" fill="none" stroke="#1E1B26" stroke-width="46" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline id="flatHi" points="${LAP.slice(flat[0], flat[1] + 2).map((p) => p[0] + "," + p[1]).join(" ")}" fill="none" stroke="#FFF3C4" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity="0" style="filter:blur(10px)"/>
+    <g stroke-width="20" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(255,176,0,.55))">${segs}</g>${finish}${car("car2", "#FFB000")}</svg>`;
+  const place = (id, i, dx, dy) => { const el = document.getElementById(id); el.style.left = (26 + (LAP[i][0] + PAD) * s2 + dx) + "px"; el.style.top = (14 + (LAP[i][1] + PAD) * s2 + dy) + "px"; };
+  place("pinTop", iMax, 34, -30); place("pinFlat", Math.round((flat[0] + flat[1]) / 2) - 8, 40, -40); place("pinSlow", iMin, -330, 150);
+  const pol = (a, r) => [165 + r * Math.cos(a * Math.PI / 180), 170 + r * Math.sin(a * Math.PI / 180)];
+  const arc = (a0, a1, r) => { const [x0, y0] = pol(a0, r), [x1, y1] = pol(a1, r); return `M${x0} ${y0} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`; };
+  document.getElementById("dial").innerHTML = `<path d="${arc(150, 390, 130)}" fill="none" stroke="#221E14" stroke-width="22" stroke-linecap="round"/>
+    <path id="dialArc" d="${arc(150, 390, 130)}" pathLength="100" stroke-dasharray="0 100" fill="none" stroke="#FFB000" stroke-width="22" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(255,176,0,.6))"/>
+    ${[0, 60, 120, 180, 240, 300, 360].map((v) => { const a = 150 + 240 * v / 360, [x0, y0] = pol(a, 108), [x1, y1] = pol(a, 96); return `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#8D939B" stroke-width="3"/>`; }).join("")}
+    <g id="needle"><line x1="259" y1="170" x2="313" y2="170" stroke="#fff" stroke-width="7" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #fff)"/></g>`;
+  document.getElementById("strip").innerHTML = `<defs><clipPath id="stc"><rect id="stClip" x="0" y="0" width="0" height="10"/></clipPath></defs><rect width="260" height="10" fill="#1C1C22"/><g clip-path="url(#stc)">${CLS.slice(0, N).map((c, i) => `<rect x="${i}" y="0" width="1.06" height="10" fill="${CCOL[c]}"/>`).join("")}</g>`;
+
+  // 3: thermometers + a tyre that goes cold
   const max = 30;
   document.getElementById("therms").innerHTML = Object.entries(TEMPS).map(([y, [air, trk]], k) => {
     const tube = (x, v, c, s) => { const h = 300 * v / max;
-      return `<rect x="${x}" y="40" width="34" height="300" rx="17" fill="#1C1A24"/><rect class="grow-y" data-a="grow ${s} 1.1" x="${x}" y="${340 - h}" width="34" height="${h}" rx="17" fill="${c}"/><circle cx="${x + 17}" cy="360" r="26" fill="${c}"/>` +
+      return `<rect x="${x}" y="40" width="34" height="300" rx="17" fill="#1C1A24"/>${[10, 20].map((g) => `<line x1="${x - 5}" x2="${x + 39}" y1="${340 - 10 * g}" y2="${340 - 10 * g}" stroke="#3A3648" stroke-width="2"/>`).join("")}<rect class="grow-y" data-a="grow ${s} 1.1" x="${x}" y="${340 - h}" width="34" height="${h}" rx="17" fill="${c}" style="filter:drop-shadow(0 0 8px ${c})"/><circle cx="${x + 17}" cy="352" r="26" fill="${c}" style="filter:drop-shadow(0 0 8px ${c})"/>` +
       `<text data-a="fade ${s + 0.9} .4" x="${x + 17}" y="${330 - h}" text-anchor="middle" font-family="Doto" font-weight="900" font-size="30" fill="${c}">${Math.round(v)}°</text>` +
       `<text x="${x + 17}" y="412" text-anchor="middle" font-family="JetBrains Mono" font-size="18" fill="#8D939B">${c === "#7FD3FF" ? "AIR" : "TRACK"}</text>`; };
     const s = 1.8 + k * 1.0;
     return `<div class="th"><svg viewBox="0 0 150 420">${tube(20, air, "#7FD3FF", s)}${tube(96, trk, "#FF3EA5", s + 0.25)}</svg><span class="yr">${y}</span></div>`;
   }).join("");
+  document.getElementById("tyre").innerHTML = `<circle cx="100" cy="100" r="94" fill="#0E0E10" stroke="#000" stroke-width="4"/><circle id="tyHeat" cx="100" cy="100" r="76" fill="none" stroke="#FFB000" stroke-width="16"/>
+    <circle cx="100" cy="100" r="52" fill="#1B1D22" stroke="#3A3D44" stroke-width="4"/>${[0, 72, 144, 216, 288].map((a) => `<line x1="100" y1="100" x2="${100 + 48 * Math.cos(a * Math.PI / 180)}" y2="${100 + 48 * Math.sin(a * Math.PI / 180)}" stroke="#3A3D44" stroke-width="6"/>`).join("")}<circle cx="100" cy="100" r="12" fill="#8D939B"/>
+    <g id="tyFrost" opacity="0" fill="#EAF8FF" font-size="34"><text x="22" y="52">❄</text><text x="146" y="70">❄</text><text x="34" y="176">❄</text><text x="140" y="180">❄</text></g>`;
+  document.getElementById("snow").innerHTML = Array.from({ length: 46 }, () => "<i></i>").join("");
+
+  // 4: tyre donuts + the winners' strategies
   const C = { SOFT: "#E8002D", MEDIUM: "#FFD400", HARD: "#F2F2F0" };
-  document.getElementById("bars").innerHTML = Object.entries(TYRES).map(([y, sh], k) => {
-    const s = 2.0 + k * 1.0;
-    const segs = ["SOFT", "MEDIUM", "HARD"].filter((x) => sh[x]).map((x) => `<i style="width:${sh[x]}%;background:${C[x]}">${sh[x] >= 8 ? sh[x] + "%" : ""}</i>`).join("");
-    const st = STOPS[y], one = st.filter((x) => x === 1).length, two = st.filter((x) => x >= 2).length;
-    return `<div class="bar"><span class="yr">${y}</span><div class="stack grow-x" data-a="grow ${s} 1">${segs}</div><span class="stop" data-a="pop ${s + 0.9} .4">${one > two ? one + "/10 ONE" : two + "/10 TWO"}<br><small style="font-size:20px;color:#8D939B">-STOP</small></span></div>`;
+  document.getElementById("donuts").innerHTML = Object.entries(TYRES).map(([y, sh], k) => {
+    const s = 1.7 + k * 0.7, hard = sh.HARD, med = sh.MEDIUM;
+    return `<div class="dn"><svg viewBox="0 0 200 200"><g class="roll" data-a="spin ${s} 1.3" style="transform-origin:100px 100px"><circle cx="100" cy="100" r="96" fill="#0E0E10" stroke="#000" stroke-width="3"/>
+      ${Array.from({ length: 24 }, (_, i) => { const a = i * 15 * Math.PI / 180; return `<line x1="${100 + 88 * Math.cos(a)}" y1="${100 + 88 * Math.sin(a)}" x2="${100 + 96 * Math.cos(a)}" y2="${100 + 96 * Math.sin(a)}" stroke="#26262B" stroke-width="3"/>`; }).join("")}</g>
+      <circle cx="100" cy="100" r="74" fill="none" stroke="#26262B" stroke-width="18"/>
+      <circle cx="100" cy="100" r="74" fill="none" stroke="${C.MEDIUM}" stroke-width="18" pathLength="100" stroke-dasharray="0 100" data-a="arc ${s} 1.3" data-len="${hard + med}" transform="rotate(-90 100 100)"/>
+      <circle cx="100" cy="100" r="74" fill="none" stroke="${C.HARD}" stroke-width="18" pathLength="100" stroke-dasharray="0 100" data-a="arc ${s} 1.3" data-len="${hard}" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 5px rgba(255,255,255,.5))"/>
+      <circle cx="100" cy="100" r="58" fill="#15161A" stroke="#2A2D33" stroke-width="3"/>
+      <text x="100" y="108" text-anchor="middle" font-family="Doto" font-weight="900" font-size="46" fill="#F2F2F0"><tspan data-count="${hard}" data-a="count ${s} 1.3">${hard}</tspan>%</text>
+      <text x="100" y="132" text-anchor="middle" font-family="JetBrains Mono" font-size="14" letter-spacing="2" fill="#8D939B">HARD</text></svg><span class="yr">${y}</span></div>`;
   }).join("");
-  document.getElementById("pcVER").insertAdjacentHTML("afterbegin", helmet("VER", { size: 140, look: 6 }));
-  document.getElementById("pcRUS").insertAdjacentHTML("afterbegin", helmet("RUS", { size: 140, look: -6 }));
-  document.getElementById("pcANT").insertAdjacentHTML("afterbegin", helmet("ANT", { size: 140, look: 6 }));
-  document.getElementById("pcHAM").insertAdjacentHTML("afterbegin", helmet("HAM", { size: 140, look: -6 }));
+  document.getElementById("plan").insertAdjacentHTML("beforeend", PLAN.map(([y, who, st], k) => {
+    const s = 4.8 + k * 0.7;
+    const bars = st.map(([c, a, b]) => `<div class="st" style="left:${(a - 1) * 2}%;width:calc(${(b - a + 1) * 2}% - 4px);background:${C[c]}">${b - a > 6 ? c[0] + " · " + (b - a + 1) : ""}</div>`).join("");
+    const pits = st.slice(1).map(([c, a]) => `<i class="pit" style="left:calc(${(a - 1) * 2}% - 4px)"></i>`).join("");
+    return `<div class="prow"><span class="yr">${y}<small>${who}</small></span><div class="lane" data-a="wipe ${s} 1.2">${bars}${pits}</div><span class="stop led" data-a="pop ${s + 1.1} .4">${st.length - 1} STOP${st.length > 2 ? "S" : ""}</span></div>`;
+  }).join("") + `<div class="axis"><span></span><div><span>LAP 1</span><span>25</span><span>50</span></div><span style="color:#FF3EA5">| PIT STOP</span></div>`);
+
+  // 5: contenders with their Vegas results, then the P2 fight
+  const REC = [["VER", "Verstappen", [1, 5, 1], 6], ["RUS", "Russell", [8, 1, 2], -6], ["ANT", "Antonelli", [0, 0, 3], 6], ["HAM", "Hamilton", [7, 2, 8], -6]];
+  document.getElementById("quad").innerHTML = REC.map(([c, nm, r, look], k) => `<div class="panel pc" data-a="drop ${1.2 + k * 0.3} .6">${helmet(c, { size: 108, look })}<span class="nm">${nm}</span>
+    <div class="res">${r.map((p, j) => `<i data-a="pop ${2.0 + k * 0.3 + j * 0.12} .35"><b class="${p === 1 ? "w" : p && p <= 3 ? "p" : ""}">${p ? "P" + p : "–"}</b>'${23 + j}</i>`).join("")}</div></div>`).join("");
   const P2 = [["VER", 279, "#3671C6"], ["RUS", 262, "#27F4D2"], ["HAM", 261, "#E8002D"], ["LEC", 249, "#E8002D"], ["NOR", 246, "#FF8000"]];
-  document.getElementById("p2").insertAdjacentHTML("beforeend", P2.map(([c, v, col], k) => `<div class="p2row" style="--c:${col}"><b>${c}</b><div class="tk"><i class="grow-x" data-a="grow ${3.6 + k * 0.35} .9" style="width:${(v - 200) / 0.8}%"></i></div><span class="v led" data-count="${v}" data-a="count ${3.6 + k * 0.35} .9">${v}</span></div>`).join(""));
+  document.getElementById("p2").insertAdjacentHTML("beforeend", P2.map(([c, v, col], k) => `<div class="p2row" style="--c:${col}"><b>${c}</b><div class="tk"><i class="grow-x" data-a="grow ${3.6 + k * 0.35} .9" style="width:${(v - 200) / 0.8}%"></i></div><span class="v led" data-count="${v}" data-a="count ${3.6 + k * 0.35} .9">${v}</span><span class="gap" data-a="fade ${4.5 + k * 0.35} .4">${k ? "−" + (P2[0][1] - v) : "P2"}</span></div>`).join(""));
+
+  // skyline (generic shapes) + marquee bulbs
+  const B = [[0, 70, 150], [70, 54, 230], [124, 90, 120], [214, 46, 270], [260, 110, 170], [370, 60, 110], [430, 80, 250], [510, 40, 140], [550, 120, 190], [670, 56, 290], [726, 94, 150], [820, 70, 220], [890, 50, 120], [940, 80, 260], [1020, 60, 160]];
+  let wins = ""; B.forEach(([x, w, h], bi) => { for (let wy = 330 - h + 18; wy < 300; wy += 26) for (let wx = x + 10; wx < x + w - 12; wx += 20) wins += `<rect class="win" x="${wx}" y="${wy}" width="8" height="12" fill="${(wx + wy + bi) % 5 ? "#FFC94A" : "#FF3EA5"}"/>`; });
+  document.getElementById("sky").innerHTML = `<defs><linearGradient id="skg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B1230"/><stop offset="1" stop-color="#0A0714"/></linearGradient></defs>
+    <circle cx="330" cy="250" r="78" fill="#150F26" stroke="#FF3EA5" stroke-width="3" opacity=".9"/><circle cx="330" cy="250" r="78" fill="none" stroke="#FF3EA5" stroke-width="10" opacity=".18"/>
+    ${B.map(([x, w, h]) => `<rect x="${x}" y="${330 - h}" width="${w}" height="${h}" fill="url(#skg)" stroke="#3A2460" stroke-width="2"/>`).join("")}
+    <path d="M691 40 L698 -6 L705 40 Z" fill="#3A2460"/><circle cx="698" cy="-6" r="5" fill="#FF3EA5" id="beacon"/>${wins}
+    <rect x="0" y="312" width="1080" height="18" fill="#07050D"/><g id="traffic"></g>`;
+  document.getElementById("traffic").innerHTML = Array.from({ length: 7 }, (_, i) => `<rect class="tr" y="${316 + (i % 2) * 6}" width="${50 + i * 9}" height="4" rx="2" fill="${i % 2 ? "#FF3B3B" : "#FFF3C4"}"/>`).join("");
+  document.getElementById("bulbs").innerHTML = Array.from({ length: 40 }, () => "<i></i>").join("");
 })();
 
 // ---- timeline ----
@@ -254,6 +384,25 @@ const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(
 const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
 const fmt = (el, v) => { if (el.dataset.fmt === "lap") { const m = Math.floor(v / 60), s = v - m * 60; return `${m}:${s.toFixed(1).padStart(4, "0")}`; } return v.toFixed(+(el.dataset.dec || 0)); };
+const $ = (id) => document.getElementById(id), rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const sgs = [...document.querySelectorAll("#map2 .sg")], winEls = [...document.querySelectorAll("#sky .win")], trEls = [...document.querySelectorAll("#sky .tr")], bulbEls = [...document.querySelectorAll("#bulbs i")], flakes = [...document.querySelectorAll("#snow i")];
+const LAP_S = 1.3, LAP_D = 6.0;                                   // the pole lap plays from 1.3 s for 6 s of scene 2
+const hooks = [
+  (lt) => { const p = easeInOut(clamp((lt - 0.2) / 2.6)); $("neon").style.strokeDashoffset = 1 - p; $("neonCore").style.strokeDashoffset = 1 - p;
+    const loop = lt < 2.8 ? p : ((lt - 2.8) / 5.5) % 1, [x, y] = lapAt(loop * N); $("car1").setAttribute("transform", `translate(${x} ${y})`); },
+  (lt) => { const p = clamp((lt - LAP_S) / LAP_D), f = p * N, [x, y, v, th, br] = lapAt(f), done = p >= 1;
+    sgs.forEach((el, i) => (el.style.display = i < f ? "" : "none"));
+    $("car2").setAttribute("transform", `translate(${x} ${y})`); $("car2").style.opacity = lt < LAP_S - 0.3 ? 0 : 1;
+    const sp = lt < LAP_S ? 0 : v; $("spd").textContent = Math.round(sp); $("needle").setAttribute("transform", `rotate(${150 + 240 * sp / 360} 165 170)`); $("dialArc").setAttribute("stroke-dasharray", `${100 * sp / 360} 100`);
+    $("clk").textContent = fmt({ dataset: { fmt: "lap" } }, LAP_TIME * p); $("thr").style.width = (lt < LAP_S ? 0 : th) + "%"; $("brk").style.width = (lt >= LAP_S && br && !done ? 100 : 0) + "%";
+    $("stClip").setAttribute("width", 260 * p);
+    const seen = Math.max(1, Math.floor(f)), cnt = [0, 0, 0]; for (let i = 0; i < seen; i++) cnt[CLS[i]]++;
+    const tot = [0, 0, 0]; CLS.slice(0, N).forEach((c) => tot[c]++);
+    const pc = done ? [69, 100 - 69 - 14, 14] : cnt.map((c) => Math.round(100 * c / N));            // settle on the published lap numbers
+    $("pcFull").textContent = pc[0]; $("pcMid").textContent = pc[1]; $("pcBrk").textContent = pc[2];
+    $("flatHi").setAttribute("opacity", 0.85 * clamp((lt - 7.9) / 0.5) * (0.75 + 0.25 * Math.sin(lt * 5))); },
+  (lt) => { const k = clamp((lt - 5.4) / 1.4); $("tyHeat").setAttribute("stroke", k < 0.5 ? "#FFB000" : "#7FD3FF"); $("tyHeat").style.opacity = 0.35 + 0.65 * Math.abs(1 - 2 * k); $("tyHeat").style.filter = `drop-shadow(0 0 ${8 + 6 * k}px ${k < 0.5 ? "#FFB000" : "#7FD3FF"})`; $("tyFrost").setAttribute("opacity", clamp((lt - 6.3) / 0.6)); },
+  null, null ];
 function seek(t) {
   scenes.forEach((sc, i) => {
     const lt = t - T0[i], end = DUR[i];
@@ -272,11 +421,21 @@ function seek(t) {
       else if (type === "drop") { el.style.opacity = clamp(p * 2); el.style.transform = `translateY(${(1 - back(p)) * -160}px)`; }
       else if (type === "grow") { el.style.setProperty("--p", easeInOut(p)); }
       else if (type === "count") { el.textContent = fmt(el, (+el.dataset.count) * easeOut(p)); }
+      else if (type === "arc") { el.setAttribute("stroke-dasharray", `${(+el.dataset.len) * easeInOut(p)} 100`); }
+      else if (type === "spin") { el.style.transform = `rotate(${(1 - easeInOut(p)) * -300}deg)`; }
+      else if (type === "wipe") { el.style.clipPath = `inset(-12px ${100 - 100 * easeInOut(p)}% -12px 0)`; }
     });
-    if (i === 0) document.getElementById("neon").style.strokeDashoffset = 1 - easeInOut(clamp((lt - 0.2) / 2.4));
-    if (i === 1) document.getElementById("gauge").style.strokeDashoffset = 100 - 69 * easeOut(clamp((lt - 1.6) / 2.2));
+    if (hooks[i]) hooks[i](lt);
   });
   dots.forEach((d, i) => (d.style.width = (100 * clamp((t - T0[i]) / DUR[i])) + "%"));
+  // ambient: chasing marquee bulbs, twinkling windows, traffic on the Strip, snow on the cold scene
+  const step = Math.floor(t * 7); bulbEls.forEach((b, i) => b.classList.toggle("on", (i + step) % 4 === 0));
+  const tw = Math.floor(t * 1.6); winEls.forEach((w, i) => w.setAttribute("opacity", rnd(i * 3 + ((tw + i) % 5 === 0 ? tw : 0)) > 0.45 ? 0.75 : 0.12));
+  trEls.forEach((r, i) => { const dir = i % 2 ? -1 : 1, sp = 260 + i * 55, x = ((t * sp + i * 337) % 1400) - 160; r.setAttribute("x", dir > 0 ? x : 1080 - x); });
+  $("beacon").setAttribute("opacity", Math.floor(t * 2) % 2 ? 1 : 0.25);
+  const cold = clamp((t - (T0[2] - 0.3)) / 0.8) * clamp((T0[3] - 0.2 - t) / 0.6); $("snow").style.opacity = cold;
+  if (cold > 0) flakes.forEach((f, i) => { const sp = 90 + 110 * rnd(i), sz = 4 + 8 * rnd(i + 99); f.style.width = f.style.height = sz + "px"; f.style.opacity = 0.25 + 0.6 * rnd(i + 7);
+    f.style.left = (1080 * rnd(i + 31) + 40 * Math.sin(t * 0.9 + i)) + "px"; f.style.top = (((t * sp + 1920 * rnd(i + 57)) % 1700) + 100) + "px"; });
   // neon sweep across each cut
   let sw = -1;
   T0.slice(1).forEach((c) => { const q = (t - (c - TR)) / TR; if (q >= 0 && q <= 1) sw = q; });
