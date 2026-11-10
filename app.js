@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v17"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v18"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -220,7 +220,7 @@
         return `<a class="fav-card has-helmet" href="#/driver/${id}" style="--tc:${tc(d.team)}">${helmet(id, { size: 56, look: 3 })}
           <span class="mono dim">P${s.rank} · ${s.points} PTS</span><b>${esc(d.last)}</b>
           <span class="note">${last ? `R${last.round} ${((S.RACE_INFO || {})[last.round] || {}).short || ""}: ${last.dnf ? "DNF" : "P" + last.pos}${last.points ? " · +" + last.points : ""}` : "No race yet"}${ahead ? ` · ${ahead.points - s.points} to P${s.rank - 1}` : " · leads"}</span>
-          <span class="forms">${formGuide(id)}</span></a>`;
+          <span class="form-lbl">Last 5 races <i>oldest → latest</i></span><span class="forms">${formGuide(id)}</span></a>`;
       }),
       ...follow.teams.filter((id) => team[id]).map((id) => {
         const t = TS.find((x) => x.id === id), rank = TS.indexOf(t) + 1;
@@ -419,7 +419,7 @@
     const ticks = [1, 6, 12, 18, S.CALENDAR.length].map((r) => `<text x="${L + (r - 0.5) * bw}" y="${H - 4}" text-anchor="middle">R${r}</text>`).join("");
     const cards = ds.map((d) => { const s = DSmap[d.id]; return `<a class="dcard" href="#/driver/${d.id}" style="--tc:${t.color}">
       <div class="dcard-top">${helmet(d.id, { size: 58, look: 3 })}<small>P${s.rank}</small></div><b class="dname">${esc(d.last)}</b>
-      <div class="dstats"><div><b>${s.points}</b><small>PTS</small></div><div><b>${s.wins}</b><small>WINS</small></div></div><div class="forms">${formGuide(d.id)}</div></a>`; }).join("");
+      <div class="dstats"><div><b>${s.points}</b><small>PTS</small></div><div><b>${s.wins}</b><small>WINS</small></div></div><span class="form-lbl">Last 5 races</span><div class="forms">${formGuide(d.id)}</div></a>`; }).join("");
     const best = perRound.reduce((a, r) => (r.pts > a.pts ? r : a), { pts: -1 });
     return `
       <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Standings</a>

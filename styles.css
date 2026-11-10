@@ -366,3 +366,8 @@ h1, .sh h2 { text-transform: uppercase; }
 .brand.logo { padding: 0; background: none; transform: none; display: inline-flex; align-items: center; }
 .brand.logo img { display: block; height: 30px; width: auto; mix-blend-mode: lighten; }
 .brand.logo .wm { display: block; height: 34px; width: auto; }
+
+/* label above the five-race form chips */
+.form-lbl { display: block; margin-top: 10px; font-family: var(--led); font-weight: 900; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
+.form-lbl i { font-family: var(--mono); font-style: normal; font-weight: 500; font-size: 10px; letter-spacing: .06em; color: var(--muted); text-transform: none; margin-left: 6px; }
+.form-lbl + .forms { margin-top: 4px; }
