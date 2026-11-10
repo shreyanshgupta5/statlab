@@ -14,7 +14,7 @@ Requirements for rebuilding: Python 3, Node with Playwright (`npm i playwright`)
 | `videos/max-interlagos-fx-preview-0-48.mp4` | Motion + sound pass on "Max × Interlagos", first 48 s (preview) |
 | `brazil-race-recap/statlab-interlagos-recap-cover.png` | Reel cover, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
 | `covers/out/statlab-cover-*.png` | Reel covers for all five reels in three colour templates (night, wet, team) with illustrated drivers, 1080×1920 (`-grid.png` = the 1080×1440 profile-grid crop) |
-| `vegas-preview-carousel/video/onef1-vegas-preview-reel.mp4` | Las Vegas preview reel, 1080×1920, 47 s: the carousel's slides 1–4 and 6, animated, synthesised soundtrack (cover: `onef1-vegas-reel-cover.png`) |
+| `vegas-preview-carousel/video/onef1-vegas-preview-reel.mp4` | Las Vegas preview reel, 1080×1920, 52.5 s: the carousel slides animated, 150 bpm synthesised soundtrack, fill sounds only on the P2 fight. Cover: `node vegas-preview-carousel/export-cover.js` -> `onef1-vegas-reel-cover.png` (+ `-grid.png` crop) |
 | `vegas-preview-carousel/slides/*.png` | Las Vegas GP preview carousel, 6 slides, 1080×1350 (track, flat-out %, temperatures, tyres, past winners, who wins) |
 | `brazil-quali-carousel/slides/*.png` | São Paulo qualifying carousel, 5 slides, 1080×1350 |
 | `data/brazil_2026_race_results.csv` | Full São Paulo GP classification: grid, places gained, tyres, stops, best lap, penalties |

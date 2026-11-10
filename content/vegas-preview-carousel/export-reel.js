@@ -28,6 +28,6 @@ const [OUT, WAV] = process.argv.slice(2); const FPS = 30;
     if (i % 300 === 0) console.log('  frame', i, '/', n);
   }
   ff.stdin.end(); await new Promise((r) => ff.on('close', r));
-  await p.evaluate(() => window.reel.seek(7)); await p.screenshot({ path: path.join(path.dirname(OUT), 'onef1-vegas-reel-cover.png') });
+  // cover: see export-cover.js
   await b.close(); console.log('done', OUT, dur + 's');
 })();
