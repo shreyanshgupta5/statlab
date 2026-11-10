@@ -149,6 +149,10 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
 .axis { display:grid; grid-template-columns:120px 1fr 150px; gap:16px; margin-top:8px; font-family:var(--mono); font-size:15px; color:var(--muted); letter-spacing:1px; } .axis div { display:flex; justify-content:space-between; }
 .trend { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; position:relative; z-index:2; }
 .trend .panel { padding:18px 22px; } .trend b { display:block; font-size:54px; line-height:1; margin-top:6px; }
+.caps { position:relative; height:118px; margin-top:18px; z-index:2; }
+.caps p { position:absolute; inset:0; margin:0; padding:14px 22px 14px 26px; display:flex; align-items:center; border-left:8px solid var(--yellow); border-radius:6px 14px 14px 6px; background:rgba(10,10,8,.9); font-weight:700; font-stretch:100%; font-size:33px; line-height:1.25; color:var(--fg); opacity:0; }
+.caps p b { color:var(--yellow); font-weight:700; } .caps p .i { color:var(--ice); } .caps p .k { color:var(--neon); }
+.th svg { width:160px !important; height:448px !important; }
 /* 5 */
 .quad .pc { padding:16px 12px 16px !important; }
 .res { display:flex; gap:8px; margin-top:8px; }
@@ -161,7 +165,7 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
 <div class="stage">
   <svg class="sky" id="sky" viewBox="0 0 1080 330"></svg>
   <div class="snow" id="snow"></div>
-  <div class="hdr"><span class="brand"><span>ONE F1</span></span><div class="dots"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div></div>
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><div class="dots"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div></div>
   <div class="bulbs" id="bulbs"></div>
 
   <!-- 1 hook -->
@@ -174,28 +178,7 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
       <div class="panel chip" data-a="left 3.0 .5"><b class="led" data-count="50" data-a="count 3.1 1">50</b><span class="lbl">laps at night</span></div>
       <div class="panel chip" data-a="left 3.8 .5"><b class="led" data-count="17" data-a="count 3.9 .9">17</b><span class="lbl">corners</span></div>
     </div>
-    <div class="tagline" data-a="pop 5.0 .5" style="transform-origin:left"><span class="hand" style="font-size:50px;display:inline-block;transform:rotate(-3deg)">4 numbers decide it 👉</span></div>
-  </section>
-
-  <!-- 2 flat out: speed map -->
-  <section class="scene">
-    <div class="kick" data-a="fade 0.3 .5">THE POLE LAP · RUSSELL 2024</div>
-    <h2 class="h" style="font-size:100px"><span data-a="up 0.4 .5">Mostly </span><em data-a="up 0.6 .5" style="display:inline-block">flat out</em></h2>
-    <div class="panel lapbox" data-a="up 0.9 .5">
-      <div class="map2" id="map2"></div>
-      <div class="side">
-        <svg id="dial" viewBox="0 0 330 260" width="330" height="260"></svg>
-        <div class="dialnum"><b class="led" id="spd">0</b><span class="lbl">km/h</span></div>
-        <div class="clock"><span class="lbl">lap</span><b class="led" id="clk">0:00.0</b></div>
-        <div class="ped"><span class="lbl">throttle</span><div class="tk"><i id="thr" style="background:#FFB000"></i></div><span class="lbl">brake</span><div class="tk"><i id="brk" style="background:#FF3EA5"></i></div></div>
-      </div>
-      <div class="pin" id="pinTop" data-a="pop 7.5 .45" style="--c:#FFB000"><b>347</b><span>KM/H TOP SPEED</span></div>
-      <div class="pin" id="pinFlat" data-a="pop 8.0 .45" style="--c:#F2F2F0"><b>1.8 KM</b><span>FLAT OUT</span></div>
-      <div class="pin" id="pinSlow" data-a="pop 8.5 .45" style="--c:#FF3EA5"><b>89</b><span>KM/H SLOWEST</span></div>
-    </div>
-    <div class="panel strip" data-a="up 1.1 .5"><span class="lbl">one lap, start to finish</span>
-      <svg id="strip" viewBox="0 0 260 10" preserveAspectRatio="none"></svg>
-      <div class="split"><div style="--c:#FFB000"><b><span id="pcFull">0</span>%</b><span>full<br>throttle</span></div><div style="--c:#FF3EA5"><b><span id="pcBrk">0</span>%</b><span>on the<br>brakes</span></div><div style="--c:#C9CDD2"><b><span id="pcMid">0</span>%</b><span>in<br>between</span></div></div></div>
+    <div class="tagline" data-a="pop 5.0 .5" style="transform-origin:left"><span class="hand" style="font-size:50px;display:inline-block;transform:rotate(-3deg)">3 things decide it 👉</span></div>
   </section>
 
   <!-- 3 cold -->
@@ -208,7 +191,11 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
       <b class="led"><span data-count="14" data-a="count 5.4 1">14</span>°</b>
       <div><span class="lbl">coldest track in qualifying</span><div class="note" style="margin-top:8px;color:var(--soft)">2024, 10pm local time</div></div>
     </div>
-    <div class="chain"><span data-a="pop 6.4 .4">COLD TRACK</span><i data-a="fade 6.7 .3">→</i><span data-a="pop 6.9 .4">COLD TYRES</span><i data-a="fade 7.2 .3">→</i><span data-a="pop 7.4 .4">LESS GRIP</span></div>
+    <div class="caps">
+      <p data-a="show 1.5 3.6"><span><span class="i">Blue</span> is the air, <span class="k">pink</span> is the track surface. Both sit near <b>18°C</b> on race night.</span></p>
+      <p data-a="show 5.2 2.9"><span>Qualifying is even colder: the track fell to <b>14°C</b> in 2024.</span></p>
+      <p data-a="show 8.2 99"><span>Cold tyres have <b>less grip</b>, so warming them up is the big challenge.</span></p>
+    </div>
   </section>
 
   <!-- 4 tyres -->
@@ -217,6 +204,11 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
     <h2 class="h" style="font-size:100px"><span data-a="up 0.5 .5" style="display:block">Hard is</span><em data-a="up 0.75 .5" style="display:block">the race tyre</em></h2>
     <div class="panel donuts" id="donuts" data-a="up 1.2 .5"></div>
     <div class="panel plan" id="plan" data-a="up 4.2 .5"><span class="lbl">how the winner did it · lap 1 → 50</span></div>
+    <div class="caps">
+      <p data-a="show 1.5 2.8"><span>Each ring is every lap the top 10 drove. <b>White</b> = hard tyre, <b>yellow</b> = medium.</span></p>
+      <p data-a="show 4.4 3.1"><span>Each bar is one set of tyres. A <span class="k">pink line</span> is a pit stop.</span></p>
+      <p data-a="show 7.6 99"><span>In 2025 the hard tyre lasted <b>half the race</b>, so one stop was enough.</span></p>
+    </div>
     <div class="trend">
       <div class="panel" data-a="pop 7.6 .45"><span class="lbl">2023–24</span><b class="led">2 STOPS</b></div>
       <div class="panel" data-a="pop 8.0 .45" style="border-color:#FFD400"><span class="lbl">2025 · 9 of top 10</span><b class="led" style="color:#FFD400">1 STOP</b></div>
@@ -226,10 +218,14 @@ svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(
   <!-- 5 contenders -->
   <section class="scene">
     <div class="kick" data-a="fade 0.4 .5">THE MEN TO BEAT · VEGAS RECORD</div>
-    <h2 class="h" style="font-size:88px"><span data-a="up 0.5 .5">Who wins </span><em data-a="up 0.75 .5" style="display:inline-block">Vegas?</em></h2>
+    <h2 class="h" style="font-size:78px;white-space:nowrap"><span data-a="up 0.5 .5">Who wins </span><em data-a="up 0.75 .5" style="display:inline-block">Vegas?</em></h2>
     <div class="duo quad" id="quad"></div>
     <div class="panel p2" id="p2" data-a="up 3.2 .5"><span class="lbl">and the fight for P2 · 3 races left</span></div>
-    <div style="margin-top:22px;display:flex;justify-content:space-between;align-items:flex-end">
+    <div class="caps">
+      <p data-a="show 1.9 1.8"><span>The badges show where each driver finished in Vegas. <b>Gold</b> = a win.</span></p>
+      <p data-a="show 3.8 99"><span>Points after 20 rounds. The small number is the <b>gap to Verstappen</b>.</span></p>
+    </div>
+    <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:flex-end">
       <span class="hand" data-a="pop 6.6 .5" style="font-size:72px;transform-origin:left">your pick? 👇</span><span class="note" data-a="fade 7.0 .5">Race: Sun 22 Nov, 09:30 IST</span></div>
   </section>
 
@@ -304,23 +300,6 @@ const car = (id, c) => `<g id="${id}"><circle r="34" fill="${c}" opacity=".25"/>
     <g data-a="fade 4.4 .6"><text transform="translate(128 500) rotate(-80.6)" text-anchor="middle" font-family="Doto" font-weight="900" font-size="46" letter-spacing="6" fill="#FFD400" style="filter:drop-shadow(0 0 8px rgba(255,212,0,.7))">THE STRIP</text></g>
     ${car("car1", "#FF3EA5")}</svg>`;
 
-  // 2: speed map + dial + lap strip
-  const H2 = 772, s2 = H2 / MH;
-  const segs = LAP.slice(0, N).map((p, i) => `<line class="sg" x1="${p[0]}" y1="${p[1]}" x2="${LAP[i + 1][0]}" y2="${LAP[i + 1][1]}" stroke="${CCOL[CLS[i]]}"/>`).join("");
-  document.getElementById("map2").innerHTML = `<svg viewBox="${-PAD} ${-PAD} ${MW} ${MH}" width="${MW * s2}" height="${H2}">
-    <polyline points="${lapPts}" fill="none" stroke="#1E1B26" stroke-width="46" stroke-linejoin="round" stroke-linecap="round"/>
-    <polyline id="flatHi" points="${LAP.slice(flat[0], flat[1] + 2).map((p) => p[0] + "," + p[1]).join(" ")}" fill="none" stroke="#FFF3C4" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity="0" style="filter:blur(10px)"/>
-    <g stroke-width="20" stroke-linecap="round" style="filter:drop-shadow(0 0 7px rgba(255,176,0,.55))">${segs}</g>${finish}${car("car2", "#FFB000")}</svg>`;
-  const place = (id, i, dx, dy) => { const el = document.getElementById(id); el.style.left = (26 + (LAP[i][0] + PAD) * s2 + dx) + "px"; el.style.top = (14 + (LAP[i][1] + PAD) * s2 + dy) + "px"; };
-  place("pinTop", iMax, 34, -30); place("pinFlat", Math.round((flat[0] + flat[1]) / 2) - 8, 40, -40); place("pinSlow", iMin, -330, 150);
-  const pol = (a, r) => [165 + r * Math.cos(a * Math.PI / 180), 170 + r * Math.sin(a * Math.PI / 180)];
-  const arc = (a0, a1, r) => { const [x0, y0] = pol(a0, r), [x1, y1] = pol(a1, r); return `M${x0} ${y0} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`; };
-  document.getElementById("dial").innerHTML = `<path d="${arc(150, 390, 130)}" fill="none" stroke="#221E14" stroke-width="22" stroke-linecap="round"/>
-    <path id="dialArc" d="${arc(150, 390, 130)}" pathLength="100" stroke-dasharray="0 100" fill="none" stroke="#FFB000" stroke-width="22" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(255,176,0,.6))"/>
-    ${[0, 60, 120, 180, 240, 300, 360].map((v) => { const a = 150 + 240 * v / 360, [x0, y0] = pol(a, 108), [x1, y1] = pol(a, 96); return `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#8D939B" stroke-width="3"/>`; }).join("")}
-    <g id="needle"><line x1="259" y1="170" x2="313" y2="170" stroke="#fff" stroke-width="7" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #fff)"/></g>`;
-  document.getElementById("strip").innerHTML = `<defs><clipPath id="stc"><rect id="stClip" x="0" y="0" width="0" height="10"/></clipPath></defs><rect width="260" height="10" fill="#1C1C22"/><g clip-path="url(#stc)">${CLS.slice(0, N).map((c, i) => `<rect x="${i}" y="0" width="1.06" height="10" fill="${CCOL[c]}"/>`).join("")}</g>`;
-
   // 3: thermometers + a tyre that goes cold
   const max = 30;
   document.getElementById("therms").innerHTML = Object.entries(TEMPS).map(([y, [air, trk]], k) => {
@@ -376,33 +355,23 @@ const car = (id, c) => `<g id="${id}"><circle r="34" fill="${c}" opacity=".25"/>
 })();
 
 // ---- timeline ----
-const DUR = [8.5, 11.5, 10.5, 10.5, 11.5], T0 = [], TR = 0.7;   // scene lengths (s), push transition length
+const DUR = [9, 14.5, 15.5, 14], T0 = [], TR = 0.7;   // scene lengths (s), push transition length
+const SLOW = [1, 1.3, 1.3, 1.25];                     // data scenes play their animations this much slower, so each step can be read
 DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
 const DURATION = DUR.reduce((a, b) => a + b, 0);
 const scenes = [...document.querySelectorAll(".scene")], dots = [...document.querySelectorAll(".dots b")], sweep = document.querySelector(".sweep");
 const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
-const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
+const anims = scenes.map((sc, i) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s * SLOW[i], d: +d * SLOW[i] }; }));
 const fmt = (el, v) => { if (el.dataset.fmt === "lap") { const m = Math.floor(v / 60), s = v - m * 60; return `${m}:${s.toFixed(1).padStart(4, "0")}`; } return v.toFixed(+(el.dataset.dec || 0)); };
 const $ = (id) => document.getElementById(id), rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-const sgs = [...document.querySelectorAll("#map2 .sg")], winEls = [...document.querySelectorAll("#sky .win")], trEls = [...document.querySelectorAll("#sky .tr")], bulbEls = [...document.querySelectorAll("#bulbs i")], flakes = [...document.querySelectorAll("#snow i")];
-const LAP_S = 1.3, LAP_D = 6.0;                                   // the pole lap plays from 1.3 s for 6 s of scene 2
+const winEls = [...document.querySelectorAll("#sky .win")], trEls = [...document.querySelectorAll("#sky .tr")], bulbEls = [...document.querySelectorAll("#bulbs i")], flakes = [...document.querySelectorAll("#snow i")];
 const hooks = [
   (lt) => { const p = easeInOut(clamp((lt - 0.2) / 2.6)); $("neon").style.strokeDashoffset = 1 - p; $("neonCore").style.strokeDashoffset = 1 - p;
     const loop = lt < 2.8 ? p : ((lt - 2.8) / 5.5) % 1, [x, y] = lapAt(loop * N); $("car1").setAttribute("transform", `translate(${x} ${y})`); },
-  (lt) => { const p = clamp((lt - LAP_S) / LAP_D), f = p * N, [x, y, v, th, br] = lapAt(f), done = p >= 1;
-    sgs.forEach((el, i) => (el.style.display = i < f ? "" : "none"));
-    $("car2").setAttribute("transform", `translate(${x} ${y})`); $("car2").style.opacity = lt < LAP_S - 0.3 ? 0 : 1;
-    const sp = lt < LAP_S ? 0 : v; $("spd").textContent = Math.round(sp); $("needle").setAttribute("transform", `rotate(${150 + 240 * sp / 360} 165 170)`); $("dialArc").setAttribute("stroke-dasharray", `${100 * sp / 360} 100`);
-    $("clk").textContent = fmt({ dataset: { fmt: "lap" } }, LAP_TIME * p); $("thr").style.width = (lt < LAP_S ? 0 : th) + "%"; $("brk").style.width = (lt >= LAP_S && br && !done ? 100 : 0) + "%";
-    $("stClip").setAttribute("width", 260 * p);
-    const seen = Math.max(1, Math.floor(f)), cnt = [0, 0, 0]; for (let i = 0; i < seen; i++) cnt[CLS[i]]++;
-    const tot = [0, 0, 0]; CLS.slice(0, N).forEach((c) => tot[c]++);
-    const pc = done ? [69, 100 - 69 - 14, 14] : cnt.map((c) => Math.round(100 * c / N));            // settle on the published lap numbers
-    $("pcFull").textContent = pc[0]; $("pcMid").textContent = pc[1]; $("pcBrk").textContent = pc[2];
-    $("flatHi").setAttribute("opacity", 0.85 * clamp((lt - 7.9) / 0.5) * (0.75 + 0.25 * Math.sin(lt * 5))); },
   (lt) => { const k = clamp((lt - 5.4) / 1.4); $("tyHeat").setAttribute("stroke", k < 0.5 ? "#FFB000" : "#7FD3FF"); $("tyHeat").style.opacity = 0.35 + 0.65 * Math.abs(1 - 2 * k); $("tyHeat").style.filter = `drop-shadow(0 0 ${8 + 6 * k}px ${k < 0.5 ? "#FFB000" : "#7FD3FF"})`; $("tyFrost").setAttribute("opacity", clamp((lt - 6.3) / 0.6)); },
   null, null ];
+
 function seek(t) {
   scenes.forEach((sc, i) => {
     const lt = t - T0[i], end = DUR[i];
@@ -423,9 +392,10 @@ function seek(t) {
       else if (type === "count") { el.textContent = fmt(el, (+el.dataset.count) * easeOut(p)); }
       else if (type === "arc") { el.setAttribute("stroke-dasharray", `${(+el.dataset.len) * easeInOut(p)} 100`); }
       else if (type === "spin") { el.style.transform = `rotate(${(1 - easeInOut(p)) * -300}deg)`; }
+      else if (type === "show") { el.style.opacity = clamp((lt - s) / 0.45) * clamp((s + d - lt) / 0.45); }
       else if (type === "wipe") { el.style.clipPath = `inset(-12px ${100 - 100 * easeInOut(p)}% -12px 0)`; }
     });
-    if (hooks[i]) hooks[i](lt);
+    if (hooks[i]) hooks[i](lt / SLOW[i]);
   });
   dots.forEach((d, i) => (d.style.width = (100 * clamp((t - T0[i]) / DUR[i])) + "%"));
   // ambient: chasing marquee bulbs, twinkling windows, traffic on the Strip, snow on the cold scene
@@ -433,7 +403,7 @@ function seek(t) {
   const tw = Math.floor(t * 1.6); winEls.forEach((w, i) => w.setAttribute("opacity", rnd(i * 3 + ((tw + i) % 5 === 0 ? tw : 0)) > 0.45 ? 0.75 : 0.12));
   trEls.forEach((r, i) => { const dir = i % 2 ? -1 : 1, sp = 260 + i * 55, x = ((t * sp + i * 337) % 1400) - 160; r.setAttribute("x", dir > 0 ? x : 1080 - x); });
   $("beacon").setAttribute("opacity", Math.floor(t * 2) % 2 ? 1 : 0.25);
-  const cold = clamp((t - (T0[2] - 0.3)) / 0.8) * clamp((T0[3] - 0.2 - t) / 0.6); $("snow").style.opacity = cold;
+  const cold = clamp((t - (T0[1] - 0.3)) / 0.8) * clamp((T0[2] - 0.2 - t) / 0.6); $("snow").style.opacity = cold;
   if (cold > 0) flakes.forEach((f, i) => { const sp = 90 + 110 * rnd(i), sz = 4 + 8 * rnd(i + 99); f.style.width = f.style.height = sz + "px"; f.style.opacity = 0.25 + 0.6 * rnd(i + 7);
     f.style.left = (1080 * rnd(i + 31) + 40 * Math.sin(t * 0.9 + i)) + "px"; f.style.top = (((t * sp + 1920 * rnd(i + 57)) % 1700) + 100) + "px"; });
   // neon sweep across each cut
@@ -513,10 +483,10 @@ async function renderSoundtrack(rate) {
   // --- cues from the animation timeline ---
   T0.slice(1).forEach((c) => whoosh(c - TR));
   // fill sounds only on the last scene: the P2 fight bars charge up like slot payouts; earlier scenes stay music-only
-  const p2 = anims[4].filter((a) => a.type === "grow" && a.el.closest(".p2row"));
-  p2.forEach((a, k) => { riser(T0[4] + a.s, a.d, parseFloat(a.el.style.width) / 100); });
-  const lastP2 = p2[p2.length - 1]; if (lastP2) bell(T0[4] + lastP2.s + lastP2.d + 0.1, 0.22);
-  bell(T0[4] + 6.6, 0.35); coin(T0[4] + 6.7, 0.5); coin(T0[4] + 6.85, 0.45); coin(T0[4] + 7.0, 0.4);   // jackpot on "your pick?"
+  const p2 = anims[3].filter((a) => a.type === "grow" && a.el.closest(".p2row"));
+  p2.forEach((a, k) => { riser(T0[3] + a.s, a.d, parseFloat(a.el.style.width) / 100); });
+  const lastP2 = p2[p2.length - 1]; if (lastP2) bell(T0[3] + lastP2.s + lastP2.d + 0.1, 0.22);
+  const jp = T0[3] + 6.6 * SLOW[3]; bell(jp, 0.35); coin(jp + 0.1, 0.5); coin(jp + 0.25, 0.45); coin(jp + 0.4, 0.4);   // jackpot on "your pick?"
   return ctx.startRendering();
 }
 window.reel = { DURATION, seek, renderSoundtrack };
