@@ -246,7 +246,7 @@ const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}
 })();
 
 // ---- timeline ----
-const DUR = [8.5, 10, 9, 10, 9.5], T0 = [], TR = 0.7;   // scene lengths (s), push transition length
+const DUR = [8.5, 11.5, 10.5, 10.5, 11.5], T0 = [], TR = 0.7;   // scene lengths (s), push transition length
 DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
 const DURATION = DUR.reduce((a, b) => a + b, 0);
 const scenes = [...document.querySelectorAll(".scene")], dots = [...document.querySelectorAll(".dots b")], sweep = document.querySelector(".sweep");
