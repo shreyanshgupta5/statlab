@@ -80,23 +80,32 @@ const COVERS = {
     <div class="hand4">${[["VER", "♦", "#C8102E", -12, 6, -330, 40], ["RUS", "♠", "#14161A", -4, 3, -110, 0], ["ANT", "♣", "#14161A", 4, -3, 110, 0], ["HAM", "♥", "#C8102E", 12, -6, 330, 40]].map(([c, s, col, r, l, dx, dy]) =>
       `<div class="card" style="transform:translate(${dx}px,${dy}px) rotate(${r}deg)"><span class="cn tl" style="color:${col}">${s}</span><span class="cn br" style="color:${col}">${s}</span>${helmet(c, { size: 170, look: l })}<b>${c}</b></div>`).join("")}</div>
     <div style="position:absolute;left:0;right:0;top:1360px;text-align:center"><span class="hand" style="font-size:88px;color:#FFD400">pick your card 👇</span></div>`,
-  // F: matches the final reel (skyline, marquee lights, the three things it explains, the four contenders). Built on top of the reel's own stage.
-  decoded: () => { const pts = LAP.map((q) => q[0] + "," + q[1]).join(" "); return `
-    <style>.cv{position:absolute;inset:0;z-index:4}.cv .track{position:absolute;right:-30px;top:250px;width:560px;height:892px;opacity:.5}
+  // F: matches the final reel (skyline, marquee lights, the three things it explains, drawn as a thermometer, a tyre and pit-stop bars; no driver helmets). Built on top of the reel's own stage.
+  decoded: () => { const pts = LAP.map((q) => q[0] + "," + q[1]).join(" ");
+    const thermo = `<svg viewBox="0 0 200 250" width="200" height="250"><rect x="80" y="14" width="40" height="176" rx="20" fill="#1C1A24" stroke="#2B5AA8" stroke-width="3"/>
+      ${[50, 90, 130].map((y) => `<line x1="124" x2="142" y1="${y}" y2="${y}" stroke="#3A5C9A" stroke-width="3"/>`).join("")}
+      <rect x="88" y="104" width="24" height="90" rx="12" fill="#7FD3FF" style="filter:drop-shadow(0 0 8px #7FD3FF)"/><circle cx="100" cy="206" r="34" fill="#7FD3FF" style="filter:drop-shadow(0 0 12px #7FD3FF)"/>
+      <text x="26" y="70" font-size="40" fill="#CFEFFF">❄</text><text x="150" y="190" font-size="30" fill="#CFEFFF" opacity=".8">❄</text><text x="38" y="150" font-size="24" fill="#CFEFFF" opacity=".6">❄</text></svg>`;
+    const tyre = `<svg viewBox="0 0 200 200" width="250" height="250"><circle cx="100" cy="100" r="96" fill="#0E0E10" stroke="#000" stroke-width="3"/>
+      ${Array.from({ length: 24 }, (_, i) => { const t = i * 15 * Math.PI / 180; return `<line x1="${100 + 88 * Math.cos(t)}" y1="${100 + 88 * Math.sin(t)}" x2="${100 + 96 * Math.cos(t)}" y2="${100 + 96 * Math.sin(t)}" stroke="#2E2E34" stroke-width="3"/>`; }).join("")}
+      <circle cx="100" cy="100" r="74" fill="none" stroke="#FFD400" stroke-width="18"/><circle cx="100" cy="100" r="74" fill="none" stroke="#F2F2F0" stroke-width="18" pathLength="100" stroke-dasharray="81 100" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 6px rgba(255,255,255,.6))"/>
+      <circle cx="100" cy="100" r="56" fill="#15161A" stroke="#2A2D33" stroke-width="3"/>${[0, 72, 144, 216, 288].map((d) => `<line x1="100" y1="100" x2="${100 + 50 * Math.cos(d * Math.PI / 180)}" y2="${100 + 50 * Math.sin(d * Math.PI / 180)}" stroke="#3A3D44" stroke-width="7"/>`).join("")}<circle cx="100" cy="100" r="14" fill="#8D939B"/></svg>`;
+    const lane = (st) => `<div style="position:relative;height:44px;margin:0 6px 18px">${st.map(([c, x, w]) => `<i style="position:absolute;left:${x}%;width:calc(${w}% - 5px);top:0;height:44px;border-radius:8px;background:${c}"></i>`).join("")}${st.slice(1).map(([c, x]) => `<i style="position:absolute;left:calc(${x}% - 5px);top:-9px;width:5px;height:62px;background:#FF3EA5;box-shadow:0 0 10px #FF3EA5"></i>`).join("")}</div>`;
+    const pits = `<div style="width:100%;height:250px;display:flex;flex-direction:column;justify-content:center">${lane([["#FFD400", 0, 24], ["#F2F2F0", 24, 40], ["#F2F2F0", 64, 36]])}${lane([["#FFD400", 0, 50], ["#F2F2F0", 50, 50]])}<span class="lbl" style="font-size:16px;color:#FF3EA5;letter-spacing:2px">| = PIT STOP</span></div>`;
+    return `
+    <style>.cv{position:absolute;inset:0;z-index:4}.cv .track{position:absolute;right:-30px;top:250px;width:560px;height:892px;opacity:.45}
       .cv .kick{position:absolute;left:72px;top:262px;margin:0;font-size:36px}.cv .h{position:absolute;left:72px;top:318px;font-size:150px;line-height:.9;margin:0}.cv .h em{display:block;text-shadow:0 0 30px rgba(255,212,0,.4)}
-      .tz{position:absolute;left:72px;right:72px;top:650px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-      .tz .panel{padding:22px 20px 20px;text-align:center}.tz b{display:block;font-size:76px;line-height:1;white-space:nowrap}.tz .lbl{display:block;margin-top:10px;font-size:19px;letter-spacing:2px}
-      .row4{position:absolute;left:72px;right:72px;top:930px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-      .row4 .panel{display:flex;flex-direction:column;align-items:center;padding:18px 6px 14px}.row4 .led{font-size:42px;margin-top:4px}</style>
+      .tz{position:absolute;left:72px;right:72px;top:660px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+      .tz .panel{padding:26px 18px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;background-color:rgba(10,10,8,.94)}.tz b{display:block;font-size:76px;line-height:1;white-space:nowrap;margin-top:18px}.tz .lbl{display:block;margin-top:10px;font-size:19px;letter-spacing:2px}</style>
     <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="pg" style="color:#FF3EA5">RACE PREVIEW</span></div>
     <div class="cv"><svg class="track" viewBox="-44 -44 683 1088"><polyline points="${pts}" fill="none" stroke="#2A1530" stroke-width="60" stroke-linejoin="round"/>
       <polyline points="${pts}" fill="none" stroke="#FF3EA5" stroke-width="15" stroke-linejoin="round" style="filter:drop-shadow(0 0 12px #FF3EA5) drop-shadow(0 0 30px #FF3EA5)"/></svg>
       <div class="kick">LAS VEGAS GP · 22 NOV</div><h1 class="h">Vegas<em>decoded</em></h1>
-      <div class="tz"><div class="panel" style="border-color:#2B5AA8"><b class="led" style="color:#7FD3FF;text-shadow:0 0 12px rgba(127,211,255,.6)">18°C</b><span class="lbl">cold track</span></div>
-        <div class="panel"><b class="led" style="color:#F2F2F0;text-shadow:0 0 12px rgba(255,255,255,.4)">81%</b><span class="lbl">hard tyre laps</span></div>
-        <div class="panel" style="border-color:#8A6A1F"><b class="led" style="word-spacing:-24px">1 or 2</b><span class="lbl">pit stops?</span></div></div>
-      <div class="row4">${[["VER", 6], ["RUS", 3], ["ANT", -3], ["HAM", -6]].map(([c, l]) => `<div class="panel">${helmet(c, { size: 178, look: l })}<b class="led">${c}</b></div>`).join("")}</div>
-      <div style="position:absolute;left:72px;top:1265px;display:flex;align-items:center;gap:20px"><span class="hand" style="font-size:104px;transform:rotate(-4deg);display:inline-block">who hits the jackpot?</span><span style="font-size:84px">🎰</span></div></div>`; },
+      <div class="tz"><div class="panel" style="border-color:#2B5AA8">${thermo}<b class="led" style="color:#7FD3FF;text-shadow:0 0 12px rgba(127,211,255,.6)">18°C</b><span class="lbl">cold track</span></div>
+        <div class="panel">${tyre}<b class="led" style="color:#F2F2F0;text-shadow:0 0 12px rgba(255,255,255,.4)">81%</b><span class="lbl">hard tyre laps</span></div>
+        <div class="panel" style="border-color:#8A6A1F">${pits}<b class="led" style="word-spacing:-24px">1 or 2</b><span class="lbl">pit stops?</span></div></div>
+      <div style="position:absolute;left:72px;top:1180px;display:flex;align-items:center;gap:20px"><span class="hand" style="font-size:104px;transform:rotate(-4deg);display:inline-block">who hits the jackpot?</span><span style="font-size:84px">🎰</span></div>
+      <div style="position:absolute;left:72px;top:1400px" class="lbl"><span style="font-size:26px;color:#C9CDD2">3 numbers that decide the race</span></div></div>`; },
 };
 
 (async () => {
