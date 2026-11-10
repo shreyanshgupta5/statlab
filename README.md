@@ -49,3 +49,4 @@ python3 tools/build_previews.py                                                 
 ```
 
 `add_round.py` takes the race order from a curated results CSV and Q1–Q3 times from OpenF1. `build_previews.py` writes the race preview pages (track layout from OpenF1, past winners and each current driver's record at the venue from Jolpica). When you change `app.js` or `styles.css`, bump `VERSION` in `sw.js` and `APP_VERSION` in `app.js` so installed apps update.
+python3 tools/build_duels.py                                                                # adds Duel telemetry (track map, speed trace, corners) for new rounds to duels.js

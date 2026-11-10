@@ -9,7 +9,7 @@ For each round's qualifying session (OpenF1):
     python3 tools/build_duels.py            # all missing rounds
     python3 tools/build_duels.py 1 2 3      # just these rounds
 
-Output matches the DUELS format the app already uses for round 19 (data.js). Corners are numbered C1, C2...
+Output matches the DUELS format the app already uses for round 19 (data.js); track maps are scaled to 1000 units like round 19.
 in lap order, not official turn numbers.
 """
 import json, math, os, sys, time, urllib.request, urllib.error
