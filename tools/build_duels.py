@@ -1,7 +1,7 @@
 """Builds duels.js: qualifying telemetry for the Duel tab, for every finished round not already in data.js.
 
 For each round's qualifying session (OpenF1):
-  - every driver's best lap: lap time, sector times, speed trace every STEP metres, speed-trap max
+  - every driver's grid-setting lap (Q3 for the top 10, Q2/Q1 for the rest): lap time, sectors, speed every STEP metres, speed-trap max
   - the track outline from the pole lap (location data), resampled to the same STEP
   - sector boundaries (as distance) from the pole lap's sector times
   - corners found from the pole lap's speed trace (clear speed minima), each driver's minimum speed through them
@@ -93,13 +93,24 @@ def build_round(rnd, race_date, name, quali_sessions):
     key = sess[0]['session_key']
     drivers = {d['driver_number']: d for d in get(f'drivers?session_key={key}')}
     laps = [l for l in get(f'laps?session_key={key}') if l.get('lap_duration') and l.get('date_start')]
+    # each driver's lap is the one that set their official grid time: their time from the last part of
+    # qualifying they reached (Q3 for the top 10, Q2 for P11-15, Q1 for the rest), not simply their fastest lap
+    official = {}
+    for r in get(f'session_result?session_key={key}'):
+        times = [x for x in (r.get('duration') or []) if x]
+        if times:
+            official[r['driver_number']] = (r.get('position') or 99, times[-1])
     best = {}
     for l in laps:
         n = l['driver_number']
-        if n not in best or l['lap_duration'] < best[n]['lap_duration']:
-            best[n] = l
-    order = sorted(best.values(), key=lambda l: l['lap_duration'])
-    pole = order[0]
+        if n in official:
+            if abs(l['lap_duration'] - official[n][1]) > 0.01:
+                continue
+        elif n in best and l['lap_duration'] >= best[n]['lap_duration']:
+            continue
+        best[n] = l
+    order = sorted(best.values(), key=lambda l: (official.get(l['driver_number'], (99, 0))[0], l['lap_duration']))
+    pole = order[0]  # the pole lap: its trace sets the track map, length, sectors and corners
     pt = lap_trace(key, pole['driver_number'], pole)
     if not pt:
         print(f'R{rnd}: no car data'); return None
