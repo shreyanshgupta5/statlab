@@ -1,0 +1,305 @@
+<title>Las Vegas Preview Reel</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* Six 1080x1350 slides. Same timing-screen system as the São Paulo carousel, plus a Vegas neon pink. */
+:root { --bg:#0B0A12; --panel:#0A0A08; --line:#2A2D33; --fg:#F2F2F0; --soft:#C9CDD2; --muted:#8D939B;
+  --amber:#FFB000; --amber-dim:#8A6A1F; --yellow:#FFD400; --ice:#7FD3FF; --neon:#FF3EA5; --red:#dc2c2c;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; color-scheme:dark; }
+* { box-sizing:border-box; }
+body { margin:0; background:#060607; color:var(--fg); font-family:var(--display); padding:24px max(16px,env(safe-area-inset-left,0px)); }
+.deck { display:grid; gap:24px; justify-items:center; }
+.frame { width:min(100%,540px); aspect-ratio:1080/1350; position:relative; overflow:hidden; border-radius:12px; }
+.slide { position:absolute; top:0; left:0; width:1080px; height:1350px; transform-origin:0 0; overflow:hidden; padding:72px 72px 60px; display:flex; flex-direction:column;
+  background:repeating-linear-gradient(105deg,transparent 0 46px,rgba(255,62,165,.05) 46px 48px),radial-gradient(90% 60% at 70% 30%,#1C1430,var(--bg) 70%); }
+.slide::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(120% 90% at 50% 45%,transparent 60%,rgba(0,0,0,.5)); }
+.top { display:flex; justify-content:space-between; align-items:center; position:relative; z-index:2; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); }
+.brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:var(--bg); }
+.pg { font-family:var(--led); font-weight:900; font-size:30px; color:var(--amber-dim); letter-spacing:3px; }
+.kick { font-family:var(--led); font-weight:900; font-size:32px; letter-spacing:3px; color:var(--neon); text-shadow:0 0 10px rgba(255,62,165,.6); margin-top:34px; position:relative; z-index:2; }
+.h { font-weight:900; font-style:italic; font-stretch:125%; line-height:.92; margin:12px 0 0; text-transform:uppercase; font-size:104px; position:relative; z-index:2; }
+.h em { font-style:inherit; color:var(--yellow); }
+.panel { position:relative; z-index:2; background:radial-gradient(circle at 3px 3px,#1A1710 1.3px,transparent 1.6px) 0 0/6px 6px,var(--panel); border:2px solid #2B2615; border-radius:16px; }
+.led { font-family:var(--led); font-weight:900; color:var(--amber); text-shadow:0 0 10px rgba(255,176,0,.5); }
+.lbl { font-family:var(--mono); font-size:22px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+.hand { font-family:var(--hand); color:var(--yellow); }
+.foot { margin-top:auto; display:flex; justify-content:space-between; font-family:var(--mono); font-size:20px; color:var(--muted); letter-spacing:2px; position:relative; z-index:2; }
+.swipe { color:var(--amber); }
+.note { font-family:var(--mono); font-size:20px; color:var(--muted); line-height:1.5; }
+/* 1 cover */
+.s1 .h { font-size:120px; }
+.trackwrap { position:absolute; right:30px; top:300px; width:560px; height:900px; z-index:1; }
+.chips { display:flex; flex-direction:column; gap:18px; margin-top:60px; position:relative; z-index:2; width:420px; }
+.chip { padding:18px 24px; }
+.chip b { display:block; font-size:72px; line-height:1; }
+.chip span { display:block; margin-top:6px; }
+.sticker { position:absolute; z-index:3; transform:rotate(-8deg); }
+/* 2 flat out */
+.gauge { display:flex; align-items:center; gap:48px; margin-top:56px; padding:40px; }
+.gauge svg { width:320px; height:320px; flex:none; }
+.big { font-size:150px; line-height:.9; }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:26px; position:relative; z-index:2; }
+.stat { padding:26px 28px; }
+.stat b { display:block; font-size:84px; line-height:1; margin-top:8px; }
+.stat b small { font-size:34px; margin-left:6px; }
+/* 3 cold */
+.therms { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:50px; padding:36px 30px 30px; }
+.th { display:flex; flex-direction:column; align-items:center; gap:14px; }
+.th svg { width:150px; height:420px; }
+.th .yr { font-family:var(--led); font-weight:900; font-size:40px; color:var(--soft); }
+.coldnote { margin-top:26px; padding:28px 32px; display:flex; align-items:center; gap:28px; }
+.coldnote b { font-size:110px; line-height:1; color:var(--ice); text-shadow:0 0 14px rgba(127,211,255,.6); }
+/* 4 tyres */
+.bars { margin-top:46px; padding:36px; display:grid; gap:30px; }
+.bar { display:grid; grid-template-columns:110px 1fr 170px; align-items:center; gap:22px; }
+.bar .yr { font-family:var(--led); font-weight:900; font-size:40px; color:var(--soft); }
+.stack { display:flex; height:64px; border-radius:10px; overflow:hidden; }
+.stack i { display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-style:normal; font-weight:700; font-size:22px; color:#0A0A0A; }
+.stop { font-family:var(--led); font-weight:900; font-size:34px; color:var(--amber); text-align:right; }
+.legend { display:flex; gap:28px; margin-top:22px; position:relative; z-index:2; }
+.legend span { display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:22px; color:var(--soft); }
+.legend span::before { content:""; width:24px; height:24px; border-radius:50%; background:var(--c); box-shadow:inset 0 0 0 5px #111; }
+/* 5 winners */
+.rows { margin-top:46px; padding:12px 32px; }
+.row { display:grid; grid-template-columns:150px 1fr 200px; align-items:center; gap:22px; padding:26px 0; border-top:2px solid #26221A; }
+.row:first-child { border-top:0; }
+.row .yr { font-family:var(--led); font-weight:900; font-size:54px; color:var(--amber); }
+.row .who { border-left:8px solid var(--c); padding-left:20px; }
+.row .who b { display:block; font-weight:900; font-style:italic; font-stretch:125%; font-size:58px; line-height:1; }
+.row .who span { display:block; margin-top:8px; font-family:var(--mono); font-size:22px; color:var(--muted); }
+.row .grid { text-align:right; }
+.row .grid b { font-family:var(--led); font-weight:900; font-size:56px; color:var(--fg); display:block; line-height:1; }
+.pw { display:flex; align-items:center; gap:30px; margin-top:26px; padding:28px 32px; }
+/* 6 pick */
+.duo { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:44px; position:relative; z-index:2; }
+.pc { padding:28px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; }
+.pc .nm { font-weight:900; font-style:italic; font-stretch:125%; font-size:54px; text-transform:uppercase; }
+.pc .ln { font-family:var(--mono); font-size:22px; color:var(--soft); }
+.p2 { margin-top:22px; padding:26px 32px; }
+.p2row { display:grid; grid-template-columns:90px 1fr 110px; align-items:center; gap:16px; margin-top:12px; }
+.p2row b { font-weight:900; font-style:italic; font-stretch:125%; font-size:36px; }
+.p2row .tk { height:20px; border-radius:6px; background:#1C1C22; overflow:hidden; } .p2row .tk i { display:block; height:100%; background:var(--c); }
+.p2row .v { font-family:var(--led); font-weight:900; font-size:36px; text-align:right; }
+
+/* reel: 1080x1920 stage, five scenes pushed across with a neon sweep */
+body { padding:0; background:#000; }
+.stage { position:relative; width:1080px; height:1920px; overflow:hidden;
+  background:repeating-linear-gradient(105deg,transparent 0 46px,rgba(255,62,165,.05) 46px 48px),radial-gradient(90% 55% at 70% 35%,#1C1430,#0B0A12 70%); }
+.hdr { position:absolute; left:72px; right:72px; top:110px; display:flex; justify-content:space-between; align-items:center; z-index:5; }
+.dots { display:flex; gap:10px; } .dots i { width:46px; height:8px; border-radius:4px; background:#2A2433; overflow:hidden; } .dots i b { display:block; height:100%; width:0; background:#FF3EA5; box-shadow:0 0 8px #FF3EA5; }
+.scene { position:absolute; left:0; top:200px; width:1080px; height:1500px; padding:0 72px 140px; display:flex; flex-direction:column; justify-content:center; will-change:transform; }
+.s1 { justify-content:flex-start; padding-top:120px; }
+.s1 .trackwrap { top:420px !important; }
+.scene .kick { margin-top:20px; }
+.ftr { position:absolute; left:72px; right:72px; bottom:150px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:22px; letter-spacing:2px; color:var(--muted); z-index:5; }
+.sweep { position:absolute; top:-200px; width:260px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,62,165,.85) 45%,#fff 50%,rgba(255,62,165,.85) 55%,transparent); filter:blur(2px); opacity:0; }
+.s1 .trackwrap { top:300px; right:-10px; }
+.grow-x { transform-origin:left; transform:scaleX(var(--p,1)); }
+svg .grow-y { transform-box:fill-box; transform-origin:bottom; transform:scaleY(var(--p,1)); }
+</style>
+<div class="stage">
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><div class="dots"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div></div>
+
+  <!-- 1 cover -->
+  <section class="scene s1">
+    <div class="kick" data-a="fade -0.6 .6">LAS VEGAS GP · ROUND 21 · 19–21 NOV</div>
+    <h1 class="h" style="font-size:132px"><span data-a="up -0.5 .6" style="display:block">Las</span><span data-a="up -0.35 .6" style="display:block">Vegas</span><em data-a="up .5 .6" style="display:block">decoded</em></h1>
+    <div class="trackwrap"><svg id="track" viewBox="-30 -30 240 360" width="560" height="900"></svg></div>
+    <div class="chips">
+      <div class="panel chip" data-a="left 2.2 .5"><b class="led"><span data-count="6.2" data-dec="1" data-a="count 2.3 1">6.2</span><small style="font-size:36px"> KM</small></b><span class="lbl">a lap</span></div>
+      <div class="panel chip" data-a="left 3.0 .5"><b class="led" data-count="50" data-a="count 3.1 1">50</b><span class="lbl">laps at night</span></div>
+      <div class="panel chip" data-a="left 3.8 .5"><b class="led" data-count="347" data-a="count 3.9 1.1">347</b><span class="lbl">km/h top speed</span></div>
+    </div>
+  </section>
+
+  <!-- 2 flat out -->
+  <section class="scene">
+    <div class="kick" data-a="fade 0.4 .5">THE POLE LAP · 2024</div>
+    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Mostly</span><em data-a="up 0.75 .5" style="display:block">flat out</em></h2>
+    <div class="panel gauge" data-a="up 1.2 .5">
+      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="82" fill="none" stroke="#221E14" stroke-width="22"/>
+        <circle id="gauge" cx="100" cy="100" r="82" fill="none" stroke="#FFB000" stroke-width="22" stroke-linecap="round" pathLength="100" stroke-dasharray="100 100" stroke-dashoffset="100" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(255,176,0,.6))"/></svg>
+      <div><b class="led big"><span data-count="69" data-a="count 1.6 2.2">69</span><small style="font-size:70px">%</small></b><div class="lbl" style="margin-top:14px;max-width:360px;line-height:1.4">of the lap at full throttle</div></div>
+    </div>
+    <div class="stats">
+      <div class="panel stat" data-a="pop 4.0 .45"><span class="lbl">top speed</span><b class="led"><span data-count="347" data-a="count 4.1 1">347</span><small>km/h</small></b></div>
+      <div class="panel stat" data-a="pop 4.6 .45"><span class="lbl">longest flat-out run</span><b class="led"><span data-count="1.8" data-dec="1" data-a="count 4.7 1">1.8</span><small>km</small></b></div>
+      <div class="panel stat" data-a="pop 5.2 .45"><span class="lbl">pole lap</span><b class="led" data-count="92.3" data-fmt="lap" data-a="count 5.3 1.2">1:32.3</b></div>
+      <div class="panel stat" data-a="pop 5.8 .45"><span class="lbl">braking</span><b class="led"><span data-count="14" data-a="count 5.9 .8">14</span><small>% of lap</small></b></div>
+    </div>
+    <p class="note" data-a="fade 6.8 .6" style="margin:18px 0 0">Russell's 2024 pole lap. 2025 qualifying was wet, so its lap is left out.</p>
+  </section>
+
+  <!-- 3 cold -->
+  <section class="scene">
+    <div class="kick" data-a="fade 0.4 .5">RACE NIGHT TEMPERATURES</div>
+    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Cold</span><em data-a="up 0.75 .5" style="display:block">tyres</em></h2>
+    <div class="panel therms" id="therms" data-a="up 1.2 .5"></div>
+    <div class="panel coldnote" data-a="left 5.4 .5"><b class="led" style="color:var(--ice)"><span data-count="14" data-a="count 5.5 1">14</span>°</b><div><span class="lbl">coldest track in qualifying</span><div class="note" style="margin-top:8px;color:var(--soft)">2024, 10pm local. A cold track makes it hard to get the tyres up to temperature.</div></div></div>
+    <p class="note" data-a="fade 1.6 .5" style="margin:16px 0 0">Median during the race · °C</p>
+  </section>
+
+  <!-- 4 tyres -->
+  <section class="scene">
+    <div class="kick" data-a="fade 0.4 .5">TOP-10 FINISHERS' LAPS</div>
+    <h2 class="h" style="font-size:104px"><span data-a="up 0.5 .5" style="display:block">Hard is</span><em data-a="up 0.75 .5" style="display:block">the race tyre</em></h2>
+    <div class="panel bars" id="bars" data-a="up 1.2 .5"></div>
+    <div class="legend" data-a="fade 2.0 .5"><span style="--c:#E8002D">SOFT</span><span style="--c:#FFD400">MEDIUM</span><span style="--c:#F2F2F0">HARD</span></div>
+    <div class="panel" data-a="up 5.6 .5" style="margin-top:26px;padding:28px 32px"><span class="lbl">the trend</span>
+      <div style="font-weight:900;font-style:italic;font-stretch:125%;font-size:46px;line-height:1.1;margin-top:10px">2023–24: mostly <span class="led">2 STOPS</span><br>2025: mostly <span class="led">1 STOP</span></div>
+      <div class="note" style="margin-top:12px">In 2024 the mediums lost about 0.2 s a lap; the hards held their pace.</div></div>
+  </section>
+
+  <!-- 5 pick -->
+  <section class="scene">
+    <div class="kick" data-a="fade 0.4 .5">THE MEN TO BEAT</div>
+    <h2 class="h" style="font-size:112px"><span data-a="up 0.5 .5" style="display:block">Who wins</span><em data-a="up 0.75 .5" style="display:block">Vegas?</em></h2>
+    <div class="duo">
+      <div class="panel pc" id="pcVER" data-a="drop 1.3 .6"><span class="nm">Verstappen</span><span class="ln">2 wins in 3 · avg P2.3</span></div>
+      <div class="panel pc" id="pcRUS" data-a="drop 1.8 .6"><span class="nm">Russell</span><span class="ln">2024 win from pole</span></div>
+    </div>
+    <div class="panel p2" id="p2" data-a="up 3.2 .5"><span class="lbl">and the fight for P2 · 3 races left</span></div>
+    <div style="margin-top:26px;display:flex;justify-content:space-between;align-items:flex-end">
+      <span class="hand" data-a="pop 6.6 .5" style="font-size:72px;transform-origin:left">your pick? 👇</span><span class="note" data-a="fade 7.0 .5">Race: Sun 22 Nov, 09:30 IST</span></div>
+  </section>
+
+  <div class="sweep"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span>DATA: OPENF1 · JOLPICA</span></div>
+</div>
+<script>
+const TRACK = [[153, 280], [156, 277], [161, 271], [171, 261], [173, 258], [175, 256], [177, 252], [177, 249], [177, 248], [176, 246], [174, 244], [172, 244], [170, 243], [166, 243], [162, 244], [159, 247], [156, 249], [153, 252], [149, 255], [146, 256], [140, 255], [136, 253], [132, 249], [130, 246], [128, 240], [127, 234], [127, 228], [127, 223], [126, 218], [126, 212], [126, 204], [125, 198], [125, 193], [125, 187], [125, 178], [125, 173], [124, 165], [124, 160], [124, 152], [124, 145], [123, 140], [123, 134], [123, 128], [123, 122], [123, 119], [123, 115], [124, 112], [126, 110], [129, 109], [131, 109], [136, 109], [138, 109], [143, 109], [148, 109], [160, 107], [166, 104], [171, 100], [175, 95], [177, 91], [179, 85], [178, 81], [178, 80], [177, 78], [175, 77], [172, 76], [171, 75], [170, 72], [171, 69], [172, 66], [174, 63], [175, 60], [175, 57], [174, 56], [172, 54], [169, 54], [167, 54], [162, 54], [157, 54], [151, 54], [145, 54], [139, 54], [135, 54], [131, 54], [125, 54], [120, 54], [115, 53], [109, 51], [101, 47], [97, 43], [93, 37], [89, 29], [87, 25], [84, 18], [81, 14], [77, 10], [70, 5], [65, 3], [60, 2], [56, 1], [52, 0], [50, 0], [48, 0], [46, 1], [46, 2], [45, 5], [44, 8], [43, 11], [41, 15], [38, 21], [35, 26], [32, 31], [29, 37], [27, 41], [25, 45], [22, 50], [19, 56], [16, 64], [13, 71], [12, 74], [9, 85], [7, 90], [5, 97], [5, 102], [3, 107], [2, 118], [1, 127], [1, 133], [1, 142], [1, 148], [1, 154], [1, 163], [1, 170], [1, 174], [1, 183], [1, 191], [1, 198], [1, 206], [1, 214], [1, 220], [1, 225], [1, 234], [0, 239], [0, 248], [0, 257], [0, 269], [0, 274], [0, 282], [0, 287], [1, 288], [4, 292], [7, 293], [9, 293], [11, 295], [14, 297], [18, 299], [21, 300], [25, 300], [28, 300], [34, 300], [39, 300], [45, 300], [52, 299], [58, 299], [64, 299], [69, 299], [75, 299], [84, 299], [89, 299], [96, 299], [104, 299], [111, 299], [131, 297], [137, 295], [143, 291], [147, 288], [153, 280]], TEMPS = {"2023": [18.0, 17.8], "2024": [17.9, 17.6], "2025": [16.8, 17.7]}, TYRES = {"2023": {"HARD": 81, "MEDIUM": 19, "SOFT": 1}, "2024": {"MEDIUM": 23, "HARD": 77, "SOFT": 0}, "2025": {"MEDIUM": 39, "SOFT": 0, "HARD": 61}}, STOPS = {"2023": [2, 1, 2, 1, 2, 2, 2, 2, 2, 2], "2024": [2, 2, 2, 2, 2, 3, 2, 2, 2, 2], "2025": [1, 2, 1, 1, 1, 1, 1, 1, 1, 1]};
+const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}};const driver={VER:{team:"RBR"},RUS:{team:"MER"}};
+  const LOOK = {
+    VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
+    HAM: ["#FFD400", "#E8002D", "#6A2C91", "#8D5A3B", "#5A3A22", "focus"], LEC: ["#E8002D", "#F2F2F0", "#1A1A1A", "#EFC29C", "#5E8A4A", "fierce"],
+    RUS: ["#16181C", "#27F4D2", "#F2F2F0", "#F2CBAA", "#4B88C9", "focus"], ANT: ["#F2F2F0", "#27F4D2", "#16181C", "#E9BC93", "#6B4A2E", "happy"],
+    NOR: ["#FF8000", "#16181C", "#47C7FC", "#F0C4A0", "#4B88C9", "happy"], PIA: ["#FF8000", "#1B2A6B", "#F2F2F0", "#F0C4A0", "#4B88C9", "focus"],
+  };
+  const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
+  let hid = 0;
+  function helmet(id, { size = 96, look = 0, cls = "" } = {}) {
+    const d = driver[id];
+    const base = d && team[d.team] ? team[d.team].color : "#8D939B";
+    const [h1, h2, h3, skin, iris, mood] = LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
+    const K = "#0A0A0A", u = "h" + ++hid, cy = 348;
+    const eye = (cx, side) => {
+      const top = mood === "happy" ? 22 : 20, lid = mood === "happy" ? 4 : 14, ix = cx + look;
+      const inner = cx - side * 30, outer = cx + side * 36, bIn = mood === "fierce" ? cy - 20 : mood === "focus" ? cy - 26 : cy - 36, bOut = mood === "happy" ? cy - 34 : cy - 36;
+      const shape = `M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z`;
+      return `<path d="${shape}" fill="#FBF8F2"/><clipPath id="${u}e${side}"><path d="${shape}"/></clipPath>
+        <g clip-path="url(#${u}e${side})"><circle cx="${ix}" cy="${cy}" r="14" fill="${iris}"/><circle cx="${ix}" cy="${cy}" r="6.5" fill="${K}"/><circle cx="${ix + 4}" cy="${cy - 5}" r="4" fill="#fff"/></g>
+        <path d="M${cx - 36} ${cy + 1} Q${cx} ${cy - top - 2} ${cx + 36} ${cy + 1}" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M${inner} ${bIn} Q${(inner + outer) / 2} ${Math.min(bIn, bOut) - 8} ${outer} ${bOut}" fill="none" stroke="#3A2A1E" stroke-width="9" stroke-linecap="round"/>`;
+    };
+    const shell = "M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z";
+    return `<svg class="helmet ${cls}" viewBox="80 110 440 480" width="${size}" height="${Math.round(size * 480 / 440)}" aria-hidden="true">
+      <defs><radialGradient id="${u}g" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+      <linearGradient id="${u}v" x1="0" x2="1"><stop offset="0" stop-color="#1B1030"/><stop offset=".45" stop-color="#2B3F8F"/><stop offset=".75" stop-color="#9B3FB5"/><stop offset="1" stop-color="#F28B2E"/></linearGradient>
+      <clipPath id="${u}c"><path d="${shell}"/></clipPath></defs>
+      <path d="${shell}" fill="${h1}"/>
+      <g clip-path="url(#${u}c)"><path d="M90 410 C170 330 430 330 510 410 L510 470 C430 380 170 380 90 470 Z" fill="${h2}"/><path d="M90 450 C170 380 430 380 510 450 L510 462 C430 392 170 392 90 462 Z" fill="${h3}"/>
+        <path d="M276 120 C284 190 288 236 286 258 L314 258 C312 236 316 190 324 120 Z" fill="${h2}"/><path d="M200 505 H400 V528 H200 Z" fill="rgba(0,0,0,.55)"/><rect x="80" y="100" width="440" height="500" fill="url(#${u}g)"/></g>
+      <path d="${shell}" fill="none" stroke="${K}" stroke-width="6"/>
+      <path d="M170 296 H430 Q458 296 458 324 V362 Q458 392 428 394 C360 400 240 400 172 394 Q142 392 142 362 V324 Q142 296 170 296 Z" fill="#141518" stroke="${K}" stroke-width="6"/>
+      <path d="M178 306 H422 Q446 306 446 328 V360 Q446 382 420 384 C356 389 244 389 180 384 Q154 382 154 360 V328 Q154 306 178 306 Z" fill="#E9E6E0"/>
+      <path d="M196 316 H404 Q426 316 426 336 V358 Q426 374 404 376 C350 380 250 380 196 376 Q174 374 174 358 V336 Q174 316 196 316 Z" fill="${skin}"/>
+      ${eye(250, -1)}${eye(350, 1)}
+      <path d="M146 252 C200 226 400 226 454 252 L460 298 H140 Z" fill="url(#${u}v)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M176 262 C240 246 300 244 360 248" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="122" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/><circle cx="478" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/></svg>`;
+  }
+
+
+// ---- scene content (same as the carousel, built with animation hooks) ----
+(() => {
+  const pts = TRACK.map((p) => p.join(",")).join(" "), [x0, y0] = TRACK[0], [x1, y1] = TRACK[3];
+  const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+  document.getElementById("track").innerHTML =
+    `<polyline points="${pts}" fill="none" stroke="#2A1530" stroke-width="20" stroke-linejoin="round"/>` +
+    `<polyline id="neon" points="${pts}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#FF3EA5" stroke-width="5" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px #FF3EA5) drop-shadow(0 0 14px rgba(255,62,165,.6))"/>` +
+    `<g data-a="pop 2.6 .4" style="transform-box:fill-box;transform-origin:center"><g transform="translate(${x0} ${y0}) rotate(${ang.toFixed(0)})"><rect x="-3" y="-14" width="6" height="28" fill="#fff"/></g></g>`;
+  const max = 30;
+  document.getElementById("therms").innerHTML = Object.entries(TEMPS).map(([y, [air, trk]], k) => {
+    const tube = (x, v, c, s) => { const h = 300 * v / max;
+      return `<rect x="${x}" y="40" width="34" height="300" rx="17" fill="#1C1A24"/><rect class="grow-y" data-a="grow ${s} 1.1" x="${x}" y="${340 - h}" width="34" height="${h}" rx="17" fill="${c}"/><circle cx="${x + 17}" cy="360" r="26" fill="${c}"/>` +
+      `<text data-a="fade ${s + 0.9} .4" x="${x + 17}" y="${330 - h}" text-anchor="middle" font-family="Doto" font-weight="900" font-size="30" fill="${c}">${Math.round(v)}°</text>` +
+      `<text x="${x + 17}" y="412" text-anchor="middle" font-family="JetBrains Mono" font-size="18" fill="#8D939B">${c === "#7FD3FF" ? "AIR" : "TRACK"}</text>`; };
+    const s = 1.8 + k * 1.0;
+    return `<div class="th"><svg viewBox="0 0 150 420">${tube(20, air, "#7FD3FF", s)}${tube(96, trk, "#FF3EA5", s + 0.25)}</svg><span class="yr">${y}</span></div>`;
+  }).join("");
+  const C = { SOFT: "#E8002D", MEDIUM: "#FFD400", HARD: "#F2F2F0" };
+  document.getElementById("bars").innerHTML = Object.entries(TYRES).map(([y, sh], k) => {
+    const s = 2.0 + k * 1.0;
+    const segs = ["SOFT", "MEDIUM", "HARD"].filter((x) => sh[x]).map((x) => `<i style="width:${sh[x]}%;background:${C[x]}">${sh[x] >= 8 ? sh[x] + "%" : ""}</i>`).join("");
+    const st = STOPS[y], one = st.filter((x) => x === 1).length, two = st.filter((x) => x >= 2).length;
+    return `<div class="bar"><span class="yr">${y}</span><div class="stack grow-x" data-a="grow ${s} 1">${segs}</div><span class="stop" data-a="pop ${s + 0.9} .4">${one > two ? one + "/10 ONE" : two + "/10 TWO"}<br><small style="font-size:20px;color:#8D939B">-STOP</small></span></div>`;
+  }).join("");
+  document.getElementById("pcVER").insertAdjacentHTML("afterbegin", helmet("VER", { size: 200, look: 6 }));
+  document.getElementById("pcRUS").insertAdjacentHTML("afterbegin", helmet("RUS", { size: 200, look: -6 }));
+  const P2 = [["VER", 279, "#3671C6"], ["RUS", 262, "#27F4D2"], ["HAM", 261, "#E8002D"], ["LEC", 249, "#E8002D"], ["NOR", 246, "#FF8000"]];
+  document.getElementById("p2").insertAdjacentHTML("beforeend", P2.map(([c, v, col], k) => `<div class="p2row" style="--c:${col}"><b>${c}</b><div class="tk"><i class="grow-x" data-a="grow ${3.6 + k * 0.35} .9" style="width:${(v - 200) / 0.8}%"></i></div><span class="v led" data-count="${v}" data-a="count ${3.6 + k * 0.35} .9">${v}</span></div>`).join(""));
+})();
+
+// ---- timeline ----
+const DUR = [8.5, 10, 9, 10, 9.5], T0 = [], TR = 0.7;   // scene lengths (s), push transition length
+DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
+const DURATION = DUR.reduce((a, b) => a + b, 0);
+const scenes = [...document.querySelectorAll(".scene")], dots = [...document.querySelectorAll(".dots b")], sweep = document.querySelector(".sweep");
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
+const fmt = (el, v) => { if (el.dataset.fmt === "lap") { const m = Math.floor(v / 60), s = v - m * 60; return `${m}:${s.toFixed(1).padStart(4, "0")}`; } return v.toFixed(+(el.dataset.dec || 0)); };
+function seek(t) {
+  scenes.forEach((sc, i) => {
+    const lt = t - T0[i], end = DUR[i];
+    let x = 0, vis = lt > -TR && lt < end + 0.01;
+    if (i > 0 && lt < 0) x = 1080 * easeInOut(clamp(-lt / TR));                    // coming in from the right
+    if (i < scenes.length - 1 && lt > end - TR) x = -1080 * easeInOut(clamp((lt - (end - TR)) / TR)); // leaving to the left
+    sc.style.display = vis ? "flex" : "none";
+    sc.style.transform = `translateX(${x}px)`;
+    if (!vis) return;
+    anims[i].forEach(({ el, type, s, d }) => {
+      const p = clamp((lt - s) / d), e = easeOut(p);
+      if (type === "up") { el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 70}px)`; }
+      else if (type === "left") { el.style.opacity = e; el.style.transform = `translateX(${(1 - e) * -120}px)`; }
+      else if (type === "fade") { el.style.opacity = e; }
+      else if (type === "pop") { el.style.opacity = clamp(p * 2); el.style.transform = `scale(${0.6 + 0.4 * back(p)})`; }
+      else if (type === "drop") { el.style.opacity = clamp(p * 2); el.style.transform = `translateY(${(1 - back(p)) * -160}px)`; }
+      else if (type === "grow") { el.style.setProperty("--p", easeInOut(p)); }
+      else if (type === "count") { el.textContent = fmt(el, (+el.dataset.count) * easeOut(p)); }
+    });
+    if (i === 0) document.getElementById("neon").style.strokeDashoffset = 1 - easeInOut(clamp((lt - 0.2) / 2.4));
+    if (i === 1) document.getElementById("gauge").style.strokeDashoffset = 100 - 69 * easeOut(clamp((lt - 1.6) / 2.2));
+  });
+  dots.forEach((d, i) => (d.style.width = (100 * clamp((t - T0[i]) / DUR[i])) + "%"));
+  // neon sweep across each cut
+  let sw = -1;
+  T0.slice(1).forEach((c) => { const q = (t - (c - TR)) / TR; if (q >= 0 && q <= 1) sw = q; });
+  sweep.style.opacity = sw < 0 ? 0 : Math.sin(Math.PI * sw);
+  sweep.style.left = (sw < 0 ? -400 : -400 + 1900 * sw) + "px";
+}
+
+// ---- soundtrack (offline Web Audio, all synthesised): 120 bpm pulse, bass, hats, a whoosh on every cut, blips on reveals ----
+async function renderSoundtrack(rate) {
+  const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate), out = ctx.createGain(); out.gain.value = 0.8; out.connect(ctx.destination);
+  const beat = 0.5, noise = ctx.createBuffer(1, rate, rate); const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  const kick = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.18); g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25); o.connect(g).connect(out); o.start(t); o.stop(t + 0.3); };
+  const hat = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "highpass"; f.frequency.value = 7000; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); s.connect(f).connect(g).connect(out); s.start(t, Math.random() * 0.5, 0.06); };
+  const bass = (t, f, d) => { const o = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.value = f; lp.type = "lowpass"; lp.frequency.value = 520; g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.22, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + d); o.connect(lp).connect(g).connect(out); o.start(t); o.stop(t + d + 0.05); };
+  const pad = (t, fs, d) => fs.forEach((f) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.045, t + 0.6); g.gain.linearRampToValueAtTime(0.0001, t + d); o.connect(g).connect(out); o.start(t); o.stop(t + d); });
+  const whoosh = (t) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(5000, t + TR); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.5, t + TR * 0.6); g.gain.exponentialRampToValueAtTime(0.001, t + TR + 0.2); s.connect(f).connect(g).connect(out); s.start(t, 0, TR + 0.3); };
+  const blip = (t, f) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12); o.connect(g).connect(out); o.start(t); o.stop(t + 0.15); };
+  const roots = [55, 55, 49, 41.2], chords = [[220, 261.6, 329.6], [220, 261.6, 329.6], [196, 246.9, 293.7], [164.8, 207.7, 246.9]];
+  for (let b = 0, t = 0; t < DURATION - 0.5; b++, t = b * beat) {
+    const bar = Math.floor(b / 8) % 4;
+    if (t > 0.4) { kick(t); hat(t + beat / 2, 0.08); hat(t + beat / 4, 0.03); }
+    if (b % 2 === 0) bass(t, roots[bar] * (b % 4 === 2 ? 2 : 1), 0.4);
+    if (b % 8 === 0) pad(t, chords[bar], 4.1);
+  }
+  T0.slice(1).forEach((c) => whoosh(c - TR));
+  anims.forEach((list, i) => list.filter((a) => a.type === "count" || a.type === "pop").forEach((a, k) => blip(T0[i] + a.s + a.d * (a.type === "count" ? 1 : 0.3), [880, 988, 1175, 1319][k % 4])));
+  return ctx.startRendering();
+}
+window.reel = { DURATION, seek, renderSoundtrack };
+seek(location.hash ? +location.hash.slice(1) : 7);
+</script>
