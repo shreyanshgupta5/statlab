@@ -33,7 +33,7 @@ window.PLAY_INIT = function (ctx) {
 
   const GAMES = {
     lights: { name: "Lights Out", lvl: 1, tag: "Reaction", blurb: "Five red lights. Go when they go out. F1 drivers react in about 0.2 s.", unit: "ms", lower: true },
-    hilo: { name: "Higher or Lower", lvl: 1, tag: "Season stats", blurb: "Two drivers, one stat from this season. Pick who's higher. 10 questions.", unit: "/10" },
+    hilo: { name: "Higher or Lower", lvl: 1, tag: "Season stats", blurb: "Two closely matched drivers, one stat. Average finishes, teammate battles, single races. 10 questions.", unit: "/10" },
     tracks: { name: "Guess the Track", lvl: 3, tag: "Circuits", blurb: "A circuit draws itself in. Name it before it's finished. Faster = more points.", unit: "pts" },
     podium: { name: "Podium Predictor", lvl: 5, tag: "Every race", blurb: "Call the top 3 before the next race. Scored when the results land.", unit: "" },
   };
@@ -95,33 +95,65 @@ window.PLAY_INIT = function (ctx) {
   const col = (id) => (driver[id] && team[driver[id].team] ? team[driver[id].team].color : "#8D939B");
   const raceShort = (round) => (S.RACE_INFO && S.RACE_INFO[round] ? S.RACE_INFO[round].location : raceByRound[round].name.replace(" Grand Prix", ""));
 
+  /* Higher or Lower questions. Difficulty comes from two things:
+     1. close matchups: the two drivers are picked next to each other in that stat's ranking, never at random;
+     2. deeper stats: average finish, places gained, Q3 appearances, teammate qualifying battles, single races.
+     Pro picks direct neighbours only and asks single-race and lap-time questions most of the time. */
   function hiloQuestions(seed, pro) {
-    const r = rng(seed), qs = [], seen = new Set();
+    const r = rng(seed), qs = [], seen = new Set(), reach = pro ? 1 : 3;
+    const racesOf = (id) => S.RESULTS.map((res) => res.race.find((x) => x.id === id)).filter(Boolean);
+    const sum = (arr) => arr.reduce((t, v) => t + v, 0);
     const poles = {}; S.RESULTS.forEach((res) => { poles[res.quali[0].id] = (poles[res.quali[0].id] || 0) + 1; });
-    const last5 = S.RESULTS.slice(-5);
-    const easy = [
+    const QD = S.QUALI_DETAIL || {};
+    const q3 = {}, beatMate = {};
+    Object.values(QD).forEach((rows) => rows.forEach((x) => {
+      if (x.q3 != null) q3[x.id] = (q3[x.id] || 0) + 1;
+      const mate = rows.find((y) => y.team === x.team && y.id !== x.id);
+      if (mate && x.pos < mate.pos) beatMate[x.id] = (beatMate[x.id] || 0) + 1;
+    }));
+    const half = Math.floor(S.RESULTS.length / 2), last5 = S.RESULTS.slice(-5);
+    const ptsIn = (list, id) => sum(list.map((res) => (res.race.find((x) => x.id === id) || {}).points || 0));
+    const avgFinish = (id) => { const f = racesOf(id).filter((x) => x.pos).map((x) => x.pos); return f.length >= 5 ? sum(f) / f.length : null; };
+    const avgGrid = (id) => { const g = racesOf(id).filter((x) => x.grid).map((x) => x.grid); return g.length >= 5 ? sum(g) / g.length : null; };
+    // every stat returns "bigger wins"; show() turns it back into what the player reads
+    const season = [
       { label: "More points this season", val: (id) => byId[id].points },
-      { label: "More wins this season", val: (id) => byId[id].wins },
-      { label: "More podiums this season", val: (id) => byId[id].podiums },
-      { label: "More pole positions", val: (id) => poles[id] || 0 },
-      { label: "More points in the last 5 races", val: (id) => last5.reduce((s, res) => s + ((res.race.find((x) => x.id === id) || {}).points || 0), 0) },
+      { label: "More podiums this season", val: (id) => byId[id].podiums, skip0: true },
+      { label: "More pole positions", val: (id) => poles[id] || 0, skip0: true },
+      { label: "More points in the last 5 races", val: (id) => ptsIn(last5, id) },
+      { label: `More points in the first ${half} races`, val: (id) => ptsIn(S.RESULTS.slice(0, half), id) },
+      { label: `More points since round ${half + 1}`, val: (id) => ptsIn(S.RESULTS.slice(half), id) },
+      { label: "Better average race finish", val: (id) => { const v = avgFinish(id); return v == null ? null : -v; }, show: (v) => "P" + (-v).toFixed(2) },
+      { label: "Better average grid slot", val: (id) => { const v = avgGrid(id); return v == null ? null : -v; }, show: (v) => "P" + (-v).toFixed(2) },
+      { label: "More places gained on Sundays", val: (id) => sum(racesOf(id).filter((x) => x.pos && x.grid).map((x) => x.grid - x.pos)), show: (v) => (v > 0 ? "+" : "") + v },
+      { label: "More races in the points", val: (id) => racesOf(id).filter((x) => x.points > 0).length },
+      { label: "More retirements this season", val: (id) => racesOf(id).filter((x) => x.dnf).length, skip0: true },
+      { label: "More Q3 appearances", val: (id) => q3[id] || 0 },
+      { label: "Out-qualified their teammate more often", val: (id) => beatMate[id] || 0 },
     ];
-    const hard = () => {
-      const res = S.RESULTS[Math.floor(r() * S.RESULTS.length)], where = raceShort(res.round);
-      return r() < 0.5
-        ? { label: `Finished higher in ${where}`, val: (id) => { const x = res.race.find((y) => y.id === id); return x && x.pos ? 100 - x.pos : null; }, show: (v) => "P" + (100 - v) }
-        : { label: `Qualified higher in ${where}`, val: (id) => { const i = res.quali.findIndex((y) => y.id === id); return i >= 0 ? 100 - (i + 1) : null; }, show: (v) => "P" + (100 - v) };
+    // one race: neighbours in the finishing order, on the grid, on places gained, or on lap time
+    const single = () => {
+      const res = S.RESULTS[Math.floor(r() * S.RESULTS.length)], where = raceShort(res.round), k = r();
+      const row = (id) => res.race.find((y) => y.id === id);
+      if (k < 0.35) return { label: `Finished higher in ${where}`, val: (id) => { const x = row(id); return x && x.pos ? -x.pos : null; }, show: (v) => "P" + -v };
+      if (k < 0.6) return { label: `Qualified higher in ${where}`, val: (id) => { const i = res.quali.findIndex((y) => y.id === id); return i >= 0 ? -(i + 1) : null; }, show: (v) => "P" + -v };
+      if (k < 0.8) return { label: `Gained more places in ${where}`, val: (id) => { const x = row(id); return x && x.pos && x.grid ? x.grid - x.pos : null; }, show: (v) => (v > 0 ? "+" : "") + v };
+      return { label: `Faster qualifying lap in ${where}`, val: (id) => { const x = res.quali.find((y) => y.id === id); return x && x.time ? -x.time : null; }, show: (v) => { const t = -v, m = Math.floor(t / 60); return `${m}:${(t - m * 60).toFixed(3).padStart(6, "0")}`; } };
     };
     let guard = 0;
-    while (qs.length < 10 && guard++ < 500) {
-      const t = pro && r() < 0.7 ? hard() : easy[Math.floor(r() * easy.length)];
-      const [a, b] = shuffle(regulars, r).slice(0, 2);
-      const va = t.val(a), vb = t.val(b);
-      const key = t.label + [a, b].sort().join();
-      if (va == null || vb == null || va === vb || seen.has(key)) continue;
-      if (!pro && Math.max(va, vb) === 0) continue;
+    while (qs.length < 10 && guard++ < 2000) {
+      const t = r() < (pro ? 0.7 : 0.35) ? single() : season[Math.floor(r() * season.length)];
+      const ranked = regulars.map((id) => ({ id, v: t.val(id) })).filter((x) => x.v != null).sort((x, y) => y.v - x.v);
+      if (ranked.length < 4) continue;
+      const i = Math.floor(r() * (ranked.length - 1)), j = Math.min(ranked.length - 1, i + 1 + Math.floor(r() * reach));
+      const x = ranked[i], y = ranked[j];
+      if (x.v === y.v || (t.skip0 && y.v === 0 && x.v === 0)) continue;
+      if (t.skip0 && x.v === 0) continue;
+      const key = t.label + [x.id, y.id].sort().join();
+      if (seen.has(key) || qs.filter((q) => q.label === t.label).length >= 2) continue;   // at most two questions on the same stat
       seen.add(key);
-      qs.push({ label: t.label, a, b, va, vb, show: t.show || ((v) => String(v)) });
+      const [A, B] = r() < 0.5 ? [x, y] : [y, x];
+      qs.push({ label: t.label, a: A.id, b: B.id, va: A.v, vb: B.v, show: t.show || ((v) => String(v)) });
     }
     return qs;
   }
