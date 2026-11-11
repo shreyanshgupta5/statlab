@@ -35,9 +35,9 @@ body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
 .hand { font-family:var(--hand); color:var(--yellow); }
 .clue .h { font-size:92px; max-width:640px; }
 /* plates */
-.plates { display:grid; grid-template-columns:repeat(4,1fr); gap:26px 18px; justify-items:center; }
+.plates { display:flex; flex-wrap:wrap; justify-content:center; gap:26px 22px; padding:6px 20px; }
 .plate { display:flex; flex-direction:column; align-items:center; gap:10px; }
-.plate b { display:grid; place-items:center; width:150px; height:150px; border-radius:16px; background:#F2F2F0; color:#0A0A0A; font-weight:900; font-style:italic; font-stretch:125%; font-size:88px; box-shadow:0 8px 0 #8D939B; }
+.plate b { display:grid; place-items:center; width:150px; height:150px; border-radius:16px; background:#F2F2F0; color:#0A0A0A; font-weight:900; font-style:italic; font-stretch:115%; font-size:80px; letter-spacing:-2px; box-shadow:0 8px 0 #8D939B; }
 .plate span { font-family:var(--mono); font-size:24px; color:var(--muted); }
 .yearline { height:6px; margin-top:16px; border-radius:3px; background:linear-gradient(90deg,var(--amber),var(--hot)); transform-origin:left; }
 /* stopwatch */
@@ -93,7 +93,7 @@ const DRIVER = {
   helmet: ["#D9DDE2", "#16181C", "#27F4D2", "#F0C4A0", "#4B88C9", "focus"], number: "6",
   source: "DATA: JOLPICA F1 RESULTS",
   clues: [
-    { type: "plates", title: "Seven race numbers", plates: [["10", "'06"], ["16", "'07"], ["7", "'08"], ["16", "'09"], ["4", "'10"], ["8", "'11–12"], ["9", "'13"], ["6", "'14–16"]],
+    { type: "plates", title: "Seven race numbers", plates: ["10", "16", "7", "4", "8", "9", "6"],
       cap: "One driver raced under <b>7 different numbers</b> in 11 seasons." },
     { type: "stopwatch", title: "The debut", stamp: "FASTEST LAP", ageY: 20, ageD: 258,
       cap: "Fastest lap in his <b>very first race</b>. Nobody had done it younger." },
@@ -158,7 +158,7 @@ const meHelm = (size) => helmet("__me", { size, look: 0, colors: DRIVER.helmet }
 document.getElementById("mystery").innerHTML = `<div id="mysteryHelm">${meHelm(250)}</div><span class="q">?</span>`;
 
 const clueViz = {
-  plates: (c) => `<div class="plates">${c.plates.map(([n, y], k) => `<div class="plate" data-a="drop ${1.0 + k * 0.28} .5"><b>${n}</b><span>${y}</span></div>`).join("")}</div><div class="yearline" data-a="grow 1.0 2.3"></div>`,
+  plates: (c) => `<div class="plates">${c.plates.map((n, k) => `<div class="plate" data-a="drop ${1.0 + k * 0.3} .5"><b>${n}</b></div>`).join("")}</div>`,
   stopwatch: (c) => `<div class="watch"><svg viewBox="0 0 330 360"><rect x="140" y="6" width="50" height="34" rx="8" fill="#5E6470"/><circle cx="165" cy="200" r="140" fill="#0E0D14" stroke="#5E6470" stroke-width="14"/>
       <circle class="wring" cx="165" cy="200" r="112" fill="none" stroke="#B98CFF" stroke-width="22" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 165 200)" style="filter:drop-shadow(0 0 10px #B98CFF)"/>
       <line class="whand" x1="165" y1="200" x2="165" y2="96" stroke="#fff" stroke-width="8" stroke-linecap="round"/><circle cx="165" cy="200" r="12" fill="#fff"/>
