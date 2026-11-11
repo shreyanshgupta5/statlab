@@ -254,7 +254,7 @@ function clueHook(sc, c, lt) {
     tr.classList.toggle("on", p > 0); tr.style.transform = `scale(${p > 0 ? 0.6 + 0.4 * back(p) : 0.8})`; });
 }
 
-// ---- soundtrack: 112 bpm synthwave that builds clue by clue and drops at the reveal; a gantry beep per clue, a whoosh per cut, lights-out hit at the reveal ----
+// ---- soundtrack: 112 bpm synthwave that builds clue by clue and drops at the reveal; no cue sounds between clues, a whoosh per cut, lights-out hit at the reveal ----
 async function renderSoundtrack(rate) {
   const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate);
   const master = ctx.createGain(); master.gain.value = 0.85; master.connect(ctx.destination);
@@ -350,8 +350,6 @@ async function renderSoundtrack(rate) {
   SWELL(TREV - 1.6, 1.55, 0.18); IMPACT(TREV, 0.7);
   const beep = (t, f, d, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; env(g, t, 0.004, v, d); const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400; o.connect(lp).connect(g).connect(sfx); o.start(t); o.stop(t + d + 0.05); };
   const boom = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.6); env(g, t, 0.005, 0.9, 0.7); o.connect(g).connect(sfx); o.start(t); o.stop(t + 0.9); };
-  T0.slice(1, -1).forEach((c) => whoosh(c - TR));
-  DRIVER.clues.forEach((_, i) => beep(T0[i + 1] + 0.15, 880, 0.14, 0.18));
   for (let k = 0; k < 3; k++) { beep(TC + k, 660, 0.12, 0.2); K(TC + k, 0.5); }
   boom(TREV); bell(TREV + 0.05, 0.3); coin(TREV + 1.45, 0.3); coin(TREV + 1.6, 0.26);
   return ctx.startRendering();
