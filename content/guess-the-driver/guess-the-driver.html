@@ -1,0 +1,320 @@
+<title>Guess the Driver</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* GUESS THE DRIVER: a reusable 1080x1920 reel template.
+   Edit DRIVER (below) for a new episode: name, reveal line, helmet colours and five clues.
+   Clue types: plates (race numbers on a timeline), stopwatch (a record + age), seasons (columns then a total),
+   count (N dots filling to a gold one), streak (N trophies split across seasons).
+   A start gantry lights one red light per clue; at the reveal it's lights out and the blurred helmet comes into focus. */
+:root { --bg:#0B0A10; --fg:#F2F2F0; --soft:#C9CDD2; --muted:#8D939B; --amber:#FFB000; --yellow:#FFD400; --red:#E10600; --hot:#FF2A2A; --line:#2A2733;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; }
+* { box-sizing:border-box; }
+body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
+.stage { position:relative; width:1080px; height:1920px; overflow:hidden;
+  background:repeating-linear-gradient(105deg,transparent 0 46px,rgba(255,176,0,.035) 46px 48px),radial-gradient(90% 55% at 65% 35%,#1E1630,#0B0A10 70%); }
+.hdr { position:absolute; left:72px; right:72px; top:110px; display:flex; justify-content:space-between; align-items:center; z-index:5; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); } .brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:#0A0A0A; }
+.series { font-family:var(--led); font-weight:900; font-size:28px; letter-spacing:3px; color:var(--amber); }
+.gantry { position:absolute; left:72px; right:72px; top:190px; height:118px; display:grid; grid-template-columns:repeat(5,1fr); gap:14px; padding:14px; border-radius:18px; background:#050506; border:3px solid #1C1C22; z-index:5; }
+.gantry div { position:relative; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:12px; background:#111216; }
+.gantry i { width:56px; height:56px; border-radius:50%; background:#2A0C0C; box-shadow:inset 0 3px 6px rgba(0,0,0,.6); }
+.gantry i.on { background:radial-gradient(circle at 40% 35%,#FF9C8F,#FF1E1E 45%,#B00000); box-shadow:0 0 18px #FF2A2A,0 0 40px rgba(255,30,30,.55); }
+.gantry b { position:absolute; bottom:-34px; font-family:var(--led); font-weight:900; font-size:20px; color:var(--muted); }
+.gantry b.on { color:var(--hot); }
+.mystery { position:absolute; right:60px; top:350px; z-index:4; text-align:center; }
+.mystery .q { position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); font-weight:900; font-style:italic; font-size:120px; color:#fff; text-shadow:0 0 30px rgba(255,255,255,.6); }
+.ftr { position:absolute; left:72px; right:72px; bottom:318px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:22px; letter-spacing:2px; color:var(--muted); z-index:5; }
+.scene { position:absolute; left:0; top:360px; width:1080px; height:1220px; padding:0 72px; display:flex; flex-direction:column; justify-content:center; will-change:transform; }
+.kick { font-family:var(--led); font-weight:900; font-size:34px; letter-spacing:4px; color:var(--amber); text-shadow:0 0 12px rgba(255,176,0,.55); }
+.h { margin:14px 0 0; font-weight:900; font-style:italic; font-stretch:125%; line-height:.95; text-transform:uppercase; }
+.h em { font-style:inherit; color:var(--yellow); }
+.panel { position:relative; margin-top:34px; padding:34px; border-radius:22px; border:2px solid #2B2615; background:radial-gradient(circle at 3px 3px,rgba(255,255,255,.04) 1.3px,transparent 1.6px) 0 0/7px 7px,#0A0A08; }
+.led { font-family:var(--led); font-weight:900; }
+.lbl { font-family:var(--mono); font-size:24px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+.cap { margin-top:28px; font-weight:800; font-size:52px; line-height:1.15; } .cap b { color:var(--yellow); }
+.hand { font-family:var(--hand); color:var(--yellow); }
+.clue .h { font-size:92px; max-width:640px; }
+/* plates */
+.plates { display:grid; grid-template-columns:repeat(4,1fr); gap:26px 18px; justify-items:center; }
+.plate { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.plate b { display:grid; place-items:center; width:150px; height:150px; border-radius:16px; background:#F2F2F0; color:#0A0A0A; font-weight:900; font-style:italic; font-stretch:125%; font-size:88px; box-shadow:0 8px 0 #8D939B; }
+.plate span { font-family:var(--mono); font-size:24px; color:var(--muted); }
+.yearline { height:6px; margin-top:16px; border-radius:3px; background:linear-gradient(90deg,var(--amber),var(--hot)); transform-origin:left; }
+/* stopwatch */
+.watch { display:grid; grid-template-columns:330px 1fr; gap:36px; align-items:center; }
+.watch svg { width:330px; height:360px; }
+.stamp { display:inline-block; padding:12px 22px; border:5px solid #B98CFF; border-radius:12px; color:#B98CFF; font-weight:900; font-style:italic; font-stretch:125%; font-size:46px; transform:rotate(-6deg); box-shadow:0 0 22px rgba(185,140,255,.35); }
+.agebig { display:block; margin-top:26px; font-size:150px; line-height:.9; color:var(--yellow); text-shadow:0 0 22px rgba(255,212,0,.5); }
+/* seasons */
+.cols { display:grid; grid-template-columns:repeat(4,1fr) 1.4fr; gap:16px; align-items:end; height:340px; }
+.col { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:10px; height:100%; }
+.col .bar { width:100%; border-radius:12px 12px 4px 4px; background:#2A2733; transform-origin:bottom; display:flex; justify-content:center; padding-top:10px; }
+.col .bar.has { background:var(--amber); box-shadow:0 0 18px rgba(255,176,0,.45); }
+.col .n { font-size:48px; } .col span { font-family:var(--mono); font-size:20px; color:var(--muted); }
+.total { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; border-radius:18px; border:3px dashed #3A3418; }
+.total .led { font-size:120px; line-height:1; color:var(--yellow); text-shadow:0 0 22px rgba(255,212,0,.5); }
+/* count */
+.dots { display:grid; grid-template-columns:repeat(15,1fr); gap:9px; }
+.dots i { aspect-ratio:1; border-radius:50%; background:#221F2A; }
+.dots i.on { background:#5E6470; } .dots i.gold { background:var(--yellow); box-shadow:0 0 20px var(--yellow),0 0 44px rgba(255,212,0,.5); transform:scale(1.5); }
+.countline { display:flex; align-items:baseline; gap:18px; margin-bottom:24px; } .countline .led { font-size:150px; line-height:.9; color:var(--yellow); text-shadow:0 0 22px rgba(255,212,0,.5); } .countline span { font-family:var(--mono); font-size:28px; color:var(--soft); }
+/* streak */
+.trophies { display:flex; align-items:flex-end; justify-content:space-between; }
+.trophies .tr { font-size:92px; line-height:1; filter:grayscale(1) brightness(.35); }
+.trophies .tr.on { filter:drop-shadow(0 0 16px rgba(255,212,0,.6)); }
+.trophies .split { width:6px; height:150px; border-radius:3px; background:var(--hot); box-shadow:0 0 14px var(--hot); }
+.seasonlbl { display:flex; justify-content:space-between; margin-top:16px; font-family:var(--mono); font-size:24px; color:var(--muted); }
+/* hook + reveal */
+.s0 .h { font-size:150px; }
+.rules { display:flex; flex-wrap:wrap; gap:14px; margin-top:44px; }
+.rules span { padding:16px 26px; border-radius:999px; background:#16131F; border:2px solid #3A2F55; font-family:var(--mono); font-weight:700; font-size:30px; color:var(--soft); }
+.rv { align-items:center; text-align:center; }
+.rv .name { margin-top:24px; font-weight:900; font-style:italic; font-stretch:125%; font-size:132px; line-height:.9; text-transform:uppercase; }
+.rv .name em { display:block; font-style:inherit; color:var(--yellow); text-shadow:0 0 30px rgba(255,212,0,.45); }
+.rv .sub { margin-top:20px; font-family:var(--mono); font-size:30px; letter-spacing:2px; color:var(--soft); }
+.flash { position:absolute; inset:0; background:#fff; opacity:0; z-index:7; pointer-events:none; }
+.sweep { position:absolute; top:-200px; width:260px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,176,0,.8) 45%,#fff 50%,rgba(255,176,0,.8) 55%,transparent); filter:blur(2px); opacity:0; }
+</style>
+<div class="stage">
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="series" id="series"></span></div>
+  <div class="gantry" id="gantry"></div>
+  <div class="mystery" id="mystery"></div>
+  <div id="scenes"></div>
+  <div class="flash" id="flash"></div>
+  <div class="sweep"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span id="src"></span></div>
+</div>
+<script>
+/* ===== the episode: change this block for a new driver ===== */
+const DRIVER = {
+  episode: "GUESS THE DRIVER #1",
+  first: "Nico", last: "Rosberg",
+  sub: "2016 World Champion · 206 starts · 23 wins",
+  helmet: ["#D9DDE2", "#16181C", "#27F4D2", "#F0C4A0", "#4B88C9", "focus"], number: "6",
+  source: "DATA: JOLPICA F1 RESULTS",
+  clues: [
+    { type: "plates", title: "Seven race numbers", plates: [["10", "'06"], ["16", "'07"], ["7", "'08"], ["16", "'09"], ["4", "'10"], ["8", "'11–12"], ["9", "'13"], ["6", "'14–16"]],
+      cap: "One driver raced under <b>7 different numbers</b> in 11 seasons." },
+    { type: "stopwatch", title: "The debut", stamp: "FASTEST LAP", ageY: 20, ageD: 258,
+      cap: "Fastest lap in his <b>very first race</b>. Nobody had done it younger." },
+    { type: "seasons", title: "The slow start", cols: [["YR 1", 0], ["YR 2", 0], ["YR 3", 2], ["YR 4", 0]], total: 57, totalLbl: "CAREER",
+      cap: "<b>2 podiums</b> in his first 4 seasons. He finished with <b>57</b>." },
+    { type: "count", title: "The wait", n: 111, unit: "starts",
+      cap: "His first win came at <b>start number 111</b>." },
+    { type: "streak", title: "The streak", n: 7, splitAfter: 3, left: "SEASON A · 3 WINS", right: "SEASON B · 4 WINS",
+      cap: "<b>7 wins in a row</b>, across two seasons." },
+  ],
+};
+/* ============================================================ */
+const HOOK = 3.8, CLUE = 7.4, REVEAL = 7.6, TR = 0.55;
+const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}};const driver={VER:{team:"RBR"},RUS:{team:"MER"}};
+  const LOOK = {
+    VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
+    HAM: ["#FFD400", "#E8002D", "#6A2C91", "#8D5A3B", "#5A3A22", "focus"], LEC: ["#E8002D", "#F2F2F0", "#1A1A1A", "#EFC29C", "#5E8A4A", "fierce"],
+    RUS: ["#16181C", "#27F4D2", "#F2F2F0", "#F2CBAA", "#4B88C9", "focus"], ANT: ["#F2F2F0", "#27F4D2", "#16181C", "#E9BC93", "#6B4A2E", "happy"],
+    NOR: ["#FF8000", "#16181C", "#47C7FC", "#F0C4A0", "#4B88C9", "happy"], PIA: ["#FF8000", "#1B2A6B", "#F2F2F0", "#F0C4A0", "#4B88C9", "focus"],
+  };
+  const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
+  let hid = 0;
+  function helmet(id, { size = 96, look = 0, cls = "" } = {}) {
+    const d = driver[id];
+    const base = d && team[d.team] ? team[d.team].color : "#8D939B";
+    const [h1, h2, h3, skin, iris, mood] = LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
+    const K = "#0A0A0A", u = "h" + ++hid, cy = 348;
+    const eye = (cx, side) => {
+      const top = mood === "happy" ? 22 : 20, lid = mood === "happy" ? 4 : 14, ix = cx + look;
+      const inner = cx - side * 30, outer = cx + side * 36, bIn = mood === "fierce" ? cy - 20 : mood === "focus" ? cy - 26 : cy - 36, bOut = mood === "happy" ? cy - 34 : cy - 36;
+      const shape = `M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z`;
+      return `<path d="${shape}" fill="#FBF8F2"/><clipPath id="${u}e${side}"><path d="${shape}"/></clipPath>
+        <g clip-path="url(#${u}e${side})"><circle cx="${ix}" cy="${cy}" r="14" fill="${iris}"/><circle cx="${ix}" cy="${cy}" r="6.5" fill="${K}"/><circle cx="${ix + 4}" cy="${cy - 5}" r="4" fill="#fff"/></g>
+        <path d="M${cx - 36} ${cy + 1} Q${cx} ${cy - top - 2} ${cx + 36} ${cy + 1}" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M${inner} ${bIn} Q${(inner + outer) / 2} ${Math.min(bIn, bOut) - 8} ${outer} ${bOut}" fill="none" stroke="#3A2A1E" stroke-width="9" stroke-linecap="round"/>`;
+    };
+    const shell = "M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z";
+    return `<svg class="helmet ${cls}" viewBox="80 110 440 480" width="${size}" height="${Math.round(size * 480 / 440)}" aria-hidden="true">
+      <defs><radialGradient id="${u}g" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+      <linearGradient id="${u}v" x1="0" x2="1"><stop offset="0" stop-color="#1B1030"/><stop offset=".45" stop-color="#2B3F8F"/><stop offset=".75" stop-color="#9B3FB5"/><stop offset="1" stop-color="#F28B2E"/></linearGradient>
+      <clipPath id="${u}c"><path d="${shell}"/></clipPath></defs>
+      <path d="${shell}" fill="${h1}"/>
+      <g clip-path="url(#${u}c)"><path d="M90 410 C170 330 430 330 510 410 L510 470 C430 380 170 380 90 470 Z" fill="${h2}"/><path d="M90 450 C170 380 430 380 510 450 L510 462 C430 392 170 392 90 462 Z" fill="${h3}"/>
+        <path d="M276 120 C284 190 288 236 286 258 L314 258 C312 236 316 190 324 120 Z" fill="${h2}"/><path d="M200 505 H400 V528 H200 Z" fill="rgba(0,0,0,.55)"/><rect x="80" y="100" width="440" height="500" fill="url(#${u}g)"/></g>
+      <path d="${shell}" fill="none" stroke="${K}" stroke-width="6"/>
+      <path d="M170 296 H430 Q458 296 458 324 V362 Q458 392 428 394 C360 400 240 400 172 394 Q142 392 142 362 V324 Q142 296 170 296 Z" fill="#141518" stroke="${K}" stroke-width="6"/>
+      <path d="M178 306 H422 Q446 306 446 328 V360 Q446 382 420 384 C356 389 244 389 180 384 Q154 382 154 360 V328 Q154 306 178 306 Z" fill="#E9E6E0"/>
+      <path d="M196 316 H404 Q426 316 426 336 V358 Q426 374 404 376 C350 380 250 380 196 376 Q174 374 174 358 V336 Q174 316 196 316 Z" fill="${skin}"/>
+      ${eye(250, -1)}${eye(350, 1)}
+      <path d="M146 252 C200 226 400 226 454 252 L460 298 H140 Z" fill="url(#${u}v)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M176 262 C240 246 300 244 360 248" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="122" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/><circle cx="478" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/></svg>`;
+  }
+
+
+
+
+document.getElementById("series").textContent = DRIVER.episode;
+document.getElementById("src").textContent = DRIVER.source;
+document.getElementById("gantry").innerHTML = DRIVER.clues.map((_, i) => `<div><i></i><i></i><b>CLUE ${i + 1}</b></div>`).join("");
+const meHelm = (size) => helmet("__me", { size, look: 0, colors: DRIVER.helmet });
+document.getElementById("mystery").innerHTML = `<div id="mysteryHelm">${meHelm(250)}</div><span class="q">?</span>`;
+
+const clueViz = {
+  plates: (c) => `<div class="plates">${c.plates.map(([n, y], k) => `<div class="plate" data-a="drop ${1.0 + k * 0.28} .5"><b>${n}</b><span>${y}</span></div>`).join("")}</div><div class="yearline" data-a="grow 1.0 2.3"></div>`,
+  stopwatch: (c) => `<div class="watch"><svg viewBox="0 0 330 360"><rect x="140" y="6" width="50" height="34" rx="8" fill="#5E6470"/><circle cx="165" cy="200" r="140" fill="#0E0D14" stroke="#5E6470" stroke-width="14"/>
+      <circle class="wring" cx="165" cy="200" r="112" fill="none" stroke="#B98CFF" stroke-width="22" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 165 200)" style="filter:drop-shadow(0 0 10px #B98CFF)"/>
+      <line class="whand" x1="165" y1="200" x2="165" y2="96" stroke="#fff" stroke-width="8" stroke-linecap="round"/><circle cx="165" cy="200" r="12" fill="#fff"/>
+      <text x="165" y="262" text-anchor="middle" font-family="JetBrains Mono" font-size="22" fill="#8D939B">RACE 1</text></svg>
+    <div><span class="stamp" data-a="pop 2.6 .45">${c.stamp}</span><span class="lbl" style="display:block;margin-top:30px">AGE</span><span class="led agebig"><span class="ageY">0</span><small style="font-size:60px">y</small> <span class="ageD" style="font-size:80px">0</span><small style="font-size:48px">d</small></span></div></div>`,
+  seasons: (c) => { const mx = Math.max(...c.cols.map((x) => x[1]), 1);
+    return `<div class="cols">${c.cols.map(([l, v], k) => `<div class="col"><span class="led n" data-a="fade ${1.6 + k * 0.3} .3" style="color:${v ? "var(--amber)" : "var(--muted)"}">${v}</span><div class="bar ${v ? "has" : ""}" data-a="growy ${1.2 + k * 0.3} .6" style="height:${v ? 30 + 70 * v / mx : 8}%"></div><span>${l}</span></div>`).join("")}
+      <div class="total" data-a="pop 3.0 .5"><span class="led" data-count="${c.total}" data-a="count 3.1 1.4">${c.total}</span><span class="lbl">${c.totalLbl}</span></div></div>`; },
+  count: (c) => `<div class="countline"><span class="led cnum">0</span><span>${c.unit}</span></div><div class="dots">${Array.from({ length: c.n }, () => "<i></i>").join("")}</div>`,
+  streak: (c) => `<div class="trophies">${Array.from({ length: c.n }, (_, k) => `${k === c.splitAfter ? `<span class="split" data-a="growy 1.0 .5"></span>` : ""}<span class="tr" data-k="${k}">🏆</span>`).join("")}</div><div class="seasonlbl"><span>${c.left}</span><span>${c.right}</span></div>`,
+};
+document.getElementById("scenes").innerHTML = `
+  <section class="scene s0">
+    <div class="kick" data-a="fade 0 .4">5 CLUES · 1 DRIVER</div>
+    <h1 class="h"><span data-a="up 0.05 .45" style="display:block">Guess</span><span data-a="up 0.15 .45" style="display:block">the</span><em data-a="up 0.3 .5" style="display:block">driver</em></h1>
+    <div class="rules"><span data-a="pop 1.2 .4">HARDEST CLUE FIRST</span><span data-a="pop 1.45 .4">NOT ON THE GRID</span></div>
+    <div data-a="pop 2.0 .5" style="margin-top:40px;transform-origin:left"><span class="hand" style="font-size:78px;display:inline-block;transform:rotate(-3deg)">comment the clue you got it on 👇</span></div>
+  </section>
+  ${DRIVER.clues.map((c, i) => `<section class="scene clue" data-c="${i}">
+    <div class="kick" data-a="fade 0 .35">CLUE ${i + 1} / ${DRIVER.clues.length}</div>
+    <h2 class="h" data-a="up 0.1 .45">${c.title}</h2>
+    <div class="panel" data-a="up 0.6 .45">${clueViz[c.type](c)}</div>
+    <div class="cap" data-a="up ${c.type === "count" ? 4.3 : 3.6} .5">${c.cap}</div>
+  </section>`).join("")}
+  <section class="scene rv">
+    <div class="kick" data-a="fade 0.9 .4">LIGHTS OUT. IT'S…</div>
+    <div id="rvHelm" data-a="pop 0.6 .7">${meHelm(400)}</div>
+    <div class="name"><span data-a="up 1.2 .4" style="display:block">${DRIVER.first}</span><em data-a="up 1.4 .45">${DRIVER.last}</em></div>
+    <div class="sub" data-a="fade 2.2 .5">${DRIVER.sub}</div>
+    <div data-a="pop 3.4 .5" style="margin-top:44px"><span class="hand" style="font-size:84px;display:inline-block;transform:rotate(-3deg)">which clue gave it away? 👇</span></div>
+  </section>`;
+
+// ---- timeline ----
+const scenes = [...document.querySelectorAll(".scene")];
+const DUR = [HOOK, ...DRIVER.clues.map(() => CLUE), REVEAL], T0 = []; DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
+const DURATION = DUR.reduce((a, b) => a + b, 0), TREV = T0[T0.length - 1];
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
+const sweep = document.querySelector(".sweep"), gant = [...document.querySelectorAll("#gantry > div")], mystery = document.getElementById("mystery"), mh = document.getElementById("mysteryHelm");
+function seek(t) {
+  scenes.forEach((sc, i) => {
+    const lt = t - T0[i], end = DUR[i];
+    let x = 0; const vis = lt > -TR && lt < end + 0.01;
+    if (i > 0 && lt < 0) x = 1080 * easeInOut(clamp(-lt / TR));
+    if (i < scenes.length - 1 && lt > end - TR) x = -1080 * easeInOut(clamp((lt - (end - TR)) / TR));
+    sc.style.display = vis ? "flex" : "none"; sc.style.transform = `translateX(${x}px)`;
+    if (!vis) return;
+    anims[i].forEach(({ el, type, s, d }) => {
+      const p = clamp((lt - s) / d), e = easeOut(p);
+      if (type === "up") { el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 70}px)`; }
+      else if (type === "fade") el.style.opacity = e;
+      else if (type === "pop") { el.style.opacity = clamp(p * 2); el.style.transform = `scale(${0.6 + 0.4 * back(p)})`; }
+      else if (type === "drop") { el.style.opacity = clamp(p * 2); el.style.transform = `translateY(${(1 - back(p)) * -140}px)`; }
+      else if (type === "grow") { el.style.transform = `scaleX(${easeInOut(p)})`; }
+      else if (type === "growy") { el.style.transform = `scaleY(${easeInOut(p)})`; }
+      else if (type === "count") el.textContent = Math.round((+el.dataset.count) * easeOut(p));
+    });
+    if (sc.classList.contains("clue")) clueHook(sc, DRIVER.clues[+sc.dataset.c], lt);
+  });
+  // gantry: one red light pair per clue; all out at the reveal
+  gant.forEach((g, k) => { const on = t >= T0[k + 1] + 0.15 && t < TREV + 0.35; g.querySelectorAll("i").forEach((l) => l.classList.toggle("on", on)); g.querySelector("b").classList.toggle("on", on); });
+  // mystery helmet: heavy blur that clears clue by clue; hidden on the hook and the reveal
+  const clueIdx = Math.max(0, Math.min(DRIVER.clues.length, Math.floor((t - HOOK) / CLUE) + 1));
+  const inClues = t >= HOOK - 0.2 && t < TREV - 0.1;
+  mystery.style.opacity = inClues ? clamp((t - HOOK + 0.2) / 0.4) * clamp((TREV - 0.1 - t) / 0.3) : 0;
+  mh.style.filter = `blur(${[40, 36, 31, 26, 21, 16][clueIdx]}px) brightness(.55)`;
+  mystery.style.top = "350px";
+  // reveal flash
+  const fl = t - TREV; document.getElementById("flash").style.opacity = fl >= 0 && fl < 0.5 ? 0.8 * (1 - fl / 0.5) : 0;
+  let sw = -1; T0.slice(1, -1).forEach((c) => { const q = (t - (c - TR)) / TR; if (q >= 0 && q <= 1) sw = q; });
+  sweep.style.opacity = sw < 0 ? 0 : Math.sin(Math.PI * sw); sweep.style.left = (sw < 0 ? -400 : -400 + 1900 * sw) + "px";
+}
+function clueHook(sc, c, lt) {
+  if (c.type === "stopwatch") { const p = easeInOut(clamp((lt - 1.0) / 1.6)); sc.querySelector(".wring").setAttribute("stroke-dasharray", `${100 * p} 100`);
+    sc.querySelector(".whand").setAttribute("transform", `rotate(${360 * p} 165 200)`); const a = easeOut(clamp((lt - 2.8) / 1.0));
+    sc.querySelector(".ageY").textContent = Math.round(c.ageY * a); sc.querySelector(".ageD").textContent = Math.round(c.ageD * a); }
+  if (c.type === "count") { const p = clamp((lt - 1.0) / 3.0), n = Math.round(c.n * (1 - Math.pow(1 - p, 2)));
+    sc.querySelector(".cnum").textContent = n; sc.querySelectorAll(".dots i").forEach((d, k) => { d.classList.toggle("on", k < n && k < c.n - 1); d.classList.toggle("gold", k === c.n - 1 && n >= c.n); }); }
+  if (c.type === "streak") sc.querySelectorAll(".tr").forEach((tr) => { const k = +tr.dataset.k, s = 1.3 + k * 0.32 + (k >= c.splitAfter ? 0.35 : 0), p = clamp((lt - s) / 0.35);
+    tr.classList.toggle("on", p > 0); tr.style.transform = `scale(${p > 0 ? 0.6 + 0.4 * back(p) : 0.8})`; });
+}
+
+// ---- soundtrack: the Vegas reel's 150 bpm drive; a gantry beep per clue, a whoosh per cut, lights-out hit at the reveal ----
+async function renderSoundtrack(rate) {
+  const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate);
+  const master = ctx.createGain(); master.gain.value = 0.85; master.connect(ctx.destination);
+  const music = ctx.createGain(); music.gain.value = 0.62; music.connect(master);
+  const sfx = ctx.createGain(); sfx.gain.value = 0.9; sfx.connect(master);
+  const noise = ctx.createBuffer(1, rate * 2, rate); const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  const mf = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const env = (g, t, a, peak, d) => { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d); };
+  // --- instruments ---
+  const ride = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 6500; f.Q.value = 0.8; env(g, t, 0.002, v, 0.35); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.4); };
+  const hat = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "highpass"; f.frequency.value = 8000; env(g, t, 0.001, v, 0.05); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.08); };
+  const kick = (t, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.12); env(g, t, 0.003, v, 0.18); o.connect(g).connect(music); o.start(t); o.stop(t + 0.25); };
+  const brush = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 2500; f.Q.value = 0.6; env(g, t, 0.01, v, 0.14); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.2); };
+  const bass = (t, m, d) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = "triangle"; o2.type = "sine"; o.frequency.value = mf(m); o2.frequency.value = mf(m) * 2; lp.type = "lowpass"; lp.frequency.value = 900;
+    const g2 = ctx.createGain(); g2.gain.value = 0.25; env(g, t, 0.008, 0.42, d); o.connect(lp); o2.connect(g2).connect(lp); lp.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.1); o2.stop(t + d + 0.1); };
+  const keys = (t, ms, d, v) => { const trem = ctx.createOscillator(), tg = ctx.createGain(); trem.frequency.value = 5; tg.gain.value = 0.25; trem.connect(tg); trem.start(t); trem.stop(t + d + 0.2);
+    ms.forEach((m) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), am = ctx.createGain(); o.type = "sine"; o2.type = "sine";
+      o.frequency.value = mf(m); o2.frequency.value = mf(m) * 2.01; const g2 = ctx.createGain(); g2.gain.value = 0.18; am.gain.value = 0.75; tg.connect(am.gain);
+      env(g, t, 0.006, v, d); o.connect(am); o2.connect(g2).connect(am); am.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.1); o2.stop(t + d + 0.1); }); };
+  // --- casino cues ---
+  const coin = (t, v = 0.35) => [2093, 2637, 3136].forEach((f, k) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; env(g, t + k * 0.045, 0.002, v * 0.35, 0.18); const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 1500; o.connect(hp).connect(g).connect(sfx); o.start(t + k * 0.045); o.stop(t + k * 0.045 + 0.25); });
+  const bell = (t, v = 0.3) => [[1318.5, 1], [1975.5, 0.5], [2637, 0.25]].forEach(([f, a]) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = f; env(g, t, 0.003, v * a, 0.9); o.connect(g).connect(sfx); o.start(t); o.stop(t + 1); });
+  const click = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 3200; f.Q.value = 4; env(g, t, 0.001, v, 0.025); s.connect(f).connect(g).connect(sfx); s.start(t, Math.random(), 0.04); };
+  const reel = (t, d) => { let x = t; const end = t + d; let gap = 0.035; while (x < end) { click(x, 0.2); x += gap; gap *= 1.09; } bell(end + 0.02, 0.14); };   // slot reel slowing to a stop
+  const riser = (t, d, fill) => {   // energy bar charging: pitch climbs with the fill, little ticks speed up, coin when it lands
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    const f0 = 180, f1 = 180 + 820 * Math.max(0.15, fill);
+    o.type = "sawtooth"; o2.type = "square"; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + d); o2.frequency.setValueAtTime(f0 * 1.5, t); o2.frequency.exponentialRampToValueAtTime(f1 * 1.5, t + d);
+    f.type = "lowpass"; f.frequency.setValueAtTime(600, t); f.frequency.exponentialRampToValueAtTime(3500, t + d); f.Q.value = 2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.04, t + 0.08); g.gain.linearRampToValueAtTime(0.065, t + d); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.12);
+    const g2 = ctx.createGain(); g2.gain.value = 0.35; o.connect(f); o2.connect(g2).connect(f); f.connect(g).connect(sfx); o.start(t); o2.start(t); o.stop(t + d + 0.2); o2.stop(t + d + 0.2);
+    for (let k = 0, n = Math.round(6 + 14 * fill); k < n; k++) { const q = k / n; click(t + d * Math.sqrt(q), 0.07 + 0.08 * q); }
+    coin(t + d + 0.02, 0.12 + 0.1 * fill);
+  };
+  const whoosh = (t) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(5000, t + TR); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.45, t + TR * 0.6); g.gain.exponentialRampToValueAtTime(0.001, t + TR + 0.2); s.connect(f).connect(g).connect(sfx); s.start(t, 0, TR + 0.3); };
+  // --- the groove: 150 bpm straight drive (four-on-the-floor, 16th hats, pulsing saw bass, neon stabs), Am-F-C-G ---
+  const snare = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = 0.7; env(g, t, 0.001, v, 0.13); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.2);
+    const o = ctx.createOscillator(), go = ctx.createGain(); o.type = "triangle"; o.frequency.setValueAtTime(240, t); o.frequency.exponentialRampToValueAtTime(160, t + 0.08); env(go, t, 0.001, v * 0.6, 0.08); o.connect(go).connect(music); o.start(t); o.stop(t + 0.15); };
+  const sbass = (t, m, d, v) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o2.type = "square"; o.frequency.value = mf(m); o2.frequency.value = mf(m) * 0.5;
+    lp.type = "lowpass"; lp.Q.value = 5; lp.frequency.setValueAtTime(1800, t); lp.frequency.exponentialRampToValueAtTime(350, t + d); env(g, t, 0.003, v, d); const g2 = ctx.createGain(); g2.gain.value = 0.5;
+    o.connect(lp); o2.connect(g2).connect(lp); lp.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.05); o2.stop(t + d + 0.05); };
+  const stab = (t, ms, d, v) => ms.forEach((m) => [0, 7, -7].forEach((det) => { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.value = mf(m); o.detune.value = det;
+    f.type = "lowpass"; f.frequency.setValueAtTime(4200, t); f.frequency.exponentialRampToValueAtTime(900, t + d); env(g, t, 0.004, v / 3, d); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + d + 0.05); }));
+  const pluck = (t, m, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = mf(m); const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 3200; env(g, t, 0.002, v, 0.12); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + 0.16); };
+  const bpm = 150, q = 60 / bpm, e = q / 2, s16 = q / 4;
+  const prog = [ { r: 45, ch: [69, 72, 76], arp: [81, 76, 72, 76] },    // Am
+                 { r: 41, ch: [69, 72, 77], arp: [81, 77, 72, 77] },    // F
+                 { r: 48, ch: [67, 72, 76], arp: [79, 76, 72, 76] },    // C
+                 { r: 43, ch: [67, 71, 74], arp: [79, 74, 71, 74] } ];  // G
+  for (let bar = 0, t = 0.2; t < DURATION - 0.4; bar++, t = 0.2 + bar * 4 * q) {
+    const c = prog[bar % 4], intro = bar < 2;              // first two bars: hats + bass only, then the full drive kicks in
+    for (let b = 0; b < 4; b++) {
+      const tb = t + b * q; if (tb > DURATION - 0.3) break;
+      if (!intro) kick(tb, 0.42);
+      if (!intro && (b === 1 || b === 3)) snare(tb, 0.26);
+      for (let k = 0; k < 4; k++) hat(tb + k * s16, k === 2 ? 0.09 : 0.045);
+      sbass(tb, c.r, e * 0.8, 0.16); sbass(tb + e, c.r + 12, e * 0.8, 0.13);   // octave-pumping bass
+      if (!intro) for (let k = 0; k < 2; k++) pluck(tb + k * e, c.arp[(b * 2 + k) % 4], 0.03);
+    }
+    if (!intro) { stab(t, c.ch, q * 0.45, 0.07); stab(t + q * 1.5, c.ch, q * 0.3, 0.05); stab(t + q * 2.5, c.ch, q * 0.3, 0.05); }
+    if (bar % 4 === 3 && !intro) for (let k = 0; k < 4; k++) snare(t + 3 * q + k * s16, 0.1 + 0.04 * k);   // fill into the next phrase
+  }
+  const beep = (t, f, d, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; env(g, t, 0.004, v, d); const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400; o.connect(lp).connect(g).connect(sfx); o.start(t); o.stop(t + d + 0.05); };
+  const boom = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.6); env(g, t, 0.005, 0.9, 0.7); o.connect(g).connect(sfx); o.start(t); o.stop(t + 0.9); };
+  T0.slice(1).forEach((c) => whoosh(c - TR));
+  DRIVER.clues.forEach((_, i) => beep(T0[i + 1] + 0.15, 880, 0.14, 0.18));
+  music.gain.setValueAtTime(0.62, TREV - 0.6); music.gain.linearRampToValueAtTime(0.0001, TREV - 0.05); music.gain.setValueAtTime(0.0001, TREV + 0.6); music.gain.linearRampToValueAtTime(0.62, TREV + 1.4);
+  for (let k = 0; k < 3; k++) beep(TREV - 0.55 + k * 0.16, 660, 0.08, 0.14);
+  boom(TREV); bell(TREV + 0.05, 0.3); coin(TREV + 1.45, 0.3); coin(TREV + 1.6, 0.26);
+  return ctx.startRendering();
+}
+window.reel = { DURATION, seek, renderSoundtrack };
+seek(location.hash ? +location.hash.slice(1) : 9);
+</script>
