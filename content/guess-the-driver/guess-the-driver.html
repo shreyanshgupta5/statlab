@@ -174,8 +174,7 @@ document.getElementById("scenes").innerHTML = `
   <section class="scene s0">
     <div class="kick" data-a="fade 0 .4">5 CLUES · 1 DRIVER</div>
     <h1 class="h"><span data-a="up 0.05 .45" style="display:block">Guess</span><span data-a="up 0.15 .45" style="display:block">the</span><em data-a="up 0.3 .5" style="display:block">driver</em></h1>
-    <div class="rules"><span data-a="pop 1.2 .4">HARDEST CLUE FIRST</span><span data-a="pop 1.45 .4">NOT ON THE GRID</span></div>
-    <div data-a="pop 2.0 .5" style="margin-top:40px;transform-origin:left"><span class="hand" style="font-size:78px;display:inline-block;transform:rotate(-3deg)">comment the clue you got it on 👇</span></div>
+    <div data-a="pop 2.0 .5" style="margin-top:40px;transform-origin:left"><span class="hand" style="font-size:70px;display:inline-block;white-space:nowrap;transform:rotate(-3deg)">comment the clue you got it on 👇</span></div>
   </section>
   ${DRIVER.clues.map((c, i) => `<section class="scene clue" data-c="${i}">
     <div class="kick" data-a="fade 0 .35">CLUE ${i + 1} / ${DRIVER.clues.length}</div>
@@ -242,11 +241,11 @@ function clueHook(sc, c, lt) {
     tr.classList.toggle("on", p > 0); tr.style.transform = `scale(${p > 0 ? 0.6 + 0.4 * back(p) : 0.8})`; });
 }
 
-// ---- soundtrack: the Vegas reel's 150 bpm drive; a gantry beep per clue, a whoosh per cut, lights-out hit at the reveal ----
+// ---- soundtrack: a 132 bpm quiz-show theme; a gantry beep per clue, a whoosh per cut, lights-out hit at the reveal ----
 async function renderSoundtrack(rate) {
   const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate);
   const master = ctx.createGain(); master.gain.value = 0.85; master.connect(ctx.destination);
-  const music = ctx.createGain(); music.gain.value = 0.62; music.connect(master);
+  const music = ctx.createGain(); music.gain.value = 0.7; music.connect(master);
   const sfx = ctx.createGain(); sfx.gain.value = 0.9; sfx.connect(master);
   const noise = ctx.createBuffer(1, rate * 2, rate); const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
   const mf = (m) => 440 * Math.pow(2, (m - 69) / 12);
@@ -279,38 +278,39 @@ async function renderSoundtrack(rate) {
     coin(t + d + 0.02, 0.12 + 0.1 * fill);
   };
   const whoosh = (t) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(5000, t + TR); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.45, t + TR * 0.6); g.gain.exponentialRampToValueAtTime(0.001, t + TR + 0.2); s.connect(f).connect(g).connect(sfx); s.start(t, 0, TR + 0.3); };
-  // --- the groove: 150 bpm straight drive (four-on-the-floor, 16th hats, pulsing saw bass, neon stabs), Am-F-C-G ---
-  const snare = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = 0.7; env(g, t, 0.001, v, 0.13); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.2);
-    const o = ctx.createOscillator(), go = ctx.createGain(); o.type = "triangle"; o.frequency.setValueAtTime(240, t); o.frequency.exponentialRampToValueAtTime(160, t + 0.08); env(go, t, 0.001, v * 0.6, 0.08); o.connect(go).connect(music); o.start(t); o.stop(t + 0.15); };
-  const sbass = (t, m, d, v) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o2.type = "square"; o.frequency.value = mf(m); o2.frequency.value = mf(m) * 0.5;
-    lp.type = "lowpass"; lp.Q.value = 5; lp.frequency.setValueAtTime(1800, t); lp.frequency.exponentialRampToValueAtTime(350, t + d); env(g, t, 0.003, v, d); const g2 = ctx.createGain(); g2.gain.value = 0.5;
-    o.connect(lp); o2.connect(g2).connect(lp); lp.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.05); o2.stop(t + d + 0.05); };
-  const stab = (t, ms, d, v) => ms.forEach((m) => [0, 7, -7].forEach((det) => { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.value = mf(m); o.detune.value = det;
-    f.type = "lowpass"; f.frequency.setValueAtTime(4200, t); f.frequency.exponentialRampToValueAtTime(900, t + d); env(g, t, 0.004, v / 3, d); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + d + 0.05); }));
-  const pluck = (t, m, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = mf(m); const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 3200; env(g, t, 0.002, v, 0.12); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + 0.16); };
-  const bpm = 150, q = 60 / bpm, e = q / 2, s16 = q / 4;
-  const prog = [ { r: 45, ch: [69, 72, 76], arp: [81, 76, 72, 76] },    // Am
-                 { r: 41, ch: [69, 72, 77], arp: [81, 77, 72, 77] },    // F
-                 { r: 48, ch: [67, 72, 76], arp: [79, 76, 72, 76] },    // C
-                 { r: 43, ch: [67, 71, 74], arp: [79, 74, 71, 74] } ];  // G
-  for (let bar = 0, t = 0.2; t < DURATION - 0.4; bar++, t = 0.2 + bar * 4 * q) {
-    const c = prog[bar % 4], intro = bar < 2;              // first two bars: hats + bass only, then the full drive kicks in
+  // --- quiz-show theme: 132 bpm, bouncy and bright. Marimba hook + answer, pizzicato bass, shaker/clap kit,
+  //     a ticking "thinking clock" on every off-beat, brass stabs on the downbeats. I–vi–IV–V in F.
+  const marimba = (t, m, v) => { [1, 4, 10].forEach((h, k) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = mf(m) * h;
+      env(g, t, 0.002, v * [1, 0.28, 0.08][k], [0.32, 0.12, 0.05][k]); o.connect(g).connect(music); o.start(t); o.stop(t + 0.4); }); };
+  const pizz = (t, m, v) => { const o = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "triangle"; o.frequency.value = mf(m);
+      lp.type = "lowpass"; lp.frequency.setValueAtTime(1400, t); lp.frequency.exponentialRampToValueAtTime(300, t + 0.2); env(g, t, 0.003, v, 0.22); o.connect(lp).connect(g).connect(music); o.start(t); o.stop(t + 0.3); };
+  const brass = (t, ms, d, v) => ms.forEach((m) => [0, 6].forEach((det) => { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.value = mf(m); o.detune.value = det;
+      f.type = "lowpass"; f.frequency.setValueAtTime(700, t); f.frequency.linearRampToValueAtTime(2600, t + 0.05); f.frequency.exponentialRampToValueAtTime(900, t + d); env(g, t, 0.02, v / 2, d); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + d + 0.05); }));
+  const shaker = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "highpass"; f.frequency.value = 6000; env(g, t, 0.01, v, 0.06); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.1); };
+  const clap = (t, v) => [0, 0.012, 0.024].forEach((d) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 1500; f.Q.value = 0.9; env(g, t + d, 0.001, v, 0.09); s.connect(f).connect(g).connect(music); s.start(t + d, Math.random(), 0.14); });
+  const tock = (t, v, hi) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = hi ? 1900 : 1500; env(g, t, 0.001, v, 0.03); o.connect(g).connect(music); o.start(t); o.stop(t + 0.06); };
+  const bpm = 132, q = 60 / bpm, e = q / 2;
+  // chords (bass root, triad) and a two-bar call / two-bar answer melody in eighths (null = rest)
+  const prog = [{ r: 41, ch: [65, 69, 72] }, { r: 38, ch: [62, 65, 69] }, { r: 46, ch: [65, 70, 74] }, { r: 48, ch: [64, 67, 72] }];
+  const call = [77, null, 77, 79, 81, null, 77, null, 74, null, 74, 77, 81, 79, 77, null];
+  const answer = [82, null, 81, 79, 77, null, 74, null, 76, 77, 79, null, 81, null, null, null];
+  for (let bar = 0, t = 0.15; t < DURATION - 0.3; bar++, t = 0.15 + bar * 4 * q) {
+    const c = prog[bar % 4], intro = bar < 1, mel = (Math.floor(bar / 2) % 2 ? answer : call), half = (bar % 2) * 8;
     for (let b = 0; b < 4; b++) {
       const tb = t + b * q; if (tb > DURATION - 0.3) break;
-      if (!intro) kick(tb, 0.42);
-      if (!intro && (b === 1 || b === 3)) snare(tb, 0.26);
-      for (let k = 0; k < 4; k++) hat(tb + k * s16, k === 2 ? 0.09 : 0.045);
-      sbass(tb, c.r, e * 0.8, 0.16); sbass(tb + e, c.r + 12, e * 0.8, 0.13);   // octave-pumping bass
-      if (!intro) for (let k = 0; k < 2; k++) pluck(tb + k * e, c.arp[(b * 2 + k) % 4], 0.03);
+      if (!intro) { kick(tb, b % 2 ? 0.22 : 0.4); if (b % 2) clap(tb, 0.16); }
+      shaker(tb, 0.035); shaker(tb + e, 0.06);
+      tock(tb + e, 0.05, b % 2);                                   // the thinking clock
+      pizz(tb, b % 2 ? c.r + 7 : c.r, 0.32); pizz(tb + e, c.r + 12, 0.18);
+      for (let k = 0; k < 2; k++) { const n = mel[half + b * 2 + k]; if (n && !intro) marimba(tb + k * e, n, 0.16); }
     }
-    if (!intro) { stab(t, c.ch, q * 0.45, 0.07); stab(t + q * 1.5, c.ch, q * 0.3, 0.05); stab(t + q * 2.5, c.ch, q * 0.3, 0.05); }
-    if (bar % 4 === 3 && !intro) for (let k = 0; k < 4; k++) snare(t + 3 * q + k * s16, 0.1 + 0.04 * k);   // fill into the next phrase
+    if (!intro) { brass(t, c.ch, q * 0.5, 0.06); if (bar % 4 === 3) brass(t + 3.5 * q, prog[0].ch.map((m) => m + 12), q * 0.4, 0.05); }
   }
   const beep = (t, f, d, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; env(g, t, 0.004, v, d); const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400; o.connect(lp).connect(g).connect(sfx); o.start(t); o.stop(t + d + 0.05); };
   const boom = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.6); env(g, t, 0.005, 0.9, 0.7); o.connect(g).connect(sfx); o.start(t); o.stop(t + 0.9); };
   T0.slice(1).forEach((c) => whoosh(c - TR));
   DRIVER.clues.forEach((_, i) => beep(T0[i + 1] + 0.15, 880, 0.14, 0.18));
-  music.gain.setValueAtTime(0.62, TREV - 0.6); music.gain.linearRampToValueAtTime(0.0001, TREV - 0.05); music.gain.setValueAtTime(0.0001, TREV + 0.6); music.gain.linearRampToValueAtTime(0.62, TREV + 1.4);
+  music.gain.setValueAtTime(0.7, TREV - 0.6); music.gain.linearRampToValueAtTime(0.0001, TREV - 0.05); music.gain.setValueAtTime(0.0001, TREV + 0.6); music.gain.linearRampToValueAtTime(0.7, TREV + 1.4);
   for (let k = 0; k < 3; k++) beep(TREV - 0.55 + k * 0.16, 660, 0.08, 0.14);
   boom(TREV); bell(TREV + 0.05, 0.3); coin(TREV + 1.45, 0.3); coin(TREV + 1.6, 0.26);
   return ctx.startRendering();
