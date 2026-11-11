@@ -3,7 +3,8 @@
 <style>
 /* GUESS THE DRIVER: a reusable 1080x1920 reel template.
    Edit DRIVER (below) for a new episode: name, reveal line, helmet colours and five clues.
-   Clue types: plates (race numbers on a timeline), stopwatch (a record + age), seasons (columns then a total),
+   Any number of clues (clue length stretches to keep the reel at TOTAL seconds); a 3-2-1 countdown runs before the reveal.
+   Clue types: plates (race numbers), stopwatch (a record + age), seasons (columns then a total),
    count (N dots filling to a gold one), streak (N trophies split across seasons).
    A start gantry lights one red light per clue; at the reveal it's lights out and the blurred helmet comes into focus. */
 :root { --bg:#0B0A10; --fg:#F2F2F0; --soft:#C9CDD2; --muted:#8D939B; --amber:#FFB000; --yellow:#FFD400; --red:#E10600; --hot:#FF2A2A; --line:#2A2733;
@@ -72,6 +73,9 @@ body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
 .rv .name { margin-top:24px; font-weight:900; font-style:italic; font-stretch:125%; font-size:132px; line-height:.9; text-transform:uppercase; }
 .rv .name em { display:block; font-style:inherit; color:var(--yellow); text-shadow:0 0 30px rgba(255,212,0,.45); }
 .rv .sub { margin-top:20px; font-family:var(--mono); font-size:30px; letter-spacing:2px; color:var(--soft); }
+.cd { align-items:center; text-align:center; }
+.cdwrap { position:relative; width:560px; height:560px; margin-top:30px; } .cdwrap svg { width:100%; height:100%; }
+.cdnum { position:absolute; left:50%; top:50%; transform:translate(-50%,-55%); font-size:330px; line-height:1; color:#fff; text-shadow:0 0 40px rgba(255,42,42,.7); }
 .flash { position:absolute; inset:0; background:#fff; opacity:0; z-index:7; pointer-events:none; }
 .sweep { position:absolute; top:-200px; width:260px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,176,0,.8) 45%,#fff 50%,rgba(255,176,0,.8) 55%,transparent); filter:blur(2px); opacity:0; }
 </style>
@@ -95,8 +99,6 @@ const DRIVER = {
   clues: [
     { type: "plates", title: "Seven race numbers", plates: ["10", "16", "7", "4", "8", "9", "6"],
       cap: "One driver raced under <b>7 different numbers</b> in 11 seasons." },
-    { type: "stopwatch", title: "The debut", stamp: "FASTEST LAP", ageY: 20, ageD: 258,
-      cap: "Fastest lap in his <b>very first race</b>. Nobody had done it younger." },
     { type: "seasons", title: "The slow start", cols: [["YR 1", 0], ["YR 2", 0], ["YR 3", 2], ["YR 4", 0]], total: 57, totalLbl: "CAREER",
       cap: "<b>2 podiums</b> in his first 4 seasons. He finished with <b>57</b>." },
     { type: "count", title: "The wait", n: 111, unit: "starts",
@@ -106,7 +108,8 @@ const DRIVER = {
   ],
 };
 /* ============================================================ */
-const HOOK = 3.8, CLUE = 7.4, REVEAL = 7.6, TR = 0.55;
+const HOOK = 3.8, COUNT = 3.0, REVEAL = 7.6, TOTAL = 48.4, TR = 0.55;
+const CLUE = (TOTAL - HOOK - COUNT - REVEAL) / DRIVER.clues.length;   // clue length stretches so the reel stays the same length
 const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}};const driver={VER:{team:"RBR"},RUS:{team:"MER"}};
   const LOOK = {
     VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
@@ -153,6 +156,7 @@ const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}
 
 document.getElementById("series").textContent = DRIVER.episode;
 document.getElementById("src").textContent = DRIVER.source;
+document.getElementById("gantry").style.gridTemplateColumns = `repeat(${DRIVER.clues.length},1fr)`;
 document.getElementById("gantry").innerHTML = DRIVER.clues.map((_, i) => `<div><i></i><i></i><b>CLUE ${i + 1}</b></div>`).join("");
 const meHelm = (size) => helmet("__me", { size, look: 0, colors: DRIVER.helmet });
 document.getElementById("mystery").innerHTML = `<div id="mysteryHelm">${meHelm(250)}</div><span class="q">?</span>`;
@@ -172,7 +176,7 @@ const clueViz = {
 };
 document.getElementById("scenes").innerHTML = `
   <section class="scene s0">
-    <div class="kick" data-a="fade 0 .4">5 CLUES · 1 DRIVER</div>
+    <div class="kick" data-a="fade 0 .4">${DRIVER.clues.length} CLUES · 1 DRIVER</div>
     <h1 class="h"><span data-a="up 0.05 .45" style="display:block">Guess</span><span data-a="up 0.15 .45" style="display:block">the</span><em data-a="up 0.3 .5" style="display:block">driver</em></h1>
     <div data-a="pop 2.0 .5" style="margin-top:40px;transform-origin:left"><span class="hand" style="font-size:70px;display:inline-block;white-space:nowrap;transform:rotate(-3deg)">comment the clue you got it on 👇</span></div>
   </section>
@@ -182,6 +186,11 @@ document.getElementById("scenes").innerHTML = `
     <div class="panel" data-a="up 0.6 .45">${clueViz[c.type](c)}</div>
     <div class="cap" data-a="up ${c.type === "count" ? 4.3 : 3.6} .5">${c.cap}</div>
   </section>`).join("")}
+  <section class="scene cd">
+    <div class="kick" data-a="fade 0 .3">REVEAL IN</div>
+    <div class="cdwrap"><svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="170" fill="none" stroke="#2A2733" stroke-width="22"/><circle class="cdring" cx="200" cy="200" r="170" fill="none" stroke="#FF2A2A" stroke-width="22" stroke-linecap="round" pathLength="100" stroke-dasharray="100 100" transform="rotate(-90 200 200)" style="filter:drop-shadow(0 0 14px #FF2A2A)"/></svg><span class="led cdnum">3</span></div>
+    <div class="hand" data-a="pop 0.2 .4" style="font-size:80px;margin-top:30px">locked in your guess?</div>
+  </section>
   <section class="scene rv">
     <div class="kick" data-a="fade 0.9 .4">LIGHTS OUT. IT'S…</div>
     <div id="rvHelm" data-a="pop 0.6 .7">${meHelm(400)}</div>
@@ -192,8 +201,8 @@ document.getElementById("scenes").innerHTML = `
 
 // ---- timeline ----
 const scenes = [...document.querySelectorAll(".scene")];
-const DUR = [HOOK, ...DRIVER.clues.map(() => CLUE), REVEAL], T0 = []; DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
-const DURATION = DUR.reduce((a, b) => a + b, 0), TREV = T0[T0.length - 1];
+const DUR = [HOOK, ...DRIVER.clues.map(() => CLUE), COUNT, REVEAL], T0 = []; DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
+const DURATION = DUR.reduce((a, b) => a + b, 0), TREV = T0[T0.length - 1], TC = TREV - COUNT;
 const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
@@ -201,9 +210,10 @@ const sweep = document.querySelector(".sweep"), gant = [...document.querySelecto
 function seek(t) {
   scenes.forEach((sc, i) => {
     const lt = t - T0[i], end = DUR[i];
-    let x = 0; const vis = lt > -TR && lt < end + 0.01;
-    if (i > 0 && lt < 0) x = 1080 * easeInOut(clamp(-lt / TR));
-    if (i < scenes.length - 1 && lt > end - TR) x = -1080 * easeInOut(clamp((lt - (end - TR)) / TR));
+    const hardIn = sc.classList.contains("rv"), hardOut = sc.classList.contains("cd");   // countdown holds its "1", then a hard cut to the reveal
+    let x = 0; const vis = lt > (hardIn ? 0 : -TR) && lt < end + (hardOut ? 0 : 0.01);
+    if (i > 0 && lt < 0 && !hardIn) x = 1080 * easeInOut(clamp(-lt / TR));
+    if (i < scenes.length - 1 && lt > end - TR && !hardOut) x = -1080 * easeInOut(clamp((lt - (end - TR)) / TR));
     sc.style.display = vis ? "flex" : "none"; sc.style.transform = `translateX(${x}px)`;
     if (!vis) return;
     anims[i].forEach(({ el, type, s, d }) => {
@@ -217,6 +227,9 @@ function seek(t) {
       else if (type === "count") el.textContent = Math.round((+el.dataset.count) * easeOut(p));
     });
     if (sc.classList.contains("clue")) clueHook(sc, DRIVER.clues[+sc.dataset.c], lt);
+    if (sc.classList.contains("cd")) { const k = Math.min(2, Math.max(0, Math.floor(lt))), f = clamp(lt - k);
+      sc.querySelector(".cdnum").textContent = String(3 - k); sc.querySelector(".cdnum").style.transform = `translate(-50%,-55%) scale(${1.25 - 0.25 * easeOut(clamp(f / 0.3))})`;
+      sc.querySelector(".cdring").setAttribute("stroke-dashoffset", String(100 * clamp(lt / COUNT))); }
   });
   // gantry: one red light pair per clue; all out at the reveal
   gant.forEach((g, k) => { const on = t >= T0[k + 1] + 0.15 && t < TREV + 0.35; g.querySelectorAll("i").forEach((l) => l.classList.toggle("on", on)); g.querySelector("b").classList.toggle("on", on); });
@@ -224,7 +237,7 @@ function seek(t) {
   const clueIdx = Math.max(0, Math.min(DRIVER.clues.length, Math.floor((t - HOOK) / CLUE) + 1));
   const inClues = t >= HOOK - 0.2 && t < TREV - 0.1;
   mystery.style.opacity = inClues ? clamp((t - HOOK + 0.2) / 0.4) * clamp((TREV - 0.1 - t) / 0.3) : 0;
-  mh.style.filter = `blur(${[40, 36, 31, 26, 21, 16][clueIdx]}px) brightness(.55)`;
+  mh.style.filter = `blur(${40 - clueIdx * (22 / DRIVER.clues.length)}px) brightness(.55)`;
   mystery.style.top = "350px";
   // reveal flash
   const fl = t - TREV; document.getElementById("flash").style.opacity = fl >= 0 && fl < 0.5 ? 0.8 * (1 - fl / 0.5) : 0;
@@ -290,7 +303,7 @@ async function renderSoundtrack(rate) {
   const pump = ctx.createGain(); pump.connect(music);                         // sidechained bus: bass, pads, arp
   const dry = ctx.createGain(); dry.connect(music);                           // drums
   const out = (node, bus, rv = 0, de = 0) => { node.connect(bus); if (rv) { const g = ctx.createGain(); g.gain.value = rv; node.connect(g).connect(verbIn); } if (de) { const g = ctx.createGain(); g.gain.value = de; node.connect(g).connect(dlIn); } };
-  const clueAt = (t) => Math.max(0, Math.min(5, Math.floor((t - HOOK) / CLUE) + 1));   // 0 hook, 1..5 clues
+  const clueAt = (t) => Math.max(0, Math.min(5, Math.round((Math.floor((t - HOOK) / CLUE) + 1) * 5 / DRIVER.clues.length)));   // 0 hook, 1..5 clues
   const K = (t, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14); env(g, t, 0.002, v, 0.3); o.connect(g).connect(dry); o.start(t); o.stop(t + 0.4);
     const c = ctx.createBufferSource(), cf = ctx.createBiquadFilter(), cg = ctx.createGain(); c.buffer = noise; cf.type = "highpass"; cf.frequency.value = 3000; env(cg, t, 0.001, v * 0.25, 0.012); c.connect(cf).connect(cg).connect(dry); c.start(t, Math.random(), 0.03);
     pump.gain.setValueAtTime(0.3, t); pump.gain.linearRampToValueAtTime(1, t + q * 0.75); };
@@ -314,7 +327,7 @@ async function renderSoundtrack(rate) {
   const prog = [{ r: 33, ch: [57, 60, 64], ar: [69, 72, 76, 81] }, { r: 29, ch: [57, 60, 65], ar: [69, 72, 77, 81] }, { r: 36, ch: [55, 60, 64], ar: [67, 72, 76, 79] }, { r: 31, ch: [55, 59, 62], ar: [67, 71, 74, 79] }];
   const hook = [[0, 76, 1.5], [1.5, 79, 0.5], [2, 81, 1], [3, 79, 0.5], [3.5, 76, 0.5], [4, 74, 1.5], [5.5, 76, 0.5], [6, 72, 2]];    // beats, note, length (2 bars)
   const ARPPAT = [0, 1, 2, 3, 2, 1, 2, 3, 0, 1, 2, 3, 2, 3, 1, 2];
-  const silentFrom = TREV - 0.6, dropAt = TREV;                                // music stops for the beeps, drops back in on the reveal
+  const silentFrom = TC, dropAt = TREV;                                // music stops for the beeps, drops back in on the reveal
   const barLen = 4 * q;
   for (let bar = 0, t = 0.1; t < DURATION - 0.2; bar++, t = 0.1 + bar * barLen) {
     const c = prog[bar % 4];
@@ -334,12 +347,12 @@ async function renderSoundtrack(rate) {
   }
   // a reverse swell into each cut and an impact on it; a long swell into the reveal
   T0.slice(1, -1).forEach((c) => { SWELL(c - 1.1, 1.1, 0.12); IMPACT(c, 0.35); });
-  SWELL(TREV - 2.2, 1.6, 0.18); IMPACT(TREV, 0.7);
+  SWELL(TREV - 1.6, 1.55, 0.18); IMPACT(TREV, 0.7);
   const beep = (t, f, d, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; env(g, t, 0.004, v, d); const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400; o.connect(lp).connect(g).connect(sfx); o.start(t); o.stop(t + d + 0.05); };
   const boom = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.6); env(g, t, 0.005, 0.9, 0.7); o.connect(g).connect(sfx); o.start(t); o.stop(t + 0.9); };
-  T0.slice(1).forEach((c) => whoosh(c - TR));
+  T0.slice(1, -1).forEach((c) => whoosh(c - TR));
   DRIVER.clues.forEach((_, i) => beep(T0[i + 1] + 0.15, 880, 0.14, 0.18));
-  for (let k = 0; k < 3; k++) beep(TREV - 0.55 + k * 0.16, 660, 0.08, 0.14);
+  for (let k = 0; k < 3; k++) { beep(TC + k, 660, 0.12, 0.2); K(TC + k, 0.5); }
   boom(TREV); bell(TREV + 0.05, 0.3); coin(TREV + 1.45, 0.3); coin(TREV + 1.6, 0.26);
   return ctx.startRendering();
 }
