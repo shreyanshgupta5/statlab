@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v18"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v19"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -96,10 +96,10 @@
   };
   const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
   let hid = 0;
-  function helmet(id, { size = 96, look = 0, cls = "" } = {}) {
+  function helmet(id, { size = 96, look = 0, cls = "", colors = null } = {}) {
     const d = driver[id];
     const base = d && team[d.team] ? team[d.team].color : "#8D939B";
-    const [h1, h2, h3, skin, iris, mood] = LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
+    const [h1, h2, h3, skin, iris, mood] = colors || LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
     const K = "#0A0A0A", u = "h" + ++hid, cy = 348;
     const eye = (cx, side) => {
       const top = mood === "happy" ? 22 : 20, lid = mood === "happy" ? 4 : 14, ix = cx + look;
@@ -691,6 +691,9 @@
     return `<div class="empty reveal"><span class="kicker">404</span><h1>Off track</h1><p>${esc(msg)}</p><a class="btn" href="#/">Back to Season</a></div>`;
   }
 
+  /* ---------- Play: games, levels, friend challenges (play.js) ---------- */
+  const PLAY = window.PLAY_INIT ? window.PLAY_INIT({ S, driver, team, helmet, esc, raceByRound, driverStats }) : null;
+
   /* ---------- router ---------- */
   const tabs = [...document.querySelectorAll(".tabs a")];
   let timer;
@@ -704,10 +707,13 @@
     else if (p0 === "driver") { html = viewDriver(p1); tab = "season"; }
     else if (p0 === "team") { html = viewTeam(p1); tab = "season"; }
     else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = "news"; }
+    else if (p0 === "play" && PLAY) { html = PLAY.view(parts); tab = "play"; }
     else if (p0 === "duel") { html = viewDuelRace(p1, p2, p3 === "race" ? Number(p4) : undefined); tab = "duel"; }
     else { html = viewMissing("That page doesn't exist."); tab = ""; }
 
+    if (PLAY) PLAY.stop();
     app.innerHTML = html;
+    if (PLAY && p0 === "play") PLAY.mount(app);
     tabs.forEach((t) => {
       const on = t.dataset.tab === tab;
       t.classList.toggle("on", on);
@@ -755,6 +761,9 @@
 
   // one listener for follow stars, share and calendar buttons
   app.addEventListener("click", (e) => {
+    const pl = PLAY && PLAY.onClick(e);
+    if (pl === "rerender") { const y = window.scrollY; route(); window.scrollTo(0, y); return; }
+    if (pl) return;
     const f = e.target.closest("[data-follow]");
     if (f) {
       const [kind, id] = f.dataset.follow.split(":");
@@ -783,6 +792,10 @@
       const a = Object.assign(document.createElement("a"), { href: url, download: `statlab-r${r.round}.ics` });
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
+  });
+  app.addEventListener("submit", (e) => {
+    const pl = PLAY && PLAY.onSubmit(e);
+    if (pl === "rerender") route();
   });
   route();
 })();

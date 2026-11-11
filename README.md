@@ -11,6 +11,7 @@ Unofficial fan project. Data: OpenF1.
 | `index.html` | Page shell: header, bottom tabs, loads everything else |
 | `styles.css` | All styling |
 | `app.js` | Router and views |
+| `play.js` | Play tab: Lights Out, Higher or Lower, Guess the Track, Podium Predictor; XP, 10 levels with unlocks (games, helmets, Pro mode), badges, rivals. Friend play works through challenge links (`#/play/<game>/c/<seed>-<score>-<name>`) that replay the same seed. Progress lives in `localStorage` on the device. |
 | `data.js` | Season data (generated, do not edit by hand) |
 | `manifest.webmanifest`, `icons/` | App name and icons for "Add to Home Screen" |
 | `sw.js` | Service worker: offline support and caching |
@@ -50,3 +51,7 @@ python3 tools/build_previews.py                                                 
 
 `add_round.py` takes the race order from a curated results CSV and Q1–Q3 times from OpenF1. `build_previews.py` writes the race preview pages (track layout from OpenF1, past winners and each current driver's record at the venue from Jolpica). When you change `app.js` or `styles.css`, bump `VERSION` in `sw.js` and `APP_VERSION` in `app.js` so installed apps update.
 python3 tools/build_duels.py                                                                # adds Duel telemetry (track map, speed trace, corners) for new rounds to duels.js
+
+## Play tab
+
+No server is needed. Each game is built from a random seed; a challenge link carries the seed and the sender's score, so the friend gets identical lights, questions or circuits. Podium Predictor picks lock at `raceStart` and are scored the next time the player opens Play after that round's results are in `data.js`. Real-time head-to-head or leaderboards across phones would need a backend (e.g. Firebase or Supabase).
