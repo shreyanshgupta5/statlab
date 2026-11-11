@@ -7,7 +7,7 @@ window.PLAY_INIT = function (ctx) {
   const KEY = "onef1.play.v1";
 
   /* ---------- profile ---------- */
-  const blank = () => ({ name: "", livery: "rookie", xp: 0, games: {}, badges: [], rivals: {}, days: [], played: [], preds: {} });
+  const blank = () => ({ name: "", livery: "rookie", xp: 0, games: {}, badges: [], rivals: {}, days: [], played: [], preds: {}, board: [] });
   let P = (() => { try { const p = JSON.parse(localStorage.getItem(KEY)); if (p && typeof p.xp === "number") return Object.assign(blank(), p); } catch (e) {} return blank(); })();
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} };
 
@@ -50,6 +50,23 @@ window.PLAY_INIT = function (ctx) {
 
   const today = () => new Date().toISOString().slice(0, 10);
   const streak = () => { let n = 0; const set = new Set(P.days); for (let d = new Date(); set.has(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() - 1)) n++; return n; };
+  /* Reaction leaderboard (top 5). Kept on this phone: your own runs plus every friend's time that arrived in a challenge link.
+     One row per driver name, their best time. A shared online board needs a backend; boardAdd/boardTop are the only two places to swap. */
+  function boardAdd(name, ms) {
+    if (!name || !(ms >= 100 && ms < 999)) return;
+    const row = P.board.find((r) => r.name === name);
+    if (row) { if (ms < row.ms) { row.ms = ms; row.at = Date.now(); } } else P.board.push({ name, ms, at: Date.now() });
+    P.board = P.board.sort((a, b) => a.ms - b.ms || a.at - b.at).slice(0, 30);
+  }
+  const boardTop = () => P.board.slice().sort((a, b) => a.ms - b.ms || a.at - b.at).slice(0, 5);
+  function boardHtml(title = true) {
+    const top = boardTop(), medal = ["🥇", "🥈", "🥉", "4", "5"];
+    const rows = top.map((r, i) => `<li class="${r.name === P.name ? "me" : ""}"><span class="pl-bpos">${medal[i]}</span><b>${esc(r.name)}${r.name === P.name ? " <small>YOU</small>" : ""}</b><span class="led">${r.ms} ms</span></li>`).join("");
+    const empty = Array.from({ length: 5 - top.length }, (_, k) => `<li class="open"><span class="pl-bpos">${medal[top.length + k]}</span><b>Open spot</b><span class="led">– ms</span></li>`).join("");
+    return `${title ? `<div class="sh"><span class="kicker">LIGHTS OUT · TOP 5</span><h2>Fastest reactions</h2></div>` : ""}<ol class="pl-board">${rows}${empty}</ol>
+      <p class="note">${top.length < 2 ? "Challenge friends on Lights Out: their times land here when you open their link." : "You and the friends you've traded challenges with. Best time each."}</p>`;
+  }
+
   // gives XP + badges, remembers the day; returns what happened for the result screen
   function award(xp, badges = []) {
     const before = levelOf(P.xp), got = [];
@@ -191,6 +208,7 @@ window.PLAY_INIT = function (ctx) {
       ${scoredHtml}
       <div class="sh"><span class="kicker">PICK A GAME</span><h2>Games</h2></div>
       <div class="pl-games">${games}</div>
+      ${boardHtml()}
       <div class="pl-card pl-how reveal"><b>Play with friends</b><span>Finish any game and tap <em>Challenge a friend</em>. They get the same lights or questions. Beat their score to win the head-to-head.</span></div>
       ${rivals.length ? `<div class="sh"><span class="kicker">HEAD TO HEAD</span><h2>Rivals</h2></div><ul class="pl-rivals">${rivals.map(([n, r]) => `<li><b>${esc(n)}</b><span class="w">${r.w}W</span><span class="l">${r.l}L</span>${r.d ? `<span>${r.d}D</span>` : ""}</li>`).join("")}</ul>` : ""}
       <div class="sh"><span class="kicker">YOUR GARAGE</span><h2>Helmet</h2></div>
@@ -209,6 +227,7 @@ window.PLAY_INIT = function (ctx) {
     if (!P.name) return namePrompt(location.hash);
     if (lv() < G.lvl && !ch) return `<section class="play"><div class="empty"><span class="kicker">LOCKED</span><h1>${G.name}</h1><p>${lockedNote(G.lvl)}. Play the other games to earn XP.</p><a class="btn" href="#/play">Back to Play</a></div></section>`;
     const scoreTxt = ch ? (g === "lights" ? `${ch.score} ms` : `${ch.score}${G.unit}`) : "";
+    if (ch && g === "lights") { boardAdd(ch.name, ch.score); save(); }
     const proOpen = g === "hilo" && lv() >= 6 && !ch;
     return `<section class="play pl-stage" data-pl-game="${g}" ${ch ? `data-pl-ch="${ch.seed}-${ch.score}-${encodeURIComponent(ch.name)}${ch.mode ? "-" + ch.mode : ""}"` : ""}>
       <a class="pl-back" href="#/play">‹ Play</a>
@@ -216,6 +235,7 @@ window.PLAY_INIT = function (ctx) {
         ${ch ? `<div class="pl-card pl-chal"><span>🥊 Challenge from</span><b>${esc(ch.name)}</b><span>Score to beat: <b class="led">${esc(scoreTxt)}</b>${ch.mode === "pro" ? " · Pro mode" : ""}</span><small>Same ${g === "lights" ? "lights" : g === "tracks" ? "circuits" : "questions"} they had. Beat it to win.</small></div>` : ""}
         <p class="pl-sub">${G.blurb}</p>
         <button class="btn pl-start" type="button" data-pl-start="${ch && ch.mode === "pro" ? "pro" : ""}">${ch ? "Accept challenge" : "Start"}</button>
+        ${g === "lights" ? boardHtml() : ""}
         ${proOpen ? `<button class="btn pl-start pl-pro" type="button" data-pl-start="pro">Pro mode 🎓</button>` : g === "hilo" && !ch ? `<p class="note">🎓 Pro mode (race-by-race questions) ${lockedNote(6).toLowerCase()}.</p>` : ""}
       </div></section>`;
   }
@@ -273,6 +293,7 @@ window.PLAY_INIT = function (ctx) {
     const gs = P.games[g] || (P.games[g] = { plays: 0, best: null });
     gs.plays++;
     const pb = gs.best == null || better(score, gs.best); if (pb) gs.best = score;
+    if (g === "lights") { boardAdd(P.name, score); if (ch) boardAdd(ch.name, ch.score); }
     let verdict = "";
     if (ch) {
       const key = `${g}:${ch.seed}:${ch.name}`, fresh = !P.played.includes(key);
@@ -292,6 +313,7 @@ window.PLAY_INIT = function (ctx) {
       ${verdict}
       <div class="pl-gain"><span>+${a.xp} XP</span>${a.daily ? `<span>+${a.daily} daily</span>` : ""}${a.badges.map((b) => `<span>${BADGES[b][0]} ${BADGES[b][1]}</span>`).join("")}</div>
       ${a.levelUp ? `<div class="pl-levelup">${avatar(80)}<div><span class="kicker">LEVEL UP</span><b>Level ${a.levelUp} · ${esc(LEVELS[a.levelUp - 1].name)}</b>${unlocksAt(a.levelUp)}</div></div>` : ""}
+      ${g === "lights" ? `<div class="pl-boardwrap">${boardHtml()}</div>` : ""}
       <button class="btn" type="button" data-pl-share="${esc(link)}" data-pl-text="${esc(shareText(g, score, ch))}">${ch ? "Send it back" : "Challenge a friend"}</button>
       <button class="btn pl-ghost" type="button" data-pl-again="${mode || ""}">Play again</button>
     </div>`;

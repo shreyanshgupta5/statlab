@@ -511,3 +511,15 @@ h1, .sh h2 { text-transform: uppercase; }
 .pl-pastpred div span { padding: 4px 8px; border-radius: 8px; background: var(--card-2); font-size: 13px; color: var(--muted); }
 .pl-pastpred .hit { background: rgba(91,227,143,.18); color: var(--up); } .pl-pastpred .near { background: rgba(255,176,0,.15); color: var(--amber); }
 .pl-pastpred .led { color: var(--amber); font-size: 18px; }
+
+/* reaction leaderboard */
+.pl-board { display: grid; gap: 6px; }
+.pl-board li { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 12px; background: var(--card); }
+.pl-board li:first-child { border: 2px solid var(--yellow); box-shadow: 0 0 14px rgba(255,212,0,.2); }
+.pl-board li.me { background: #1E1A0C; }
+.pl-board li.open { opacity: .4; }
+.pl-bpos { font-family: var(--led); font-weight: 900; font-size: 18px; text-align: center; color: var(--muted); }
+.pl-board b { font-size: 18px; font-weight: 900; font-style: italic; font-stretch: 125%; overflow-wrap: anywhere; text-align: left; }
+.pl-board b small { margin-left: 6px; padding: 2px 6px; border-radius: 6px; background: var(--amber); color: #0A0A08; font: 700 10px var(--mono); font-style: normal; vertical-align: middle; }
+.pl-board .led { font-size: 18px; color: var(--amber); }
+.pl-boardwrap { margin-top: 18px; text-align: left; }
