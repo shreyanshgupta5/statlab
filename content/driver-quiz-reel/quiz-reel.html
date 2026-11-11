@@ -1,0 +1,327 @@
+<title>Antonelli Quiz Reel</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* "How well do you know Kimi Antonelli?" 1080x1920 quiz reel: hook, 5 questions (pick, 3 s countdown, reveal + infographic), score card.
+   Mercedes-teal take on the ONE F1 timing-screen look. Content sits in y 200-1560 so Instagram's UI never covers it. */
+:root { --bg:#070B0B; --fg:#F2F2F0; --soft:#C9CDD2; --muted:#8D939B; --teal:#27F4D2; --amber:#FFB000; --yellow:#FFD400; --red:#dc2c2c; --good:#5BE38F; --bad:#FF6B6B;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; }
+* { box-sizing:border-box; }
+body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
+.stage { position:relative; width:1080px; height:1920px; overflow:hidden;
+  background:repeating-linear-gradient(105deg,transparent 0 46px,rgba(39,244,210,.045) 46px 48px),radial-gradient(90% 55% at 70% 30%,#0C2A27,#070B0B 70%); }
+.hdr { position:absolute; left:72px; right:72px; top:110px; display:flex; justify-content:space-between; align-items:center; z-index:5; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); } .brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:#0A0A0A; }
+.qdots { display:flex; gap:10px; } .qdots i { width:56px; height:10px; border-radius:5px; background:#17302C; } .qdots i.on { background:var(--teal); box-shadow:0 0 10px var(--teal); }
+.ftr { position:absolute; left:72px; right:72px; bottom:318px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:22px; letter-spacing:2px; color:var(--muted); z-index:5; }
+.scene { position:absolute; left:0; top:200px; width:1080px; height:1380px; padding:0 72px; display:flex; flex-direction:column; will-change:transform; }
+.kick { font-family:var(--led); font-weight:900; font-size:34px; letter-spacing:4px; color:var(--teal); text-shadow:0 0 12px rgba(39,244,210,.6); }
+.h { margin:14px 0 0; font-weight:900; font-style:italic; font-stretch:125%; line-height:.95; text-transform:uppercase; }
+.h em { font-style:inherit; color:var(--teal); }
+.panel { position:relative; border-radius:20px; border:2px solid #173A35; background:radial-gradient(circle at 3px 3px,rgba(255,255,255,.04) 1.3px,transparent 1.6px) 0 0/7px 7px,#060A0A; }
+.led { font-family:var(--led); font-weight:900; }
+.lbl { font-family:var(--mono); font-size:24px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+.hand { font-family:var(--hand); color:var(--yellow); }
+/* hook */
+.s0 { justify-content:center; }
+.s0 .num12 { position:absolute; right:30px; top:120px; font-weight:900; font-style:italic; font-stretch:125%; font-size:700px; line-height:1; color:transparent; -webkit-text-stroke:5px rgba(39,244,210,.35); }
+.s0 .helm { margin-top:40px; align-self:center; filter:drop-shadow(0 20px 30px rgba(0,0,0,.6)) drop-shadow(0 0 40px rgba(39,244,210,.25)); }
+.rules { display:flex; gap:14px; margin-top:40px; justify-content:center; }
+.rules span { padding:14px 22px; border-radius:999px; background:#0D1F1D; border:2px solid #1E4A44; font-family:var(--mono); font-weight:700; font-size:26px; color:var(--soft); }
+/* question */
+.q { justify-content:center; padding-bottom:120px; }
+.q .qtop { display:flex; justify-content:space-between; align-items:baseline; }
+.q .qt { font-size:88px; min-height:255px; }
+.opts { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:26px; }
+.opt { position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:26px 10px 24px; border-radius:22px; border:3px solid #1E4A44; background:#081211; transition:none; }
+.opt .k { width:58px; height:58px; display:grid; place-items:center; border-radius:50%; background:#12302C; font-family:var(--led); font-weight:900; font-size:34px; color:var(--teal); }
+.opt b { font-family:var(--led); font-weight:900; font-size:74px; line-height:1.05; color:var(--fg); white-space:nowrap; }
+.opt.right { border-color:var(--good); background:#0B2618; box-shadow:0 0 34px rgba(91,227,143,.45); } .opt.right .k { background:var(--good); color:#06140C; } .opt.right b { color:var(--good); }
+.opt.dim { opacity:.32; }
+.opt .tick { position:absolute; right:-14px; top:-16px; width:60px; height:60px; border-radius:50%; background:var(--good); color:#06140C; display:grid; place-items:center; font-size:38px; font-weight:900; opacity:0; }
+.stagebox { position:relative; margin-top:30px; height:540px; }
+.timer { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.timer svg { width:330px; height:330px; } .timer .tn { position:absolute; top:50%; left:50%; transform:translate(-50%,-62%); font-family:var(--led); font-weight:900; font-size:170px; color:var(--fg); }
+.timer .pick { margin-top:18px; font-size:74px; }
+.viz { position:absolute; inset:0; padding:30px 34px; opacity:0; }
+.viz .cap { font-family:var(--mono); font-size:26px; color:var(--soft); line-height:1.4; margin-top:18px; }
+.viz .cap b { color:var(--teal); }
+/* Q1 race strip */
+.strip { display:grid; grid-template-columns:repeat(10,1fr); gap:12px; margin-top:22px; }
+.strip i { aspect-ratio:1; border-radius:12px; background:#0F1D1B; border:2px solid #1C3532; display:grid; place-items:center; font-style:normal; font-family:var(--led); font-weight:900; font-size:22px; color:#3A5A55; }
+.strip i.w { background:var(--yellow); border-color:var(--yellow); color:#141000; box-shadow:0 0 16px rgba(255,212,0,.55); }
+.bigline { display:flex; align-items:baseline; gap:18px; } .bigline .led { font-size:150px; line-height:1; color:var(--yellow); text-shadow:0 0 22px rgba(255,212,0,.5); } .bigline span { font-family:var(--mono); font-size:30px; color:var(--soft); }
+/* Q2 streak */
+.streak { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-top:20px; }
+.streak div { display:flex; flex-direction:column; align-items:center; gap:10px; padding:22px 6px; border-radius:18px; background:#0B1817; border:2px solid #1E4A44; }
+.streak .fl { font-size:64px; line-height:1; } .streak b { font-family:var(--mono); font-size:22px; color:var(--soft); letter-spacing:1px; } .streak .led { font-size:30px; color:var(--yellow); }
+/* Q3 grid climb */
+.climb { display:grid; grid-template-columns:420px 1fr; gap:30px; align-items:center; }
+.gridsvg { width:420px; height:560px; }
+.climbnum .led { display:block; font-size:200px; line-height:.9; color:var(--teal); text-shadow:0 0 24px rgba(39,244,210,.5); }
+/* Q4 h2h */
+.h2h { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:22px; margin-top:20px; }
+.h2h .side { display:flex; flex-direction:column; align-items:center; gap:6px; } .h2h .side b { font-weight:900; font-style:italic; font-stretch:125%; font-size:36px; text-transform:uppercase; }
+.h2hbar { position:relative; height:84px; border-radius:16px; background:#0F1D1B; overflow:hidden; display:flex; }
+.h2hbar i { display:flex; align-items:center; padding:0 22px; font-style:normal; font-family:var(--led); font-weight:900; font-size:56px; }
+.h2hbar .a { background:var(--teal); color:#03201B; transform-origin:left; } .h2hbar .b { margin-left:auto; background:#3A4A48; color:var(--fg); justify-content:flex-end; transform-origin:right; }
+/* Q5 points */
+.pts { display:grid; gap:22px; margin-top:16px; }
+.prow { display:grid; grid-template-columns:96px 1fr 150px; align-items:center; gap:16px; }
+.prow .tk { height:58px; border-radius:12px; background:#0F1D1B; overflow:hidden; } .prow .tk i { display:block; height:100%; border-radius:12px; transform-origin:left; }
+.prow .led { font-size:52px; text-align:right; }
+.gapline { display:flex; align-items:center; gap:20px; margin-top:28px; } .gapline span:last-child { font-family:var(--mono); font-size:28px; color:var(--soft); }
+.gap { display:inline-block; padding:12px 22px; border-radius:16px; background:var(--yellow); color:#141000; font-family:var(--led); font-weight:900; font-size:56px; transform-origin:center; box-shadow:0 0 30px rgba(255,212,0,.5); }
+/* end */
+.s6 { justify-content:center; }
+.tiers { display:grid; gap:18px; margin-top:40px; }
+.tier { display:grid; grid-template-columns:150px 1fr; align-items:center; gap:22px; padding:24px 30px; border-radius:22px; border:3px solid #1E4A44; background:#081211; }
+.tier .led { font-size:66px; color:var(--teal); } .tier b { font-weight:900; font-style:italic; font-stretch:125%; font-size:50px; text-transform:uppercase; } .tier:first-child { border-color:var(--yellow); box-shadow:0 0 30px rgba(255,212,0,.3); } .tier:first-child .led { color:var(--yellow); }
+.sweep { position:absolute; top:-200px; width:260px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(39,244,210,.85) 45%,#fff 50%,rgba(39,244,210,.85) 55%,transparent); filter:blur(2px); opacity:0; }
+</style>
+<div class="stage">
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><div class="qdots" id="qdots"><i></i><i></i><i></i><i></i><i></i></div></div>
+
+  <section class="scene s0">
+    <div class="num12">12</div>
+    <div class="kick" data-a="fade 0 .4">THE QUIZ · 5 QUESTIONS</div>
+    <h1 class="h" style="font-size:118px"><span data-a="up 0.05 .45" style="display:block">How well</span><span data-a="up 0.15 .45" style="display:block">do you know</span><em data-a="up 0.3 .5" style="display:block">Kimi Antonelli?</em></h1>
+    <div class="helm" id="hookHelm" data-a="pop 0.7 .6"></div>
+    <div class="rules"><span data-a="pop 1.5 .4">5 QUESTIONS</span><span data-a="pop 1.75 .4">3 SECONDS EACH</span><span data-a="pop 2.0 .4">KEEP SCORE</span></div>
+  </section>
+
+  <!-- questions are built from QUIZ below -->
+  <div id="qs"></div>
+
+  <section class="scene s6">
+    <div class="kick" data-a="fade 0.1 .4">FULL TIME</div>
+    <h2 class="h" style="font-size:118px"><span data-a="up 0.15 .45" style="display:block">What did</span><em data-a="up 0.3 .5" style="display:block">you score?</em></h2>
+    <div class="tiers">
+      <div class="tier" data-a="left 0.8 .45"><span class="led">5/5</span><b>🏆 World Champion</b></div>
+      <div class="tier" data-a="left 1.1 .45"><span class="led">3–4</span><b>🥈 Podium</b></div>
+      <div class="tier" data-a="left 1.4 .45"><span class="led">0–2</span><b>🚧 Back of the grid</b></div>
+    </div>
+    <div data-a="pop 2.2 .5" style="margin-top:46px;transform-origin:left"><span class="hand" style="font-size:96px;display:inline-block;transform:rotate(-3deg)">comment your score 👇</span></div>
+  </section>
+
+  <div class="sweep"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span>2026 SEASON · AFTER ROUND 20</span></div>
+</div>
+<script>
+// All numbers checked against ONE F1's season data after round 20 (São Paulo).
+const RES = [["P",1],["W",2],["W",3],["W",4],["W",5],["W",6],["R",7],["P",8],["",9],["W",10],["P",11],["P",12],["W",13],["W",14],["",15],["P",16],["P",17],["W",18],["P",19],["",20]];
+const QUIZ = [
+  { q: "How many races has he won in 2026?", opts: ["7", "9", "11"], a: 1, viz: "wins" },
+  { q: "His longest winning streak this year?", opts: ["3", "4", "5"], a: 2, viz: "streak" },
+  { q: "Where did he start the Italian GP, the race he won?", opts: ["P1", "P8", "P19"], a: 2, viz: "climb", small: true },
+  { q: "Qualifying vs teammate Russell?", opts: ["6–14", "11–9", "15–5"], a: 1, viz: "h2h" },
+  { q: "His title lead with 3 races to go?", opts: ["48", "111", "79"], a: 1, viz: "lead" },
+];
+const HOOK = 3.6, QD = 8.6, END = 5.4, TR = 0.55;                 // scene lengths (s), push transition
+const PICK = 1.7, CD = 3.0, REVEAL = PICK + CD;                   // inside a question: options pop, 3 s countdown, reveal
+const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}};const driver={VER:{team:"RBR"},RUS:{team:"MER"}};
+  const LOOK = {
+    VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
+    HAM: ["#FFD400", "#E8002D", "#6A2C91", "#8D5A3B", "#5A3A22", "focus"], LEC: ["#E8002D", "#F2F2F0", "#1A1A1A", "#EFC29C", "#5E8A4A", "fierce"],
+    RUS: ["#16181C", "#27F4D2", "#F2F2F0", "#F2CBAA", "#4B88C9", "focus"], ANT: ["#F2F2F0", "#27F4D2", "#16181C", "#E9BC93", "#6B4A2E", "happy"],
+    NOR: ["#FF8000", "#16181C", "#47C7FC", "#F0C4A0", "#4B88C9", "happy"], PIA: ["#FF8000", "#1B2A6B", "#F2F2F0", "#F0C4A0", "#4B88C9", "focus"],
+  };
+  const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
+  let hid = 0;
+  function helmet(id, { size = 96, look = 0, cls = "" } = {}) {
+    const d = driver[id];
+    const base = d && team[d.team] ? team[d.team].color : "#8D939B";
+    const [h1, h2, h3, skin, iris, mood] = LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
+    const K = "#0A0A0A", u = "h" + ++hid, cy = 348;
+    const eye = (cx, side) => {
+      const top = mood === "happy" ? 22 : 20, lid = mood === "happy" ? 4 : 14, ix = cx + look;
+      const inner = cx - side * 30, outer = cx + side * 36, bIn = mood === "fierce" ? cy - 20 : mood === "focus" ? cy - 26 : cy - 36, bOut = mood === "happy" ? cy - 34 : cy - 36;
+      const shape = `M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z`;
+      return `<path d="${shape}" fill="#FBF8F2"/><clipPath id="${u}e${side}"><path d="${shape}"/></clipPath>
+        <g clip-path="url(#${u}e${side})"><circle cx="${ix}" cy="${cy}" r="14" fill="${iris}"/><circle cx="${ix}" cy="${cy}" r="6.5" fill="${K}"/><circle cx="${ix + 4}" cy="${cy - 5}" r="4" fill="#fff"/></g>
+        <path d="M${cx - 36} ${cy + 1} Q${cx} ${cy - top - 2} ${cx + 36} ${cy + 1}" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M${inner} ${bIn} Q${(inner + outer) / 2} ${Math.min(bIn, bOut) - 8} ${outer} ${bOut}" fill="none" stroke="#3A2A1E" stroke-width="9" stroke-linecap="round"/>`;
+    };
+    const shell = "M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z";
+    return `<svg class="helmet ${cls}" viewBox="80 110 440 480" width="${size}" height="${Math.round(size * 480 / 440)}" aria-hidden="true">
+      <defs><radialGradient id="${u}g" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+      <linearGradient id="${u}v" x1="0" x2="1"><stop offset="0" stop-color="#1B1030"/><stop offset=".45" stop-color="#2B3F8F"/><stop offset=".75" stop-color="#9B3FB5"/><stop offset="1" stop-color="#F28B2E"/></linearGradient>
+      <clipPath id="${u}c"><path d="${shell}"/></clipPath></defs>
+      <path d="${shell}" fill="${h1}"/>
+      <g clip-path="url(#${u}c)"><path d="M90 410 C170 330 430 330 510 410 L510 470 C430 380 170 380 90 470 Z" fill="${h2}"/><path d="M90 450 C170 380 430 380 510 450 L510 462 C430 392 170 392 90 462 Z" fill="${h3}"/>
+        <path d="M276 120 C284 190 288 236 286 258 L314 258 C312 236 316 190 324 120 Z" fill="${h2}"/><path d="M200 505 H400 V528 H200 Z" fill="rgba(0,0,0,.55)"/><rect x="80" y="100" width="440" height="500" fill="url(#${u}g)"/></g>
+      <path d="${shell}" fill="none" stroke="${K}" stroke-width="6"/>
+      <path d="M170 296 H430 Q458 296 458 324 V362 Q458 392 428 394 C360 400 240 400 172 394 Q142 392 142 362 V324 Q142 296 170 296 Z" fill="#141518" stroke="${K}" stroke-width="6"/>
+      <path d="M178 306 H422 Q446 306 446 328 V360 Q446 382 420 384 C356 389 244 389 180 384 Q154 382 154 360 V328 Q154 306 178 306 Z" fill="#E9E6E0"/>
+      <path d="M196 316 H404 Q426 316 426 336 V358 Q426 374 404 376 C350 380 250 380 196 376 Q174 374 174 358 V336 Q174 316 196 316 Z" fill="${skin}"/>
+      ${eye(250, -1)}${eye(350, 1)}
+      <path d="M146 252 C200 226 400 226 454 252 L460 298 H140 Z" fill="url(#${u}v)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M176 262 C240 246 300 244 360 248" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="122" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/><circle cx="478" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/></svg>`;
+  }
+
+
+
+
+const vizHtml = {
+  wins: () => `<div class="bigline"><span class="led" id="v-wins">0</span><span>wins in 20 races</span></div>
+    <div class="strip">${RES.map(([k, rd]) => `<i class="${k === "W" ? "wl" : ""}" data-rd="${rd}">${rd}</i>`).join("")}</div>
+    <div class="cap">Gold = a win. <b>8 of his 9</b> came from the front row.</div>`,
+  streak: () => `<div class="streak">${[["🇨🇳","CHINA"],["🇯🇵","JAPAN"],["🇺🇸","MIAMI"],["🇨🇦","CANADA"],["🇲🇨","MONACO"]].map(([f, n], k) => `<div data-a="pop ${REVEAL + 0.35 + k * 0.32} .4"><span class="fl">${f}</span><b>${n}</b><span class="led">WIN</span></div>`).join("")}</div>
+    <div class="bigline" style="margin-top:34px" data-a="pop ${REVEAL + 2.1} .45"><span class="led">5</span><span>in a row · rounds 2 to 6</span></div>`,
+  climb: () => `<div class="climb"><svg class="gridsvg" viewBox="0 0 420 560" id="gridsvg"></svg>
+    <div class="climbnum"><span class="lbl">STARTED</span><span class="led" id="v-pos">P19</span><span class="lbl" style="display:block;margin-top:16px">FINISHED <b style="color:var(--yellow)">P1</b></span>
+    <div class="cap" style="margin-top:26px">Qualified 7th,<br>started 19th,<br><b>won by Sunday night.</b></div></div></div>`,
+  h2h: () => `<div class="h2h"><div class="side">${helmet("ANT", { size: 150, look: 6 })}<b>Antonelli</b></div>
+    <div><div class="h2hbar"><i class="a" id="v-a" style="width:55%">11</i><i class="b" id="v-b" style="width:45%">9</i></div><div class="cap" style="text-align:center">Qualifying head-to-head · 20 rounds</div></div>
+    <div class="side">${helmet("RUS", { size: 150, look: -6 })}<b>Russell</b></div></div>
+    <div class="cap" data-a="fade ${REVEAL + 2.2} .5" style="margin-top:30px">In races they both finished, he was ahead <b>11 times in 16</b>.</div>`,
+  lead: () => `<div class="pts">${[["ANT", 390, "#27F4D2"], ["VER", 279, "#3671C6"], ["RUS", 262, "#9FB7B3"]].map(([c, v, col], k) => `<div class="prow"><b class="led" style="font-size:44px">${c}</b><div class="tk"><i class="grow" data-a="grow ${REVEAL + 0.4 + k * 0.25} 1.1" style="width:${v / 4}%;background:${col}"></i></div><span class="led" style="color:${col}" data-count="${v}" data-a="count ${REVEAL + 0.4 + k * 0.25} 1.1">${v}</span></div>`).join("")}</div>
+    <div class="gapline"><span class="gap" data-a="pop ${REVEAL + 1.9} .45">+111</span><span data-a="fade ${REVEAL + 2.1} .4">points clear of Verstappen</span></div>
+    <div class="cap" data-a="fade ${REVEAL + 2.3} .5" style="margin-top:36px">Las Vegas, Qatar and Abu Dhabi to go. <b>Can anyone still catch him?</b></div>`,
+};
+document.getElementById("qs").innerHTML = QUIZ.map((Q, i) => `<section class="scene q" data-q="${i}">
+  <div class="qtop"><span class="kick" data-a="fade 0 .35">QUESTION ${i + 1} / 5</span></div>
+  <h2 class="h qt" style="${Q.small ? "font-size:72px" : ""}" data-a="up 0.1 .45">${Q.q}</h2>
+  <div class="opts">${Q.opts.map((o, k) => `<div class="opt" data-k="${k}" data-a="pop ${0.7 + k * 0.22} .4"><span class="k">${"ABC"[k]}</span><b>${o}</b><span class="tick">✓</span></div>`).join("")}</div>
+  <div class="stagebox">
+    <div class="timer"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="86" fill="none" stroke="#12302C" stroke-width="16"/><circle class="ring" cx="100" cy="100" r="86" fill="none" stroke="#27F4D2" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="100 100" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 10px #27F4D2)"/></svg>
+      <span class="tn led">3</span><span class="hand pick">pause &amp; pick!</span></div>
+    <div class="panel viz">${vizHtml[Q.viz]()}</div>
+  </div></section>`).join("");
+document.getElementById("hookHelm").innerHTML = helmet("ANT", { size: 330, look: 0 });
+
+// Q3: a starting grid (two staggered columns), the car climbs from slot 19 to slot 1
+(() => { const slot = (p) => [p % 2 ? 110 : 300, 40 + (p - 1) * 25]; let g = "";
+  for (let p = 1; p <= 20; p++) { const [x, y] = slot(p); g += `<rect x="${x - 50}" y="${y - 8}" width="100" height="16" rx="4" fill="${p === 1 ? "#3A3418" : "#0F1D1B"}" stroke="${p === 1 ? "#FFD400" : "#1C3532"}" stroke-width="2"/><text x="${p % 2 ? x - 64 : x + 64}" y="${y + 7}" text-anchor="middle" font-family="JetBrains Mono" font-size="16" fill="#3A5A55">${p}</text>`; }
+  document.getElementById("gridsvg").innerHTML = g + `<path id="climbTrail" fill="none" stroke="#27F4D2" stroke-width="6" stroke-linecap="round" opacity=".55"/><circle id="climbCar" r="16" fill="#27F4D2" stroke="#fff" stroke-width="4" style="filter:drop-shadow(0 0 10px #27F4D2)"/>`;
+  window.gridSlot = slot; })();
+
+// ---- timeline ----
+const scenes = [...document.querySelectorAll(".scene")];
+const DUR = [HOOK, ...QUIZ.map(() => QD), END], T0 = []; DUR.reduce((a, d, i) => (T0[i] = a, a + d), 0);
+const DURATION = DUR.reduce((a, b) => a + b, 0);
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
+const sweep = document.querySelector(".sweep"), qdots = [...document.querySelectorAll("#qdots i")];
+function seek(t) {
+  scenes.forEach((sc, i) => {
+    const lt = t - T0[i], end = DUR[i];
+    let x = 0; const vis = lt > -TR && lt < end + 0.01;
+    if (i > 0 && lt < 0) x = 1080 * easeInOut(clamp(-lt / TR));
+    if (i < scenes.length - 1 && lt > end - TR) x = -1080 * easeInOut(clamp((lt - (end - TR)) / TR));
+    sc.style.display = vis ? "flex" : "none"; sc.style.transform = `translateX(${x}px)`;
+    if (!vis) return;
+    anims[i].forEach(({ el, type, s, d }) => {
+      const p = clamp((lt - s) / d), e = easeOut(p);
+      if (type === "up") { el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 70}px)`; }
+      else if (type === "left") { el.style.opacity = e; el.style.transform = `translateX(${(1 - e) * -120}px)`; }
+      else if (type === "fade") el.style.opacity = e;
+      else if (type === "pop") { el.style.opacity = clamp(p * 2); el.style.transform = `scale(${0.6 + 0.4 * back(p)})`; }
+      else if (type === "grow") el.style.transform = `scaleX(${easeInOut(p)})`;
+      else if (type === "count") el.textContent = Math.round((+el.dataset.count) * easeOut(p));
+    });
+    if (sc.classList.contains("q")) question(sc, QUIZ[+sc.dataset.q], lt);
+  });
+  const qi = scenes.findIndex((sc, i) => t >= T0[i] && t < T0[i] + DUR[i]) - 1;
+  qdots.forEach((d, k) => d.classList.toggle("on", k <= qi && qi < 5 || t >= T0[6]));
+  let sw = -1; T0.slice(1).forEach((c) => { const q = (t - (c - TR)) / TR; if (q >= 0 && q <= 1) sw = q; });
+  sweep.style.opacity = sw < 0 ? 0 : Math.sin(Math.PI * sw); sweep.style.left = (sw < 0 ? -400 : -400 + 1900 * sw) + "px";
+}
+function question(sc, Q, lt) {
+  const cd = clamp((lt - PICK) / CD), rv = lt >= REVEAL, after = lt - REVEAL;
+  const timer = sc.querySelector(".timer"), viz = sc.querySelector(".viz");
+  timer.style.opacity = lt < PICK - 0.3 ? 0 : rv ? 1 - clamp(after / 0.25) : clamp((lt - PICK + 0.3) / 0.3);
+  sc.querySelector(".ring").setAttribute("stroke-dashoffset", String(100 * cd));
+  sc.querySelector(".ring").setAttribute("stroke", cd > 0.66 ? "#FF6B6B" : cd > 0.33 ? "#FFB000" : "#27F4D2");
+  sc.querySelector(".tn").textContent = String(Math.max(1, 3 - Math.floor(cd * 3)));
+  sc.querySelector(".tn").style.transform = `translate(-50%,-62%) scale(${1 + 0.18 * (1 - ((cd * 3) % 1))})`;
+  sc.querySelectorAll(".opt").forEach((o) => { const ok = +o.dataset.k === Q.a; o.classList.toggle("right", rv && ok); o.classList.toggle("dim", rv && !ok);
+    const tk = o.querySelector(".tick"); tk.style.opacity = rv && ok ? 1 : 0; tk.style.transform = `scale(${rv && ok ? 0.6 + 0.4 * back(clamp(after / 0.35)) : 0.6})`;
+    if (rv && ok) o.style.transform = `scale(${1 + 0.08 * Math.sin(Math.PI * clamp(after / 0.4))})`; });
+  viz.style.opacity = clamp((after - 0.15) / 0.3); viz.style.transform = `translateY(${(1 - easeOut(clamp((after - 0.15) / 0.4))) * 40}px)`;
+  const a = clamp((after - 0.4) / 1.8);
+  if (Q.viz === "wins") { const n = Math.round(9 * easeOut(a)); document.getElementById("v-wins").textContent = n; let seen = 0;
+    sc.querySelectorAll(".strip i").forEach((el) => { const w = el.classList.contains("wl"); if (w) seen++; el.classList.toggle("w", w && seen <= n); }); }
+  if (Q.viz === "climb") { const p = easeInOut(clamp((after - 0.4) / 2.2)), pos = Math.max(1, Math.round(19 - 18 * p)), [x0, y0] = gridSlot(19), [x1, y1] = gridSlot(1);
+    const cx = x0 + (x1 - x0) * p, cy = y0 + (y1 - y0) * p; const car = document.getElementById("climbCar"); car.setAttribute("cx", cx); car.setAttribute("cy", cy);
+    document.getElementById("climbTrail").setAttribute("d", `M${x0} ${y0} L${cx} ${cy}`); document.getElementById("v-pos").textContent = "P" + pos; }
+  if (Q.viz === "h2h") { const p = easeInOut(clamp((after - 0.4) / 1.2)); document.getElementById("v-a").style.transform = `scaleX(${p})`; document.getElementById("v-b").style.transform = `scaleX(${p})`; }
+}
+
+// ---- soundtrack: the Vegas reel's 150 bpm drive, ducked under each countdown; ticks, a reveal chime, a whoosh per cut ----
+async function renderSoundtrack(rate) {
+  const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate);
+  const master = ctx.createGain(); master.gain.value = 0.85; master.connect(ctx.destination);
+  const music = ctx.createGain(); music.gain.value = 0.62; music.connect(master);
+  const sfx = ctx.createGain(); sfx.gain.value = 0.9; sfx.connect(master);
+  const noise = ctx.createBuffer(1, rate * 2, rate); const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  const mf = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const env = (g, t, a, peak, d) => { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d); };
+  // --- instruments ---
+  const ride = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 6500; f.Q.value = 0.8; env(g, t, 0.002, v, 0.35); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.4); };
+  const hat = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "highpass"; f.frequency.value = 8000; env(g, t, 0.001, v, 0.05); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.08); };
+  const kick = (t, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.12); env(g, t, 0.003, v, 0.18); o.connect(g).connect(music); o.start(t); o.stop(t + 0.25); };
+  const brush = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 2500; f.Q.value = 0.6; env(g, t, 0.01, v, 0.14); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.2); };
+  const bass = (t, m, d) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = "triangle"; o2.type = "sine"; o.frequency.value = mf(m); o2.frequency.value = mf(m) * 2; lp.type = "lowpass"; lp.frequency.value = 900;
+    const g2 = ctx.createGain(); g2.gain.value = 0.25; env(g, t, 0.008, 0.42, d); o.connect(lp); o2.connect(g2).connect(lp); lp.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.1); o2.stop(t + d + 0.1); };
+  const keys = (t, ms, d, v) => { const trem = ctx.createOscillator(), tg = ctx.createGain(); trem.frequency.value = 5; tg.gain.value = 0.25; trem.connect(tg); trem.start(t); trem.stop(t + d + 0.2);
+    ms.forEach((m) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), am = ctx.createGain(); o.type = "sine"; o2.type = "sine";
+      o.frequency.value = mf(m); o2.frequency.value = mf(m) * 2.01; const g2 = ctx.createGain(); g2.gain.value = 0.18; am.gain.value = 0.75; tg.connect(am.gain);
+      env(g, t, 0.006, v, d); o.connect(am); o2.connect(g2).connect(am); am.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.1); o2.stop(t + d + 0.1); }); };
+  // --- casino cues ---
+  const coin = (t, v = 0.35) => [2093, 2637, 3136].forEach((f, k) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = f; env(g, t + k * 0.045, 0.002, v * 0.35, 0.18); const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 1500; o.connect(hp).connect(g).connect(sfx); o.start(t + k * 0.045); o.stop(t + k * 0.045 + 0.25); });
+  const bell = (t, v = 0.3) => [[1318.5, 1], [1975.5, 0.5], [2637, 0.25]].forEach(([f, a]) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = f; env(g, t, 0.003, v * a, 0.9); o.connect(g).connect(sfx); o.start(t); o.stop(t + 1); });
+  const click = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 3200; f.Q.value = 4; env(g, t, 0.001, v, 0.025); s.connect(f).connect(g).connect(sfx); s.start(t, Math.random(), 0.04); };
+  const reel = (t, d) => { let x = t; const end = t + d; let gap = 0.035; while (x < end) { click(x, 0.2); x += gap; gap *= 1.09; } bell(end + 0.02, 0.14); };   // slot reel slowing to a stop
+  const riser = (t, d, fill) => {   // energy bar charging: pitch climbs with the fill, little ticks speed up, coin when it lands
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    const f0 = 180, f1 = 180 + 820 * Math.max(0.15, fill);
+    o.type = "sawtooth"; o2.type = "square"; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + d); o2.frequency.setValueAtTime(f0 * 1.5, t); o2.frequency.exponentialRampToValueAtTime(f1 * 1.5, t + d);
+    f.type = "lowpass"; f.frequency.setValueAtTime(600, t); f.frequency.exponentialRampToValueAtTime(3500, t + d); f.Q.value = 2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.04, t + 0.08); g.gain.linearRampToValueAtTime(0.065, t + d); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.12);
+    const g2 = ctx.createGain(); g2.gain.value = 0.35; o.connect(f); o2.connect(g2).connect(f); f.connect(g).connect(sfx); o.start(t); o2.start(t); o.stop(t + d + 0.2); o2.stop(t + d + 0.2);
+    for (let k = 0, n = Math.round(6 + 14 * fill); k < n; k++) { const q = k / n; click(t + d * Math.sqrt(q), 0.07 + 0.08 * q); }
+    coin(t + d + 0.02, 0.12 + 0.1 * fill);
+  };
+  const whoosh = (t) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(5000, t + TR); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.45, t + TR * 0.6); g.gain.exponentialRampToValueAtTime(0.001, t + TR + 0.2); s.connect(f).connect(g).connect(sfx); s.start(t, 0, TR + 0.3); };
+  // --- the groove: 150 bpm straight drive (four-on-the-floor, 16th hats, pulsing saw bass, neon stabs), Am-F-C-G ---
+  const snare = (t, v) => { const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise; f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = 0.7; env(g, t, 0.001, v, 0.13); s.connect(f).connect(g).connect(music); s.start(t, Math.random(), 0.2);
+    const o = ctx.createOscillator(), go = ctx.createGain(); o.type = "triangle"; o.frequency.setValueAtTime(240, t); o.frequency.exponentialRampToValueAtTime(160, t + 0.08); env(go, t, 0.001, v * 0.6, 0.08); o.connect(go).connect(music); o.start(t); o.stop(t + 0.15); };
+  const sbass = (t, m, d, v) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o2.type = "square"; o.frequency.value = mf(m); o2.frequency.value = mf(m) * 0.5;
+    lp.type = "lowpass"; lp.Q.value = 5; lp.frequency.setValueAtTime(1800, t); lp.frequency.exponentialRampToValueAtTime(350, t + d); env(g, t, 0.003, v, d); const g2 = ctx.createGain(); g2.gain.value = 0.5;
+    o.connect(lp); o2.connect(g2).connect(lp); lp.connect(g).connect(music); o.start(t); o2.start(t); o.stop(t + d + 0.05); o2.stop(t + d + 0.05); };
+  const stab = (t, ms, d, v) => ms.forEach((m) => [0, 7, -7].forEach((det) => { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = "sawtooth"; o.frequency.value = mf(m); o.detune.value = det;
+    f.type = "lowpass"; f.frequency.setValueAtTime(4200, t); f.frequency.exponentialRampToValueAtTime(900, t + d); env(g, t, 0.004, v / 3, d); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + d + 0.05); }));
+  const pluck = (t, m, v) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = mf(m); const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 3200; env(g, t, 0.002, v, 0.12); o.connect(f).connect(g).connect(music); o.start(t); o.stop(t + 0.16); };
+  const bpm = 150, q = 60 / bpm, e = q / 2, s16 = q / 4;
+  const prog = [ { r: 45, ch: [69, 72, 76], arp: [81, 76, 72, 76] },    // Am
+                 { r: 41, ch: [69, 72, 77], arp: [81, 77, 72, 77] },    // F
+                 { r: 48, ch: [67, 72, 76], arp: [79, 76, 72, 76] },    // C
+                 { r: 43, ch: [67, 71, 74], arp: [79, 74, 71, 74] } ];  // G
+  for (let bar = 0, t = 0.2; t < DURATION - 0.4; bar++, t = 0.2 + bar * 4 * q) {
+    const c = prog[bar % 4], intro = bar < 2;              // first two bars: hats + bass only, then the full drive kicks in
+    for (let b = 0; b < 4; b++) {
+      const tb = t + b * q; if (tb > DURATION - 0.3) break;
+      if (!intro) kick(tb, 0.42);
+      if (!intro && (b === 1 || b === 3)) snare(tb, 0.26);
+      for (let k = 0; k < 4; k++) hat(tb + k * s16, k === 2 ? 0.09 : 0.045);
+      sbass(tb, c.r, e * 0.8, 0.16); sbass(tb + e, c.r + 12, e * 0.8, 0.13);   // octave-pumping bass
+      if (!intro) for (let k = 0; k < 2; k++) pluck(tb + k * e, c.arp[(b * 2 + k) % 4], 0.03);
+    }
+    if (!intro) { stab(t, c.ch, q * 0.45, 0.07); stab(t + q * 1.5, c.ch, q * 0.3, 0.05); stab(t + q * 2.5, c.ch, q * 0.3, 0.05); }
+    if (bar % 4 === 3 && !intro) for (let k = 0; k < 4; k++) snare(t + 3 * q + k * s16, 0.1 + 0.04 * k);   // fill into the next phrase
+  }
+  // duck the music while the clock runs, so the ticks carry the tension
+  QUIZ.forEach((_, i) => { const t = T0[i + 1]; music.gain.setValueAtTime(0.62, t + PICK - 0.05); music.gain.linearRampToValueAtTime(0.28, t + PICK + 0.25); music.gain.setValueAtTime(0.28, t + REVEAL - 0.02); music.gain.linearRampToValueAtTime(0.62, t + REVEAL + 0.6); });
+  T0.slice(1).forEach((c) => whoosh(c - TR));
+  QUIZ.forEach((_, i) => { const t = T0[i + 1];
+    for (let k = 0; k < 6; k++) click(t + PICK + k * 0.5, k % 2 ? 0.16 : 0.32);       // tick-tock for 3 s
+    bell(t + REVEAL, 0.24); coin(t + REVEAL + 0.08, 0.22); });
+  bell(T0[6] + 2.2, 0.3); coin(T0[6] + 2.3, 0.35); coin(T0[6] + 2.45, 0.3);
+  return ctx.startRendering();
+}
+window.reel = { DURATION, seek, renderSoundtrack };
+seek(location.hash ? +location.hash.slice(1) : 10);
+</script>
