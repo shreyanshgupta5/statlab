@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v20"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v21"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -187,6 +187,20 @@
     `<div class="sh"><span class="kicker">${esc(kicker)}</span><h2>${title}</h2>${extra}</div>`;
 
   /* ---------- views ---------- */
+  function dataUpdated() {
+    const updated = new Date(S.DATA_UPDATED_AT || "");
+    const valid = !Number.isNaN(updated.getTime());
+    const label = valid ? updated.toLocaleString(undefined, {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "numeric", minute: "2-digit", timeZoneName: "short"
+    }) : "Update time unavailable";
+    return `<section class="data-updated reveal" aria-label="Race data freshness">
+      <span class="kicker">Race data last updated</span>
+      ${valid ? `<time datetime="${esc(updated.toISOString())}">${esc(label)}</time>` : `<span>${label}</span>`}
+      <span class="note">Results through round ${Math.max(0, ...S.RESULTS.map((r) => r.round))} · Times shown in your timezone</span>
+    </section>`;
+  }
+
   function viewSeason() {
     const leader = DS[0], second = DS[1];
     const ld = driver[leader.id];
@@ -286,6 +300,8 @@
         ${awaiting.length ? `<span class="note">Results for ${awaiting.map((r) => esc(((S.RACE_INFO || {})[r.round] || {}).short || r.name)).join(", ")} are on the way.</span>` : ""}</a>
         <button class="cal" type="button" data-ics="${upcoming.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
       </div>` : ""}
+
+      ${dataUpdated()}
 
       ${following}
 

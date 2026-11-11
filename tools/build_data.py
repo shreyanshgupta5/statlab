@@ -1,5 +1,6 @@
 """Builds data.js (window.SEASON / window.NEWS in the app shell's format) from Stat Lab's season.js and news.js."""
 import json, re, os
+from datetime import datetime, timezone
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)  # repo root: data.js is written here
 SITE = os.environ.get('STATLAB_SITE', os.path.join(ROOT, 'site'))  # folder holding Stat Lab's season.js and news.js
@@ -57,6 +58,7 @@ season = {'QUALI_DETAIL': quali_detail, 'RACE_INFO': race_info, 'DUELS': S.get('
           'OFFICIAL_POINTS': {d['driver']: d['points'] for d in S['drivers']},
           'TEAM_POINTS': {t['team']: t['points'] for t in S['teamStandings']},
           'NOTE': 'Data: OpenF1 · unofficial fan project. Standings include sprint points; race-by-race results are Grands Prix only.'}
+season['DATA_UPDATED_AT'] = datetime.now(timezone.utc).isoformat(timespec='seconds')
 news = []
 for i, h in enumerate(N['headlines']):
     slug = re.sub(r'[^a-z0-9]+', '-', h['title'].lower()).strip('-')[:48]

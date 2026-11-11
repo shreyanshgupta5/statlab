@@ -10,6 +10,7 @@ Championship totals (OFFICIAL_POINTS, TEAM_POINTS) get the round's Grand Prix po
 sprint CSV with driver,points columns is given). Re-running for a round already in data.js does nothing.
 """
 import argparse, csv, json, os, urllib.request
+from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEAM_IDS = {'Mercedes': 'MER', 'Ferrari': 'FER', 'Red Bull Racing': 'RBR', 'McLaren': 'MCL', 'Racing Bulls': 'RB',
@@ -85,6 +86,7 @@ def main():
     S['RACE_INFO'][str(a.round)] = {'short': a.short, 'location': a.location}
     cal['laps'] = max(int(r['laps']) for r in csv.DictReader(open(a.race_csv, encoding='utf-8')) if r['laps'])
 
+    S['DATA_UPDATED_AT'] = datetime.now(timezone.utc).isoformat(timespec='seconds')
     with open(path, 'w', encoding='utf-8') as f:
         f.write(head + 'window.SEASON = ' + json.dumps(S, ensure_ascii=False, separators=(',', ':')) + ';\nwindow.NEWS = ' + news_part)
     print(f"round {a.round}: {len(race)} classified, pole {quali[0]['id']}, winner {race[0]['id']}")

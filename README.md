@@ -55,3 +55,7 @@ python3 tools/build_duels.py                                                    
 ## Play tab
 
 No server is needed. Each game is built from a random seed; a challenge link carries the seed and the sender's score, so the friend gets identical lights, questions or circuits. Podium Predictor picks lock at `raceStart` and are scored the next time the player opens Play after that round's results are in `data.js`. Real-time head-to-head or leaderboards across phones would need a backend (e.g. Firebase or Supabase).
+
+## Race data freshness
+
+The Season page shows `SEASON.DATA_UPDATED_AT` in the visitor's timezone. `tools/build_data.py` and `tools/add_round.py` stamp it in UTC when writing race data; news-only updates leave it unchanged. The initial timestamp comes from the last Git commit that changed `data.js`, since older data did not record an update time.

@@ -523,3 +523,7 @@ h1, .sh h2 { text-transform: uppercase; }
 .pl-board b small { margin-left: 6px; padding: 2px 6px; border-radius: 6px; background: var(--amber); color: #0A0A08; font: 700 10px var(--mono); font-style: normal; vertical-align: middle; }
 .pl-board .led { font-size: 18px; color: var(--amber); }
 .pl-boardwrap { margin-top: 18px; text-align: left; }
+
+/* Season data freshness */
+.data-updated { display: grid; gap: 6px; margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.data-updated time { font-family: var(--mono); font-size: 14px; overflow-wrap: anywhere; }
