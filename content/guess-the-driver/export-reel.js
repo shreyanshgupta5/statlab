@@ -7,6 +7,7 @@ const [OUT, WAV] = process.argv.slice(2); const FPS = 30;
   const p = await b.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   await p.goto('file://' + path.resolve(__dirname, 'guess-the-driver.html'));
   await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(600);
+  if (process.env.SFX_ONLY) await p.evaluate(() => { window.reel.sfxOnly = true; });   // SFX_ONLY=1: effects without music
   const wav = await p.evaluate(async () => {
     const buf = await window.reel.renderSoundtrack(48000), L = buf.getChannelData(0), R = buf.getChannelData(1), n = L.length;
     const out = new DataView(new ArrayBuffer(44 + n * 4)), w = (o, s) => [...s].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
