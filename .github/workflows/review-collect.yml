@@ -8,7 +8,7 @@ permissions:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,7 +17,7 @@ jobs:
       - run: pip install --quiet requests google-play-scraper playwright && python -m playwright install --with-deps chromium
       - name: Collect
         working-directory: research
-        run: python furniture_probe.py
+        run: python furniture_collect.py
       - name: Encrypt and commit results
         working-directory: research
         run: |
