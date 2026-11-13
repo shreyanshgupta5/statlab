@@ -1,0 +1,34 @@
+name: review-collect
+on:
+  push:
+    branches: [claude/busy-bardeen-4x4249]
+    paths: ['research/furniture_*.py', '.github/workflows/review-collect.yml']
+permissions:
+  contents: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet requests google-play-scraper playwright && python -m playwright install --with-deps chromium
+      - name: Collect
+        working-directory: research
+        run: python furniture_collect.py
+      - name: Encrypt and commit results
+        working-directory: research
+        run: |
+          tar czf bundle.tgz out
+          openssl rand -hex 32 > pass.txt
+          openssl enc -aes-256-cbc -pbkdf2 -salt -in bundle.tgz -out bundle.enc -pass file:pass.txt
+          openssl pkeyutl -encrypt -pubin -inkey pub.pem -in pass.txt -out pass.enc
+          rm -rf out bundle.tgz pass.txt
+          ls -la bundle.enc
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bundle.enc pass.enc
+          git commit -m "Add encrypted collection results"
+          git push
