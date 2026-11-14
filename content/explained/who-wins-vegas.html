@@ -1,0 +1,244 @@
+<title>Who wins Vegas?</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* ONE F1 EXPLAINED: "Who wins Vegas?" (~106 s), built from 2026 data only. ?land = 1920x1080 (default), ?port = 1080x1920.
+   Built by build-who-wins.py from this template (edit the template, then rebuild). Same continuous-camera engine as the cold-tyres explainer:
+   a text column (kicker, title, captions in phases) + one SVG graphic on a 1000x800 canvas per chapter; the camera zooms into a focal point between chapters. */
+:root { --fg:#F2F2F0; --soft:#C9CDD2; --muted:#7D838C; --amber:#FFB000; --yellow:#FFD400; --red:#E10600; --ice:#7FD3FF; --heat:#FF7A1A; --good:#5BE38F; --bad:#FF3B30; --mer:#27F4D2;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; }
+* { box-sizing:border-box; }
+body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
+.stage { position:relative; overflow:hidden; background:
+  linear-gradient(rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px, linear-gradient(90deg,rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px,
+  radial-gradient(80% 60% at 60% 45%,#121722,#08090D 75%); }
+.land { width:1920px; height:1080px; } .port { width:1080px; height:1920px; }
+.ruler { position:absolute; width:22px; z-index:2; background:repeating-linear-gradient(180deg,rgba(255,176,0,.45) 0 2px,transparent 2px 24px); }
+.land .ruler { top:140px; bottom:110px; } .port .ruler { top:240px; bottom:340px; } .ruler.l { left:24px; } .ruler.r { right:24px; }
+.hdr { position:absolute; display:flex; justify-content:space-between; align-items:center; z-index:6; }
+.land .hdr { left:110px; right:110px; top:52px; } .port .hdr { left:72px; right:72px; top:110px; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); } .brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:#0A0A0A; }
+.tag { font-family:var(--mono); font-weight:700; font-size:22px; letter-spacing:3px; color:var(--muted); } .tag b { color:var(--amber); }
+.prog { position:absolute; height:6px; border-radius:3px; background:#1A1D24; z-index:6; } .prog i { display:block; height:100%; border-radius:3px; background:var(--amber); box-shadow:0 0 10px var(--amber); }
+.land .prog { left:110px; right:110px; top:112px; } .port .prog { left:72px; right:72px; top:176px; }
+.chap { position:absolute; display:flex; gap:10px; z-index:6; } .chap i { width:22px; height:6px; border-radius:3px; background:#2A2E36; } .chap i.on { background:var(--amber); }
+.land .chap { right:110px; top:126px; } .port .chap { right:72px; top:190px; }
+.ftr { position:absolute; display:flex; justify-content:space-between; font-family:var(--mono); font-size:20px; letter-spacing:2px; color:var(--muted); z-index:6; }
+.land .ftr { left:110px; right:110px; bottom:40px; } .port .ftr { left:72px; right:72px; bottom:318px; }
+.txt { position:absolute; z-index:5; } .land .txt { left:120px; top:240px; width:640px; } .port .txt { left:84px; top:250px; width:912px; text-align:center; }
+.kick { font-family:var(--led); font-weight:900; font-size:28px; letter-spacing:4px; color:var(--amber); text-shadow:0 0 10px rgba(255,176,0,.5); }
+.ttl { margin:16px 0 0; font-weight:900; font-style:italic; font-stretch:125%; line-height:.98; text-transform:uppercase; } .land .ttl { font-size:74px; } .port .ttl { font-size:80px; }
+.ttl .w { display:inline-block; margin-right:.22em; }
+.cap { position:relative; margin-top:32px; min-height:220px; }
+.cap p { position:absolute; left:0; right:0; top:0; margin:0; font-family:var(--mono); font-weight:700; font-size:30px; line-height:1.45; color:var(--soft); }
+.cap p b { color:var(--fg); }
+.ice { color:var(--ice); text-shadow:0 0 22px rgba(127,211,255,.45); } .heat { color:var(--heat); } .bad { color:var(--bad); } .amb { color:var(--amber); } .mer { color:var(--mer); text-shadow:0 0 22px rgba(39,244,210,.4); } .rbr { color:#5B8DEF; }
+.gbox { position:absolute; z-index:4; } .land .gbox { left:820px; top:160px; width:1000px; height:800px; } .port .gbox { left:40px; top:650px; width:1000px; height:800px; }
+.g { position:absolute; inset:0; will-change:transform,opacity; } .g svg { width:100%; height:100%; overflow:visible; }
+.lbl { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; letter-spacing:3px; fill:#7D838C; }
+.ledt { font-family:'Doto',monospace; font-weight:900; } .disp { font-family:'Archivo',sans-serif; font-weight:900; font-style:italic; font-stretch:125%; }
+.follow { display:inline-flex; align-items:center; gap:18px; margin-top:22px; padding:18px 30px 18px 18px; border-radius:999px; background:var(--red); box-shadow:0 0 34px rgba(225,6,0,.5); font-weight:900; font-style:italic; font-stretch:125%; font-size:32px; color:#fff; }
+.follow .plus { display:grid; place-items:center; width:52px; height:52px; border-radius:50%; background:#fff; color:var(--red); font-style:normal; font-size:42px; line-height:1; } .follow b { color:var(--yellow); }
+.ask { font-family:var(--hand); color:var(--yellow); font-size:64px; display:inline-block; transform:rotate(-3deg); }
+.port .ctaw { position:absolute; left:0; right:0; top:1196px; text-align:center; } .port .ask { font-size:46px; } .port .follow { margin-top:4px; font-size:28px; padding:14px 26px 14px 14px; } .port .follow .plus { width:44px; height:44px; font-size:36px; } .land .ctaw { margin-top:10px; }
+.snow { position:absolute; inset:0; z-index:3; pointer-events:none; } .snow i { position:absolute; border-radius:50%; background:#CFEFFF; box-shadow:0 0 8px #9FE3FF; }
+</style>
+<div class="stage" id="stage">
+  <div class="ruler l"></div><div class="ruler r"></div>
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="tag">EXPLAINED · <b>LAS VEGAS GP</b></span></div>
+  <div class="prog"><i id="prog"></i></div><div class="chap" id="chap"></div>
+  <div class="snow" id="snow"></div>
+  <div id="txts"></div><div class="gbox" id="gbox"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span id="src"></span></div>
+</div>
+<script>
+const LAP = [[510,935,325,100,0],[514,931,325,100,0],[525,919,326,100,0],[536,906,327,100,0],[547,893,328,100,0],[560,879,326,100,0],[568,870,276,63,1],[576,861,218,0,1],[583,854,183,0,1],[588,847,160,0,1],[591,839,144,0,1],[591,833,132,0,1],[590,827,124,0,1],[586,821,117,0,1],[583,817,112,0,0],[577,813,116,42,0],[573,811,122,63,0],[567,810,132,64,0],[558,810,148,78,0],[550,811,162,100,0],[542,814,174,100,0],[534,819,189,100,0],[527,824,201,100,0],[519,831,210,100,0],[508,842,222,100,0],[502,846,228,65,0],[489,852,228,67,0],[479,852,230,72,0],[468,850,234,76,0],[458,845,240,100,0],[446,837,246,100,0],[437,828,250,100,0],[430,814,251,100,0],[427,805,260,100,0],[425,793,265,100,0],[424,776,271,100,0],[423,761,277,100,0],[422,747,283,100,0],[421,735,288,100,0],[421,719,294,100,0],[420,707,301,100,0],[420,690,305,100,0],[419,674,309,100,0],[418,658,313,100,0],[418,644,316,100,0],[417,628,319,100,0],[417,611,321,100,0],[416,594,324,100,0],[415,576,326,100,0],[415,560,329,100,0],[414,540,330,100,0],[414,528,333,100,0],[413,512,335,100,0],[413,495,337,100,0],[412,476,337,100,0],[411,460,336,100,0],[411,444,336,100,0],[410,428,304,100,1],[410,414,253,0,1],[409,403,201,0,1],[409,394,163,0,1],[410,387,143,0,1],[412,380,130,0,1],[413,375,118,0,1],[416,370,112,0,0],[420,366,111,23,0],[425,363,117,43,0],[431,362,125,56,0],[437,362,140,75,0],[446,362,160,100,0],[455,362,175,100,0],[468,362,190,100,0],[476,362,203,100,0],[486,362,212,100,0],[497,362,227,100,0],[509,362,235,100,0],[521,360,245,100,0],[533,357,252,100,0],[546,350,258,100,0],[556,344,264,100,0],[566,336,267,100,0],[578,323,269,100,0],[583,315,266,89,0],[590,303,250,0,0],[594,291,226,0,1],[595,282,180,0,1],[595,274,143,0,1],[594,268,128,0,1],[593,266,117,0,1],[590,261,107,0,1],[587,258,98,0,0],[582,256,93,16,0],[577,255,102,23,0],[573,253,107,29,0],[569,249,103,5,0],[567,245,100,16,0],[566,240,101,22,0],[567,233,105,50,0],[568,229,114,55,0],[571,223,126,72,0],[576,216,137,76,0],[579,211,134,63,1],[580,206,120,0,1],[582,200,111,0,1],[582,195,104,0,1],[581,190,96,0,0],[580,186,89,0,0],[577,182,90,22,0],[572,179,94,38,0],[567,179,104,58,0],[562,179,115,73,0],[556,179,132,86,0],[545,179,156,100,0],[539,179,173,100,0],[530,179,189,100,0],[520,180,199,100,0],[509,180,213,100,0],[498,180,224,100,0],[485,180,235,100,0],[475,180,243,100,0],[462,180,250,100,0],[448,180,259,100,0],[435,180,265,100,0],[419,180,271,100,0],[406,180,278,100,0],[393,178,282,100,0],[379,175,286,100,0],[365,170,290,100,0],[352,165,294,100,0],[335,154,296,100,0],[328,147,298,100,0],[318,136,298,100,0],[309,123,299,100,0],[303,110,303,100,0],[296,96,306,100,0],[290,82,309,100,0],[283,68,311,100,0],[275,54,312,100,0],[265,42,312,100,0],[253,31,312,100,0],[240,22,311,100,0],[225,14,308,100,0],[209,8,303,100,0],[197,6,267,74,0],[185,3,208,0,1],[180,2,174,0,1],[172,1,140,0,1],[166,0,121,0,1],[161,1,108,0,1],[156,4,100,0,0],[153,6,98,27,0],[150,11,106,53,0],[149,17,119,68,0],[147,23,135,83,0],[145,30,156,100,0],[142,37,172,100,0],[138,45,188,100,0],[133,56,203,100,0],[128,66,214,100,0],[121,80,227,100,0],[117,88,237,100,0],[111,98,245,100,0],[105,109,252,100,0],[98,121,261,100,0],[92,131,267,100,0],[86,144,274,100,0],[78,159,279,100,0],[72,169,285,100,0],[64,186,290,100,0],[57,200,292,100,0],[53,209,299,100,0],[47,225,302,100,0],[42,239,305,100,0],[38,252,309,100,0],[33,268,311,100,0],[29,283,313,100,0],[25,298,315,100,0],[21,313,317,100,0],[17,329,318,100,0],[13,348,321,100,0],[11,361,322,100,0],[9,376,324,100,0],[6,398,325,100,0],[5,409,326,100,0],[3,425,327,100,0],[3,442,328,100,0],[2,458,330,100,0],[2,475,331,100,0],[2,498,331,100,0],[2,511,332,100,0],[2,525,332,100,0],[2,546,334,100,0],[2,560,335,100,0],[3,576,337,100,0],[3,601,338,100,0],[3,612,340,100,0],[3,628,340,100,0],[3,649,341,100,0],[2,664,342,100,0],[2,681,343,100,0],[2,699,343,100,0],[2,716,344,100,0],[2,734,344,100,0],[2,751,345,100,0],[2,769,346,100,0],[2,786,346,100,0],[2,803,346,100,0],[1,821,346,100,0],[1,838,346,100,0],[1,861,347,100,0],[1,874,345,100,0],[1,892,345,100,0],[0,896,345,100,0],[0,911,306,100,0],[0,922,225,0,1],[0,932,183,0,1],[0,940,155,0,1],[0,946,124,0,1],[1,952,111,0,1],[2,957,103,0,1],[4,963,94,0,1],[5,966,90,1,1],[9,971,93,16,0],[11,973,105,61,0],[17,976,124,89,0],[23,977,139,85,0],[30,979,150,86,0],[38,983,170,100,0],[45,989,183,100,0],[51,994,195,100,0],[63,999,206,100,0],[71,999,215,100,0],[84,1000,228,100,0],[95,1000,239,100,0],[109,1000,246,100,0],[120,999,258,100,0],[133,999,264,100,0],[150,999,271,100,0],[161,998,277,100,0],[174,998,283,100,0],[192,998,289,100,0],[204,997,293,100,0],[219,997,297,100,0],[236,996,298,100,0],[249,996,305,100,0],[267,996,308,100,0],[280,996,311,100,0],[296,997,313,100,0],[312,997,316,100,0],[328,997,318,100,0],[345,996,320,100,0],[361,996,322,100,0],[387,996,324,100,0],[406,995,325,100,0],[422,993,326,100,0],[440,990,326,100,0],[458,983,326,100,0],[470,976,326,100,0],[481,967,325,100,0],[494,954,322,100,0],[505,941,322,100,0]];
+const TRACKS = {"Montreal":[[307,852],[307,862],[307,872],[306,883],[305,893],[304,903],[303,914],[302,924],[301,934],[302,945],[305,954],[311,962],[319,968],[328,974],[333,982],[330,992],[322,999],[312,1000],[302,1000],[291,998],[281,995],[272,992],[262,989],[253,984],[243,979],[235,974],[226,968],[218,961],[210,955],[202,948],[194,942],[186,935],[178,928],[172,920],[168,911],[168,901],[169,890],[167,880],[162,871],[156,863],[149,855],[143,847],[136,839],[129,832],[121,825],[113,818],[105,812],[97,805],[91,796],[87,787],[83,777],[81,767],[79,757],[79,747],[79,736],[80,726],[80,716],[81,705],[80,695],[78,685],[73,676],[64,672],[53,672],[43,672],[33,669],[25,662],[19,654],[14,645],[11,635],[9,625],[8,615],[6,604],[5,594],[4,584],[3,573],[2,563],[2,553],[1,542],[1,532],[0,522],[0,511],[0,501],[0,491],[1,480],[1,470],[2,460],[3,449],[4,439],[6,429],[8,419],[9,408],[12,398],[14,388],[16,378],[19,368],[21,358],[23,348],[27,338],[31,329],[41,325],[51,322],[59,316],[66,308],[71,299],[75,290],[77,280],[80,270],[82,260],[85,249],[87,239],[89,229],[91,219],[92,209],[94,199],[96,188],[97,178],[98,168],[99,157],[99,147],[99,137],[100,126],[100,116],[99,106],[99,95],[97,85],[95,75],[93,65],[91,55],[88,45],[86,35],[84,24],[83,14],[84,4],[93,0],[101,6],[105,16],[107,26],[108,36],[109,46],[111,57],[114,67],[117,76],[121,86],[125,95],[129,105],[133,114],[137,124],[141,133],[146,143],[150,152],[154,162],[158,171],[162,181],[166,191],[170,200],[173,210],[177,220],[180,229],[184,239],[187,249],[189,259],[192,269],[195,279],[197,289],[200,299],[202,309],[204,319],[207,329],[209,339],[212,350],[214,360],[216,370],[219,380],[221,390],[223,400],[226,410],[228,420],[230,430],[233,440],[235,450],[237,460],[239,471],[242,481],[244,491],[247,501],[249,511],[251,521],[254,531],[256,541],[259,551],[261,561],[263,571],[265,582],[265,592],[261,601],[256,610],[255,621],[255,631],[256,641],[259,651],[261,661],[264,671],[267,681],[270,691],[273,701],[275,711],[278,721],[280,731],[283,741],[285,751],[288,761],[291,771],[293,781],[296,791],[298,801],[301,811],[303,822],[305,832]],"Monza":[[6,757],[7,748],[8,739],[9,730],[10,721],[10,712],[11,703],[12,694],[13,686],[13,677],[14,668],[15,659],[16,650],[16,641],[17,632],[18,623],[19,614],[20,605],[20,596],[21,587],[22,578],[23,570],[23,561],[24,552],[25,543],[26,534],[26,525],[27,516],[28,507],[29,498],[30,489],[30,480],[31,471],[32,462],[33,454],[33,445],[34,436],[35,427],[36,418],[36,409],[37,400],[38,391],[39,382],[39,373],[41,364],[43,356],[50,350],[58,347],[62,340],[62,331],[60,322],[58,314],[55,305],[53,296],[52,287],[51,279],[50,270],[50,261],[49,252],[50,243],[50,234],[51,225],[52,216],[53,207],[54,198],[56,190],[59,181],[62,172],[65,164],[69,156],[73,148],[78,141],[84,134],[89,127],[96,120],[102,114],[109,109],[117,104],[124,99],[132,94],[140,91],[148,87],[157,84],[165,81],[174,79],[183,77],[191,76],[200,74],[209,73],[218,72],[227,71],[236,71],[245,70],[254,69],[263,68],[272,68],[281,67],[289,66],[298,66],[307,66],[316,65],[325,65],[334,64],[343,64],[352,64],[361,63],[370,62],[379,60],[386,55],[390,47],[396,41],[404,37],[413,35],[422,33],[431,31],[439,29],[448,26],[456,24],[465,21],[473,17],[482,14],[490,11],[498,8],[507,5],[515,3],[524,1],[533,0],[542,1],[550,4],[558,9],[564,16],[568,24],[571,32],[572,41],[574,50],[574,59],[575,68],[576,77],[576,86],[577,95],[578,103],[579,112],[579,121],[580,130],[579,139],[576,148],[571,155],[564,161],[556,165],[548,169],[540,173],[532,177],[524,182],[517,186],[509,190],[501,194],[493,199],[485,203],[477,208],[470,212],[462,216],[454,221],[446,225],[438,230],[431,234],[423,239],[416,244],[409,250],[402,255],[395,261],[388,266],[381,272],[374,278],[368,284],[361,290],[354,296],[347,302],[340,308],[334,313],[327,319],[320,325],[313,331],[307,337],[300,343],[293,349],[286,355],[280,360],[273,366],[266,372],[259,378],[253,384],[246,390],[239,396],[232,402],[226,407],[219,413],[212,419],[206,425],[199,431],[193,438],[188,446],[187,454],[187,463],[186,472],[186,481],[183,490],[179,498],[175,505],[169,512],[163,519],[158,526],[154,534],[151,543],[150,552],[149,560],[148,569],[147,578],[146,587],[146,596],[145,605],[144,614],[143,623],[142,632],[141,641],[141,650],[140,659],[139,667],[138,676],[137,685],[137,694],[136,703],[135,712],[134,721],[133,730],[132,739],[132,748],[131,757],[130,766],[129,774],[128,783],[127,792],[127,801],[126,810],[125,819],[124,828],[123,837],[123,846],[122,855],[121,864],[120,873],[119,881],[118,890],[118,899],[117,908],[116,917],[115,926],[114,935],[113,944],[111,953],[110,961],[107,970],[104,978],[99,986],[93,992],[86,997],[77,1000],[68,1000],[59,999],[51,996],[43,992],[36,986],[29,980],[24,973],[19,966],[14,958],[11,950],[8,941],[5,933],[3,924],[2,915],[1,906],[0,897],[0,888],[0,879],[0,871],[0,862],[0,853],[1,844],[1,835],[1,826],[2,817],[2,808],[3,799],[4,790],[4,781],[5,772],[6,763]],"Baku":[[886,201],[895,197],[904,194],[913,190],[922,186],[931,182],[940,179],[949,175],[957,171],[966,167],[975,164],[984,161],[993,156],[998,148],[1000,139],[998,129],[994,121],[990,112],[986,103],[982,94],[979,85],[975,76],[971,68],[967,59],[963,50],[959,41],[955,32],[951,23],[947,15],[943,6],[936,0],[926,1],[917,4],[908,8],[899,11],[890,14],[881,18],[872,21],[863,24],[854,28],[845,31],[836,35],[827,38],[818,41],[809,45],[800,48],[791,52],[782,55],[773,59],[764,63],[755,66],[746,70],[738,74],[729,78],[720,82],[711,86],[702,89],[693,93],[684,97],[676,101],[667,105],[658,109],[649,112],[640,116],[632,120],[623,124],[614,128],[605,132],[596,136],[587,140],[579,144],[570,148],[561,152],[553,157],[549,165],[552,174],[556,183],[559,192],[563,201],[566,210],[570,219],[574,228],[578,236],[581,245],[584,255],[583,264],[576,270],[567,274],[558,277],[549,281],[540,285],[531,288],[522,292],[514,296],[505,301],[497,305],[488,310],[480,315],[472,320],[463,325],[455,330],[448,336],[444,345],[446,354],[450,363],[448,372],[441,378],[433,383],[425,389],[417,395],[410,401],[402,406],[394,412],[387,418],[379,424],[371,430],[363,436],[356,441],[348,447],[340,453],[333,459],[325,465],[318,471],[310,477],[301,481],[293,477],[289,468],[286,459],[283,450],[281,441],[278,431],[275,422],[272,413],[269,404],[267,395],[260,388],[251,384],[242,382],[232,381],[223,380],[215,375],[212,366],[210,356],[202,353],[192,353],[183,355],[174,357],[165,361],[156,365],[147,369],[138,373],[129,377],[121,381],[112,386],[104,390],[95,394],[87,399],[78,403],[70,408],[61,413],[53,418],[45,422],[37,428],[30,435],[26,444],[22,453],[19,462],[17,471],[14,480],[11,489],[8,499],[5,508],[3,517],[1,527],[0,536],[0,546],[0,556],[1,565],[1,575],[2,584],[3,594],[3,604],[3,613],[2,623],[2,632],[3,642],[10,648],[19,652],[27,657],[36,661],[44,665],[53,670],[62,674],[70,679],[79,683],[87,688],[95,693],[104,697],[112,702],[121,707],[129,711],[138,716],[147,718],[156,718],[164,711],[169,703],[173,695],[177,686],[182,677],[186,669],[190,660],[195,652],[200,643],[205,635],[211,628],[218,621],[225,614],[232,608],[239,601],[247,595],[254,588],[260,581],[267,574],[274,568],[281,561],[287,553],[291,545],[294,536],[297,527],[299,517],[301,508],[304,499],[308,490],[313,482],[319,475],[327,469],[335,463],[343,457],[350,452],[358,446],[366,440],[373,434],[381,428],[389,422],[396,416],[404,411],[412,405],[419,399],[427,393],[435,388],[443,383],[452,378],[461,374],[470,371],[479,367],[487,364],[496,360],[505,356],[514,353],[523,349],[532,346],[541,342],[550,338],[559,334],[568,331],[577,327],[586,323],[594,320],[603,316],[612,312],[621,308],[630,305],[639,301],[648,297],[657,293],[666,290],[674,286],[683,282],[692,278],[701,274],[710,271],[719,267],[728,263],[737,260],[746,257],[755,253],[764,250],[773,246],[782,243],[791,240],[800,236],[809,233],[818,229],[827,226],[836,222],[845,218],[854,215],[863,211],[871,207],[880,204]]};
+const COLD = [{"race":"Montréal","temp":17.9,"pole":"RUS","win":"ANT"},{"race":"Shanghai","temp":22.2,"pole":"ANT","win":"ANT"},{"race":"Spa","temp":30.6,"pole":"ANT","win":"ANT"},{"race":"Suzuka","temp":34.0,"pole":"ANT","win":"ANT"}];
+const PACE = {"MER":{"cold":0.0,"rest":0.208,"delta":-0.208},"FER":{"cold":0.463,"rest":0.285,"delta":0.178},"MCL":{"cold":0.975,"rest":0.645,"delta":0.33},"RBR":{"cold":0.955,"rest":0.509,"delta":0.446}};
+const FORM = [["VER",108],["ANT",83],["LEC",64],["NOR",59],["HAM",55],["RUS",26]];
+const VERWINS = [{"race":"KUALA LUMPUR","wet":true,"temp":33.8},{"race":"SINGAPORE","wet":false,"temp":42.6},{"race":"MEXICO CITY","wet":false,"temp":42.2}];
+const CHANCES = {"weights":{"cold":0.45,"lowdf":0.3,"form":0.2,"season":0.05},"cold_races":["Montréal","Shanghai","Spa-Francorchamps","Suzuka"],"lowdf_races":["Monza","Baku"],"last5":["Kuala Lumpur","Marina Bay","Austin","Mexico City","São Paulo"],"drivers":[{"code":"ANT","chance":37.3,"score":20.72,"parts":{"cold":25.0,"lowdf":17.5,"form":16.6,"season":17.9}},{"code":"VER","chance":16.4,"score":13.74,"parts":{"cold":8.5,"lowdf":16.5,"form":21.6,"season":12.9}},{"code":"RUS","chance":11.4,"score":11.44,"parts":{"cold":7.5,"lowdf":21.5,"form":5.2,"season":11.4}},{"code":"LEC","chance":11.1,"score":11.31,"parts":{"cold":14.2,"lowdf":6.0,"form":12.8,"season":10.8}},{"code":"HAM","chance":10.8,"score":11.15,"parts":{"cold":13.2,"lowdf":8.0,"form":11.0,"season":11.7}},{"code":"NOR","chance":3.7,"score":6.49,"parts":{"cold":4.0,"lowdf":6.0,"form":11.8,"season":10.7}}],"others":9.4};
+const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}};const driver={VER:{team:"RBR"},RUS:{team:"MER"}};
+  const LOOK = {
+    VER: ["#1B2A6B", "#E8102E", "#FFD400", "#F0C4A0", "#3E7CC4", "fierce"], HAD: ["#1B2A6B", "#FFD400", "#E8102E", "#E2B48E", "#4A3424", "focus"],
+    HAM: ["#FFD400", "#E8002D", "#6A2C91", "#8D5A3B", "#5A3A22", "focus"], LEC: ["#E8002D", "#F2F2F0", "#1A1A1A", "#EFC29C", "#5E8A4A", "fierce"],
+    RUS: ["#16181C", "#27F4D2", "#F2F2F0", "#F2CBAA", "#4B88C9", "focus"], ANT: ["#F2F2F0", "#27F4D2", "#16181C", "#E9BC93", "#6B4A2E", "happy"],
+    NOR: ["#FF8000", "#16181C", "#47C7FC", "#F0C4A0", "#4B88C9", "happy"], PIA: ["#FF8000", "#1B2A6B", "#F2F2F0", "#F0C4A0", "#4B88C9", "focus"],
+  };
+  const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
+  let hid = 0;
+  function helmet(id, { size = 96, look = 0, cls = "" } = {}) {
+    const d = driver[id];
+    const base = d && team[d.team] ? team[d.team].color : "#8D939B";
+    const [h1, h2, h3, skin, iris, mood] = LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
+    const K = "#0A0A0A", u = "h" + ++hid, cy = 348;
+    const eye = (cx, side) => {
+      const top = mood === "happy" ? 22 : 20, lid = mood === "happy" ? 4 : 14, ix = cx + look;
+      const inner = cx - side * 30, outer = cx + side * 36, bIn = mood === "fierce" ? cy - 20 : mood === "focus" ? cy - 26 : cy - 36, bOut = mood === "happy" ? cy - 34 : cy - 36;
+      const shape = `M${cx - 34} ${cy} Q${cx} ${cy - top} ${cx + 34} ${cy} Q${cx} ${cy + lid} ${cx - 34} ${cy} Z`;
+      return `<path d="${shape}" fill="#FBF8F2"/><clipPath id="${u}e${side}"><path d="${shape}"/></clipPath>
+        <g clip-path="url(#${u}e${side})"><circle cx="${ix}" cy="${cy}" r="14" fill="${iris}"/><circle cx="${ix}" cy="${cy}" r="6.5" fill="${K}"/><circle cx="${ix + 4}" cy="${cy - 5}" r="4" fill="#fff"/></g>
+        <path d="M${cx - 36} ${cy + 1} Q${cx} ${cy - top - 2} ${cx + 36} ${cy + 1}" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M${inner} ${bIn} Q${(inner + outer) / 2} ${Math.min(bIn, bOut) - 8} ${outer} ${bOut}" fill="none" stroke="#3A2A1E" stroke-width="9" stroke-linecap="round"/>`;
+    };
+    const shell = "M300 130 C420 130 500 215 500 340 C500 430 480 500 440 545 C400 575 200 575 160 545 C120 500 100 430 100 340 C100 215 180 130 300 130 Z";
+    return `<svg class="helmet ${cls}" viewBox="80 110 440 480" width="${size}" height="${Math.round(size * 480 / 440)}" aria-hidden="true">
+      <defs><radialGradient id="${u}g" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+      <linearGradient id="${u}v" x1="0" x2="1"><stop offset="0" stop-color="#1B1030"/><stop offset=".45" stop-color="#2B3F8F"/><stop offset=".75" stop-color="#9B3FB5"/><stop offset="1" stop-color="#F28B2E"/></linearGradient>
+      <clipPath id="${u}c"><path d="${shell}"/></clipPath></defs>
+      <path d="${shell}" fill="${h1}"/>
+      <g clip-path="url(#${u}c)"><path d="M90 410 C170 330 430 330 510 410 L510 470 C430 380 170 380 90 470 Z" fill="${h2}"/><path d="M90 450 C170 380 430 380 510 450 L510 462 C430 392 170 392 90 462 Z" fill="${h3}"/>
+        <path d="M276 120 C284 190 288 236 286 258 L314 258 C312 236 316 190 324 120 Z" fill="${h2}"/><path d="M200 505 H400 V528 H200 Z" fill="rgba(0,0,0,.55)"/><rect x="80" y="100" width="440" height="500" fill="url(#${u}g)"/></g>
+      <path d="${shell}" fill="none" stroke="${K}" stroke-width="6"/>
+      <path d="M170 296 H430 Q458 296 458 324 V362 Q458 392 428 394 C360 400 240 400 172 394 Q142 392 142 362 V324 Q142 296 170 296 Z" fill="#141518" stroke="${K}" stroke-width="6"/>
+      <path d="M178 306 H422 Q446 306 446 328 V360 Q446 382 420 384 C356 389 244 389 180 384 Q154 382 154 360 V328 Q154 306 178 306 Z" fill="#E9E6E0"/>
+      <path d="M196 316 H404 Q426 316 426 336 V358 Q426 374 404 376 C350 380 250 380 196 376 Q174 374 174 358 V336 Q174 316 196 316 Z" fill="${skin}"/>
+      ${eye(250, -1)}${eye(350, 1)}
+      <path d="M146 252 C200 226 400 226 454 252 L460 298 H140 Z" fill="url(#${u}v)" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M176 262 C240 246 300 244 360 248" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="122" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/><circle cx="478" cy="330" r="15" fill="#2A2C31" stroke="${K}" stroke-width="5"/></svg>`;
+  }
+
+
+
+
+
+const MODE = location.search.includes("port") ? "port" : "land", SW = MODE === "land" ? 1920 : 1080, SH = MODE === "land" ? 1080 : 1920;
+document.getElementById("stage").className = "stage " + MODE;
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeIn = (x) => x * x * x, easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const TEAMCOL = { MER: "#27F4D2", RBR: "#3671C6", FER: "#E8002D", MCL: "#FF8000" }, DRV_TEAM = { ANT: "MER", RUS: "MER", VER: "RBR", HAD: "RBR", LEC: "FER", HAM: "FER", NOR: "MCL", PIA: "MCL" };
+const NAME = { ANT: "Antonelli", RUS: "Russell", VER: "Verstappen", LEC: "Leclerc", HAM: "Hamilton", NOR: "Norris", PIA: "Piastri", HAD: "Hadjar" };
+const outline = (T, box) => { const xs = T.map((p) => p[0]), ys = T.map((p) => p[1]), x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0, h = Math.max(...ys) - y0, s = Math.min(box[2] / w, box[3] / h);
+  const ox = box[0] + (box[2] - w * s) / 2, oy = box[1] + (box[3] - h * s) / 2; return T.map((p) => `${(ox + (p[0] - x0) * s).toFixed(1)},${(oy + (p[1] - y0) * s).toFixed(1)}`).join(" "); };
+
+/* ===================== chapters ===================== */
+const CH = [
+  { d: 8, kick: "ONE F1 EXPLAINED", title: [["WHO", ""], ["WINS", ""], ["VEGAS?", "amb"]],
+    caps: [[1.2, "Night race. November. <span class='ice'>Desert air.</span>"], [4.2, "Expect the <span class='ice'>coldest track</span> of the season. So: who is fast in the cold?"]], focus: [500, 400], src: "ONE F1 · 2026 DATA ONLY" },
+  { d: 18, kick: "THE PROBLEM", title: [["COLD", "ice"], ["TYRES,", "ice"], ["LONG", ""], ["STRAIGHTS", ""]],
+    caps: [[0.8, "F1 tyres need heat to grip. Too cold and they slide, wear and lose time."], [7.0, "Vegas gives them almost none: <span class='ice'>cold night air</span>, <b>long straights</b>, few slow corners to build heat."], [13.0, "Some cars switch their tyres on in the cold. <b>Others never do.</b>"]], focus: [500, 400], src: "ILLUSTRATION" },
+  { d: 26, kick: "EVIDENCE 1 · COLD RACES", title: [["WHO'S", ""], ["FAST", ""], ["IN", ""], ["THE", ""], ["COLD?", "ice"]],
+    caps: [[0.8, "The four coldest dry races of 2026, by track temperature."], [6.4, "<span class='mer'>Mercedes</span>: <b>4 poles, 4 wins.</b> Antonelli won every one."], [13.2, "Race pace gap to the fastest team, cold races vs the rest."], [19.0, "Mercedes was fastest in all four. <span class='rbr'>Red Bull</span> and McLaren lose the most when it's cold."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
+  { d: 16, kick: "EVIDENCE 2 · VEGAS-TYPE TRACKS", title: [["BUILT", ""], ["FOR", ""], ["STRAIGHTS", "amb"]],
+    caps: [[0.8, "Monza and Baku: long straights, low downforce. The closest thing to Vegas."], [7.4, "<span class='mer'>Mercedes won both.</span> Antonelli from <b>P19</b> at Monza, Russell from pole in Baku."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
+  { d: 16, kick: "THE TWIST · LAST 5 RACES", title: [["BUT", ""], ["VERSTAPPEN", "rbr"], ["IS", ""], ["ON", ""], ["FIRE", "heat"]],
+    caps: [[0.8, "Most points of anyone in the last five races: <b>108</b>."], [7.4, "His three wins came in <span class='heat'>hot or wet</span> races. Red Bull is at its weakest in the cold."]], focus: [500, 400], src: "DATA: OPENF1 · LAST 5 RACES" },
+  { d: 22, kick: "THE VERDICT · ONE F1 MODEL", title: [["CHANCES", ""], ["OF", ""], ["WINNING", "amb"]],
+    caps: [[0.8, "From 2026 races only: cold races <b>45%</b>, Vegas-type tracks <b>30%</b>, last five <b>20%</b>, season <b>5%</b>."], [9.0, "<span class='mer'>Antonelli</span> is the favourite. <span class='rbr'>Verstappen</span> is the threat. Then it's wide open."]], focus: null, src: "ONE F1 MODEL · 2026 DATA", cta: true },
+];
+const T0 = []; CH.reduce((a, c, i) => (T0[i] = a, a + c.d), 0);
+const DURATION = CH.reduce((a, c) => a + c.d, 0), XF = 0.8;
+
+/* ===================== graphics (1000 x 800) ===================== */
+const G = [];
+const lp = outline(LAP, [300, 40, 400, 660]);
+G[0] = `<svg viewBox="0 0 1000 800"><polyline points="${lp}" fill="none" stroke="#141E2A" stroke-width="40" stroke-linejoin="round"/>
+  <polyline id="g0l" points="${lp}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#7FD3FF" stroke-width="9" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px #7FD3FF) drop-shadow(0 0 22px #7FD3FF)"/>
+  <text id="g0q" x="500" y="420" text-anchor="middle" class="disp" font-size="300" fill="#FFB000" opacity="0" style="filter:drop-shadow(0 0 24px rgba(255,176,0,.6))">?</text>
+  <text x="500" y="770" text-anchor="middle" class="lbl" style="fill:#7FD3FF">LAS VEGAS STRIP CIRCUIT · SAT 21 NOV · 8PM LOCAL</text></svg>`;
+G[1] = (() => { const P = (a, r) => [500 + r * Math.cos(a), 470 + r * Math.sin(a)], A = (v) => Math.PI * (1 + v / 160);
+  const arc = (v0, v1, r) => { const [x0, y0] = P(A(v0), r), [x1, y1] = P(A(v1), r); return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`; };
+  const chips = [["COLD NIGHT AIR", "#7FD3FF", 7.6], ["LONG STRAIGHTS", "#7FD3FF", 8.4], ["FEW SLOW CORNERS", "#7FD3FF", 9.2]];
+  return `<svg viewBox="0 0 1000 800"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#2B6CFF"/><stop offset=".45" stop-color="#7FD3FF"/><stop offset=".56" stop-color="#5BE38F"/><stop offset=".7" stop-color="#FFB000"/><stop offset="1" stop-color="#FF3B30"/></linearGradient></defs>
+    <path d="${arc(0, 160, 300)}" fill="none" stroke="url(#gg)" stroke-width="28" stroke-linecap="round"/><path d="${arc(88, 112, 300)}" fill="none" stroke="#5BE38F" stroke-width="58" opacity=".85" style="filter:drop-shadow(0 0 12px #5BE38F)"/>
+    <text x="${P(A(100), 352)[0]}" y="${P(A(100), 352)[1]}" text-anchor="middle" class="lbl" style="fill:#5BE38F">GRIP WINDOW</text>
+    <text x="180" y="520" class="lbl" style="fill:#7FD3FF">COLD</text><text x="820" y="520" text-anchor="end" class="lbl" style="fill:#FF3B30">HOT</text>
+    <g id="g1n"><line x1="500" y1="470" x2="500" y2="200" stroke="#fff" stroke-width="9" stroke-linecap="round" style="filter:drop-shadow(0 0 8px #fff)"/></g><circle cx="500" cy="470" r="20" fill="#fff"/>
+    ${chips.map(([t, c, s], k) => `<g class="g1c" data-s="${s}" opacity="0"><rect x="${70 + k * 300}" y="600" width="270" height="64" rx="12" fill="#0B0E14" stroke="${c}" stroke-width="3"/><text x="${205 + k * 300}" y="641" text-anchor="middle" class="lbl" style="fill:${c};font-size:18px">${t}</text></g>`).join("")}
+    <text x="930" y="770" text-anchor="end" class="lbl" style="font-size:16px">ILLUSTRATION</text></svg>`; })();
+G[2] = (() => { const cards = COLD.map((c, k) => { const x = 40 + (k % 2) * 470, y = 40 + Math.floor(k / 2) * 330;
+    return `<g class="g2card" data-k="${k}" opacity="0"><rect x="${x}" y="${y}" width="450" height="300" rx="20" fill="#0B0E14" stroke="#1E3A36" stroke-width="3"/>
+      <text x="${x + 28}" y="${y + 54}" class="disp" font-size="32" fill="#F2F2F0">${c.race.toUpperCase()}</text><text x="${x + 422}" y="${y + 56}" text-anchor="end" class="ledt" font-size="38" fill="#7FD3FF">${c.temp}°C</text>
+      <line x1="${x + 28}" x2="${x + 422}" y1="${y + 84}" y2="${y + 84}" stroke="#1E2632" stroke-width="2"/>
+      <g transform="translate(${x + 28} ${y + 108})">${helmet(c.pole, { size: 90, look: 4 }).replace("<svg", '<svg x="0" y="0"')}</g><text x="${x + 132}" y="${y + 150}" class="lbl" style="font-size:18px">POLE</text><text x="${x + 132}" y="${y + 188}" class="disp" font-size="34" fill="${TEAMCOL[DRV_TEAM[c.pole]]}">${c.pole}</text>
+      <g transform="translate(${x + 238} ${y + 108})">${helmet(c.win, { size: 90, look: -4 }).replace("<svg", '<svg x="0" y="0"')}</g><text x="${x + 342}" y="${y + 150}" class="lbl" style="font-size:18px;fill:#FFD400">WIN</text><text x="${x + 342}" y="${y + 188}" class="disp" font-size="34" fill="${TEAMCOL[DRV_TEAM[c.win]]}">${c.win}</text>
+      <rect x="${x + 28}" y="${y + 236}" width="394" height="40" rx="10" fill="${TEAMCOL[DRV_TEAM[c.win]]}" opacity=".16"/><text x="${x + 225}" y="${y + 263}" text-anchor="middle" class="lbl" style="fill:${TEAMCOL[DRV_TEAM[c.win]]};font-size:17px">MERCEDES POLE + WIN</text></g>`; }).join("");
+  const teams = ["MER", "FER", "MCL", "RBR"], mx = 1.1, X = (v) => 220 + 700 * v / mx;
+  const bars = teams.map((t, k) => { const v = PACE[t], y = 120 + k * 150;
+    return `<g class="g2bar" data-k="${k}"><text x="40" y="${y + 52}" class="disp" font-size="40" fill="${TEAMCOL[t]}">${t}</text>
+      <rect class="g2b" data-k="${k}" x="220" y="${y}" width="${Math.max(6, X(v.cold) - 220)}" height="40" rx="8" fill="#7FD3FF" style="transform-box:fill-box;transform-origin:left"/><text class="g2v" data-k="${k}" x="${Math.max(232, X(v.cold) + 12)}" y="${y + 31}" class="ledt" font-size="30" fill="#7FD3FF">${v.cold.toFixed(2)}%</text>
+      <rect class="g2b" data-k="${k}" x="220" y="${y + 52}" width="${Math.max(6, X(v.rest) - 220)}" height="30" rx="8" fill="#4A5462" style="transform-box:fill-box;transform-origin:left"/><text class="g2v" data-k="${k}" x="${X(v.rest) + 12}" y="${y + 77}" class="ledt" font-size="24" fill="#8D939B">${v.rest.toFixed(2)}%</text></g>`; }).join("");
+  return `<svg viewBox="0 0 1000 800"><g id="g2a">${cards}<g id="g2stamp" opacity="0" transform="translate(500 400) rotate(-8)"><rect x="-250" y="-60" width="500" height="120" rx="16" fill="#0A0A08" stroke="#27F4D2" stroke-width="6"/><text x="0" y="22" text-anchor="middle" class="disp" font-size="58" fill="#27F4D2">4 POLES · 4 WINS</text></g></g>
+    <g id="g2b" opacity="0"><text x="40" y="60" class="lbl">RACE PACE GAP TO THE FASTEST TEAM</text>
+      <g transform="translate(500 50)"><rect x="40" y="-16" width="20" height="20" rx="4" fill="#7FD3FF"/><text x="68" y="0" class="lbl" style="fill:#7FD3FF;font-size:17px">4 COLD RACES</text><rect x="260" y="-16" width="20" height="20" rx="4" fill="#4A5462"/><text x="288" y="0" class="lbl" style="font-size:17px">OTHER DRY RACES</text></g>
+      ${bars}<g id="g2note" opacity="0"><text x="40" y="760" class="lbl" style="fill:#C9CDD2;font-size:18px">0.00% = FASTEST · AT VEGAS PACE, 1% ≈ 0.95 S A LAP</text></g></g></svg>`; })();
+G[3] = (() => { const card = (k, nm, T, who, how) => { const x = 30 + k * 480;
+    return `<g class="g3c" data-k="${k}" opacity="0"><rect x="${x}" y="40" width="460" height="700" rx="22" fill="#0B0E14" stroke="#2A3240" stroke-width="3"/>
+      <text x="${x + 30}" y="104" class="disp" font-size="48" fill="#F2F2F0">${nm}</text><text x="${x + 30}" y="138" class="lbl" style="font-size:16px">LOW DOWNFORCE · LONG STRAIGHTS</text>
+      <polyline points="${outline(T, [x + 40, 170, 380, 300])}" fill="none" stroke="#14202B" stroke-width="22" stroke-linejoin="round"/>
+      <polyline class="g3l" data-k="${k}" points="${outline(T, [x + 40, 170, 380, 300])}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#FFB000" stroke-width="6" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px #FFB000)"/>
+      <g class="g3w" data-k="${k}" opacity="0"><g transform="translate(${x + 30} 520)">${helmet(who, { size: 120, look: 4 }).replace("<svg", '<svg x="0" y="0"')}</g>
+        <text x="${x + 170}" y="566" class="lbl" style="fill:#FFD400">WINNER</text><text x="${x + 170}" y="612" class="disp" font-size="34" fill="#27F4D2">${NAME[who].toUpperCase()}</text>
+        <text x="${x + 170}" y="660" class="ledt" font-size="38" fill="#FFB000">${how}</text></g></g>`; };
+  return `<svg viewBox="0 0 1000 800">${card(0, "MONZA", TRACKS.Monza, "ANT", "FROM P19")}${card(1, "BAKU", TRACKS.Baku, "RUS", "FROM POLE")}</svg>`; })();
+G[4] = (() => { const mx = 120, X = (v) => 260 + 620 * v / mx;
+  const rows = FORM.map(([c, v], k) => { const y = 70 + k * 108, col = TEAMCOL[DRV_TEAM[c]] || "#8D939B";
+    return `<g class="g4r" data-k="${k}"><g transform="translate(40 ${y - 6})">${helmet(c, { size: 82, look: 3 }).replace("<svg", '<svg x="0" y="0"')}</g><text x="140" y="${y + 50}" class="disp" font-size="38" fill="${c === "VER" ? "#5B8DEF" : "#F2F2F0"}">${c}</text>
+      <rect class="g4b" data-k="${k}" x="260" y="${y + 18}" width="${X(v) - 260}" height="44" rx="10" fill="${col}" opacity="${c === "VER" ? 1 : .55}" style="transform-box:fill-box;transform-origin:left;${c === "VER" ? "filter:drop-shadow(0 0 14px #3671C6)" : ""}"/>
+      <text class="g4v" data-k="${k}" data-v="${v}" x="${X(v) + 14}" y="${y + 52}" class="ledt" font-size="38" fill="${c === "VER" ? "#5B8DEF" : "#C9CDD2"}">0</text></g>`; }).join("");
+  const wins = VERWINS.map((w, k) => `<g class="g4w" data-k="${k}" opacity="0"><rect x="${40 + k * 310}" y="720" width="290" height="60" rx="12" fill="#0B0E14" stroke="${w.wet ? "#7FD3FF" : "#FF7A1A"}" stroke-width="3"/>
+    <text x="${185 + k * 310}" y="758" text-anchor="middle" class="lbl" style="fill:${w.wet ? "#7FD3FF" : "#FF7A1A"};font-size:17px">${w.race} · ${w.wet ? "WET" : w.temp + "°C"}</text></g>`).join("");
+  return `<svg viewBox="0 0 1000 800"><text x="40" y="40" class="lbl">POINTS · LAST 5 RACES</text>${rows}<text id="g4wl" x="40" y="706" class="lbl" style="fill:#5B8DEF" opacity="0">VERSTAPPEN'S WINS</text>${wins}</svg>`; })();
+G[5] = (() => { const rows = [...CHANCES.drivers.map((d) => [d.code, d.chance]), ["OTHERS", CHANCES.others]], mx = 40, X = (v) => 450 + 420 * v / mx;
+  return `<svg viewBox="0 0 1000 800"><text x="40" y="40" class="lbl">CHANCE OF WINNING THE LAS VEGAS GP</text>${rows.map(([c, v], k) => { const y = 70 + k * 100, col = TEAMCOL[DRV_TEAM[c]] || "#5E6470", top = k === 0;
+    return `<g class="g5r" data-k="${k}">${c === "OTHERS" ? `<circle cx="78" cy="${y + 40}" r="30" fill="#1C2028" stroke="#3A4452" stroke-width="3"/><text x="78" y="${y + 50}" text-anchor="middle" class="disp" font-size="28" fill="#8D939B">+</text>` : `<g transform="translate(36 ${y - 6})">${helmet(c, { size: 84, look: 3 }).replace("<svg", '<svg x="0" y="0"')}</g>`}
+      <text x="140" y="${y + 50}" class="disp" font-size="${top ? 34 : 30}" fill="${top ? "#27F4D2" : "#F2F2F0"}">${c === "OTHERS" ? "OTHERS" : NAME[c].toUpperCase()}</text>
+      <rect class="g5b" data-k="${k}" x="450" y="${y + 16}" width="${X(v) - 450}" height="${top ? 52 : 44}" rx="10" fill="${col}" opacity="${top ? 1 : .7}" style="transform-box:fill-box;transform-origin:left;${top ? "filter:drop-shadow(0 0 16px #27F4D2)" : ""}"/>
+      <text class="g5v" data-k="${k}" data-v="${v}" x="${X(v) + 14}" y="${y + 56}" class="ledt" font-size="${top ? 50 : 40}" fill="${top ? "#27F4D2" : "#C9CDD2"}">0%</text></g>`; }).join("")}</svg>`; })();
+
+/* ===================== build ===================== */
+document.getElementById("chap").innerHTML = CH.map(() => "<i></i>").join("");
+document.getElementById("txts").innerHTML = CH.map((c, i) => `<div class="txt" data-i="${i}"><div class="kick">${c.kick}</div><h1 class="ttl">${c.title.map(([w, k]) => `<span class="w ${k}">${w}</span>`).join("")}</h1>
+  <div class="cap">${c.caps.map(([s, h]) => `<p data-s="${s}">${h}</p>`).join("")}</div>${c.cta ? `<div class="ctaw"><div class="ask" id="cta1">who's your pick? 👇</div><br><div class="follow" id="cta2"><span class="plus">+</span><span>FOLLOW FOR MORE <b>F1 EXPLAINED</b></span></div></div>` : ""}</div>`).join("");
+document.getElementById("gbox").innerHTML = G.map((g, i) => `<div class="g" data-i="${i}">${g}</div>`).join("");
+document.getElementById("snow").innerHTML = Array.from({ length: 40 }, () => "<i></i>").join("");
+const txts = [...document.querySelectorAll(".txt")], gs = [...document.querySelectorAll(".g")], chapDots = [...document.querySelectorAll("#chap i")], flakes = [...document.querySelectorAll("#snow i")];
+const $ = (id) => document.getElementById(id), op = (el, v) => el && el.setAttribute("opacity", v), all = (sel) => [...document.querySelectorAll(sel)];
+
+function seek(t) {
+  CH.forEach((c, i) => {
+    const lt = t - T0[i], last = i === CH.length - 1;
+    const enter = i === 0 ? 1 : clamp((lt + XF) / XF), exit = last ? 0 : clamp((lt - (c.d - XF)) / XF), vis = enter > 0 && exit < 1;
+    const tx = txts[i], g = gs[i]; tx.style.display = g.style.display = vis ? "block" : "none"; if (!vis) return;
+    tx.style.opacity = easeOut(enter) * (1 - easeIn(exit)); tx.style.transform = `translateY(${(1 - easeOut(enter)) * 40 - easeIn(exit) * 40}px)`;
+    tx.querySelectorAll(".ttl .w").forEach((w, k) => { const p = clamp((lt - k * 0.15) / 0.35); w.style.opacity = p; w.style.transform = `translateY(${(1 - easeOut(p)) * 34}px)`; });
+    const ps = [...tx.querySelectorAll(".cap p")]; ps.forEach((p, k) => { const s = +p.dataset.s, e = k < ps.length - 1 ? +ps[k + 1].dataset.s : 1e9;
+      p.style.opacity = clamp((lt - s) / 0.4) * (1 - clamp((lt - e + 0.3) / 0.3)); p.style.transform = `translateY(${(1 - easeOut(clamp((lt - s) / 0.4))) * 20}px)`; });
+    const f = c.focus || [500, 400]; g.style.transformOrigin = `${f[0] / 10}% ${f[1] / 8}%`;
+    g.style.opacity = easeOut(enter) * (1 - easeIn(exit)); g.style.transform = `scale(${(0.86 + 0.14 * easeOut(enter)) * (c.focus ? 1 + 1.8 * easeIn(exit) : 1)})`;
+    A[i](lt);
+  });
+  $("prog").style.width = (100 * t / DURATION) + "%";
+  const ci = Math.max(0, T0.findIndex((s, i) => t >= s && t < s + CH[i].d)); chapDots.forEach((d, k) => d.classList.toggle("on", k <= ci));
+  $("src").textContent = CH[ci].src;
+  const cold = clamp((t - T0[1] + 0.5) / 1) * clamp((T0[3] - t) / 0.8); $("snow").style.opacity = cold * 0.65;
+  if (cold > 0) flakes.forEach((fl, i) => { const sp = 60 + 80 * rnd(i), sz = 3 + 7 * rnd(i + 99); fl.style.width = fl.style.height = sz + "px"; fl.style.opacity = 0.2 + 0.5 * rnd(i + 7);
+    fl.style.left = (SW * rnd(i + 31) + 30 * Math.sin(t * 0.8 + i)) + "px"; fl.style.top = (((t * sp + SH * rnd(i + 57)) % (SH - 100)) + 60) + "px"; });
+}
+const A = [
+  (lt) => { $("g0l").style.strokeDashoffset = 1 - easeInOut(clamp((lt - 0.2) / 3.0)); const q = clamp((lt - 3.4) / 0.5); op($("g0q"), q); $("g0q").setAttribute("transform", `translate(500 400) scale(${0.6 + 0.4 * back(q)}) translate(-500 -400)`); },
+  (lt) => { const v = 22 + 6 * Math.sin(lt * 2.2) + (lt > 2 && lt < 6 ? 30 * Math.sin(Math.PI * clamp((lt - 2) / 4)) : 0);           // tries to climb, falls back cold
+    $("g1n").setAttribute("transform", `rotate(${-90 + 180 * v / 160} 500 470)`); all(".g1c").forEach((c) => op(c, clamp((lt - +c.dataset.s) / 0.4))); },
+  (lt) => { const a = 1 - clamp((lt - 12.4) / 0.6), b = clamp((lt - 12.8) / 0.6); op($("g2a"), a); op($("g2b"), b);
+    all(".g2card").forEach((c) => { const k = +c.dataset.k, p = clamp((lt - 0.8 - k * 1.1) / 0.45); op(c, p); c.setAttribute("transform", `translate(0 ${(1 - easeOut(p)) * 40})`); });
+    const s = clamp((lt - 6.4) / 0.4); op($("g2stamp"), s); $("g2stamp").setAttribute("transform", `translate(500 400) rotate(-8) scale(${0.6 + 0.4 * back(s)})`);
+    all(".g2b").forEach((r) => { const k = +r.dataset.k; r.style.transform = `scaleX(${easeOut(clamp((lt - 13.6 - k * 0.5) / 0.8))})`; });
+    all(".g2v").forEach((r) => { const k = +r.dataset.k; r.style.opacity = clamp((lt - 14.2 - k * 0.5) / 0.4); }); op($("g2note"), clamp((lt - 18.4) / 0.5));
+    all(".g2bar").forEach((r) => { const k = +r.dataset.k; r.style.opacity = lt > 19 && (k === 2 || k === 3) ? 0.75 + 0.25 * Math.sin(lt * 5) : 1; }); },
+  (lt) => { all(".g3c").forEach((c) => { const k = +c.dataset.k; op(c, clamp((lt - 0.6 - k * 0.6) / 0.4)); });
+    all(".g3l").forEach((l) => { const k = +l.dataset.k; l.style.strokeDashoffset = 1 - easeInOut(clamp((lt - 1.0 - k * 0.6) / 2.4)); });
+    all(".g3w").forEach((w) => { const k = +w.dataset.k; op(w, clamp((lt - 7.4 - k * 0.7) / 0.4)); }); },
+  (lt) => { all(".g4b").forEach((b) => { const k = +b.dataset.k; b.style.transform = `scaleX(${easeOut(clamp((lt - 0.8 - k * 0.3) / 0.9))})`; });
+    all(".g4v").forEach((v) => { const k = +v.dataset.k; v.textContent = Math.round(+v.dataset.v * easeOut(clamp((lt - 0.8 - k * 0.3) / 0.9))); });
+    op($("g4wl"), clamp((lt - 7.4) / 0.4)); all(".g4w").forEach((w) => { const k = +w.dataset.k; op(w, clamp((lt - 7.8 - k * 0.5) / 0.4)); }); },
+  (lt) => { all(".g5b").forEach((b) => { const k = +b.dataset.k; b.style.transform = `scaleX(${easeOut(clamp((lt - 1.4 - k * 0.45) / 1.0))})`; });
+    all(".g5v").forEach((v) => { const k = +v.dataset.k; v.textContent = Math.round(+v.dataset.v * easeOut(clamp((lt - 1.4 - k * 0.45) / 1.0))) + "%"; });
+    const a = $("cta1"), b = $("cta2"), p = clamp((lt - 12.0) / 0.45), q = clamp((lt - 13.4) / 0.45);
+    if (a) { a.style.opacity = p; a.style.transform = `rotate(-3deg) scale(${0.6 + 0.4 * back(p)})`; } if (b) { b.style.opacity = q; b.style.transform = `scale(${0.6 + 0.4 * back(q)})`; } },
+];
+async function renderSoundtrack(rate) { const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate); return ctx.startRendering(); }   // silent: voiceover goes on in the edit
+window.reel = { DURATION, seek, renderSoundtrack, T0, CH, W: SW, H: SH };
+seek(location.hash ? +location.hash.slice(1) : 4);
+</script>

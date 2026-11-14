@@ -1,0 +1,193 @@
+<title>Who wins Vegas?</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* ONE F1 EXPLAINED: "Who wins Vegas?" (~106 s), built from 2026 data only. ?land = 1920x1080 (default), ?port = 1080x1920.
+   Built by build-who-wins.py from this template (edit the template, then rebuild). Same continuous-camera engine as the cold-tyres explainer:
+   a text column (kicker, title, captions in phases) + one SVG graphic on a 1000x800 canvas per chapter; the camera zooms into a focal point between chapters. */
+:root { --fg:#F2F2F0; --soft:#C9CDD2; --muted:#7D838C; --amber:#FFB000; --yellow:#FFD400; --red:#E10600; --ice:#7FD3FF; --heat:#FF7A1A; --good:#5BE38F; --bad:#FF3B30; --mer:#27F4D2;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; }
+* { box-sizing:border-box; }
+body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
+.stage { position:relative; overflow:hidden; background:
+  linear-gradient(rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px, linear-gradient(90deg,rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px,
+  radial-gradient(80% 60% at 60% 45%,#121722,#08090D 75%); }
+.land { width:1920px; height:1080px; } .port { width:1080px; height:1920px; }
+.ruler { position:absolute; width:22px; z-index:2; background:repeating-linear-gradient(180deg,rgba(255,176,0,.45) 0 2px,transparent 2px 24px); }
+.land .ruler { top:140px; bottom:110px; } .port .ruler { top:240px; bottom:340px; } .ruler.l { left:24px; } .ruler.r { right:24px; }
+.hdr { position:absolute; display:flex; justify-content:space-between; align-items:center; z-index:6; }
+.land .hdr { left:110px; right:110px; top:52px; } .port .hdr { left:72px; right:72px; top:110px; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); } .brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:#0A0A0A; }
+.tag { font-family:var(--mono); font-weight:700; font-size:22px; letter-spacing:3px; color:var(--muted); } .tag b { color:var(--amber); }
+.prog { position:absolute; height:6px; border-radius:3px; background:#1A1D24; z-index:6; } .prog i { display:block; height:100%; border-radius:3px; background:var(--amber); box-shadow:0 0 10px var(--amber); }
+.land .prog { left:110px; right:110px; top:112px; } .port .prog { left:72px; right:72px; top:176px; }
+.chap { position:absolute; display:flex; gap:10px; z-index:6; } .chap i { width:22px; height:6px; border-radius:3px; background:#2A2E36; } .chap i.on { background:var(--amber); }
+.land .chap { right:110px; top:126px; } .port .chap { right:72px; top:190px; }
+.ftr { position:absolute; display:flex; justify-content:space-between; font-family:var(--mono); font-size:20px; letter-spacing:2px; color:var(--muted); z-index:6; }
+.land .ftr { left:110px; right:110px; bottom:40px; } .port .ftr { left:72px; right:72px; bottom:318px; }
+.txt { position:absolute; z-index:5; } .land .txt { left:120px; top:240px; width:640px; } .port .txt { left:84px; top:250px; width:912px; text-align:center; }
+.kick { font-family:var(--led); font-weight:900; font-size:28px; letter-spacing:4px; color:var(--amber); text-shadow:0 0 10px rgba(255,176,0,.5); }
+.ttl { margin:16px 0 0; font-weight:900; font-style:italic; font-stretch:125%; line-height:.98; text-transform:uppercase; } .land .ttl { font-size:74px; } .port .ttl { font-size:80px; }
+.ttl .w { display:inline-block; margin-right:.22em; }
+.cap { position:relative; margin-top:32px; min-height:220px; }
+.cap p { position:absolute; left:0; right:0; top:0; margin:0; font-family:var(--mono); font-weight:700; font-size:30px; line-height:1.45; color:var(--soft); }
+.cap p b { color:var(--fg); }
+.ice { color:var(--ice); text-shadow:0 0 22px rgba(127,211,255,.45); } .heat { color:var(--heat); } .bad { color:var(--bad); } .amb { color:var(--amber); } .mer { color:var(--mer); text-shadow:0 0 22px rgba(39,244,210,.4); } .rbr { color:#5B8DEF; }
+.gbox { position:absolute; z-index:4; } .land .gbox { left:820px; top:160px; width:1000px; height:800px; } .port .gbox { left:40px; top:650px; width:1000px; height:800px; }
+.g { position:absolute; inset:0; will-change:transform,opacity; } .g svg { width:100%; height:100%; overflow:visible; }
+.lbl { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; letter-spacing:3px; fill:#7D838C; }
+.ledt { font-family:'Doto',monospace; font-weight:900; } .disp { font-family:'Archivo',sans-serif; font-weight:900; font-style:italic; font-stretch:125%; }
+.follow { display:inline-flex; align-items:center; gap:18px; margin-top:22px; padding:18px 30px 18px 18px; border-radius:999px; background:var(--red); box-shadow:0 0 34px rgba(225,6,0,.5); font-weight:900; font-style:italic; font-stretch:125%; font-size:32px; color:#fff; }
+.follow .plus { display:grid; place-items:center; width:52px; height:52px; border-radius:50%; background:#fff; color:var(--red); font-style:normal; font-size:42px; line-height:1; } .follow b { color:var(--yellow); }
+.ask { font-family:var(--hand); color:var(--yellow); font-size:64px; display:inline-block; transform:rotate(-3deg); }
+.port .ctaw { position:absolute; left:0; right:0; top:1196px; text-align:center; } .port .ask { font-size:46px; } .port .follow { margin-top:4px; font-size:28px; padding:14px 26px 14px 14px; } .port .follow .plus { width:44px; height:44px; font-size:36px; } .land .ctaw { margin-top:10px; }
+.snow { position:absolute; inset:0; z-index:3; pointer-events:none; } .snow i { position:absolute; border-radius:50%; background:#CFEFFF; box-shadow:0 0 8px #9FE3FF; }
+</style>
+<div class="stage" id="stage">
+  <div class="ruler l"></div><div class="ruler r"></div>
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="tag">EXPLAINED · <b>LAS VEGAS GP</b></span></div>
+  <div class="prog"><i id="prog"></i></div><div class="chap" id="chap"></div>
+  <div class="snow" id="snow"></div>
+  <div id="txts"></div><div class="gbox" id="gbox"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span id="src"></span></div>
+</div>
+<script>
+/*DATA*/
+const MODE = location.search.includes("port") ? "port" : "land", SW = MODE === "land" ? 1920 : 1080, SH = MODE === "land" ? 1080 : 1920;
+document.getElementById("stage").className = "stage " + MODE;
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeIn = (x) => x * x * x, easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const TEAMCOL = { MER: "#27F4D2", RBR: "#3671C6", FER: "#E8002D", MCL: "#FF8000" }, DRV_TEAM = { ANT: "MER", RUS: "MER", VER: "RBR", HAD: "RBR", LEC: "FER", HAM: "FER", NOR: "MCL", PIA: "MCL" };
+const NAME = { ANT: "Antonelli", RUS: "Russell", VER: "Verstappen", LEC: "Leclerc", HAM: "Hamilton", NOR: "Norris", PIA: "Piastri", HAD: "Hadjar" };
+const outline = (T, box) => { const xs = T.map((p) => p[0]), ys = T.map((p) => p[1]), x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0, h = Math.max(...ys) - y0, s = Math.min(box[2] / w, box[3] / h);
+  const ox = box[0] + (box[2] - w * s) / 2, oy = box[1] + (box[3] - h * s) / 2; return T.map((p) => `${(ox + (p[0] - x0) * s).toFixed(1)},${(oy + (p[1] - y0) * s).toFixed(1)}`).join(" "); };
+
+/* ===================== chapters ===================== */
+const CH = [
+  { d: 8, kick: "ONE F1 EXPLAINED", title: [["WHO", ""], ["WINS", ""], ["VEGAS?", "amb"]],
+    caps: [[1.2, "Night race. November. <span class='ice'>Desert air.</span>"], [4.2, "Expect the <span class='ice'>coldest track</span> of the season. So: who is fast in the cold?"]], focus: [500, 400], src: "ONE F1 · 2026 DATA ONLY" },
+  { d: 18, kick: "THE PROBLEM", title: [["COLD", "ice"], ["TYRES,", "ice"], ["LONG", ""], ["STRAIGHTS", ""]],
+    caps: [[0.8, "F1 tyres need heat to grip. Too cold and they slide, wear and lose time."], [7.0, "Vegas gives them almost none: <span class='ice'>cold night air</span>, <b>long straights</b>, few slow corners to build heat."], [13.0, "Some cars switch their tyres on in the cold. <b>Others never do.</b>"]], focus: [500, 400], src: "ILLUSTRATION" },
+  { d: 26, kick: "EVIDENCE 1 · COLD RACES", title: [["WHO'S", ""], ["FAST", ""], ["IN", ""], ["THE", ""], ["COLD?", "ice"]],
+    caps: [[0.8, "The four coldest dry races of 2026, by track temperature."], [6.4, "<span class='mer'>Mercedes</span>: <b>4 poles, 4 wins.</b> Antonelli won every one."], [13.2, "Race pace gap to the fastest team, cold races vs the rest."], [19.0, "Mercedes was fastest in all four. <span class='rbr'>Red Bull</span> and McLaren lose the most when it's cold."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
+  { d: 16, kick: "EVIDENCE 2 · VEGAS-TYPE TRACKS", title: [["BUILT", ""], ["FOR", ""], ["STRAIGHTS", "amb"]],
+    caps: [[0.8, "Monza and Baku: long straights, low downforce. The closest thing to Vegas."], [7.4, "<span class='mer'>Mercedes won both.</span> Antonelli from <b>P19</b> at Monza, Russell from pole in Baku."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
+  { d: 16, kick: "THE TWIST · LAST 5 RACES", title: [["BUT", ""], ["VERSTAPPEN", "rbr"], ["IS", ""], ["ON", ""], ["FIRE", "heat"]],
+    caps: [[0.8, "Most points of anyone in the last five races: <b>108</b>."], [7.4, "His three wins came in <span class='heat'>hot or wet</span> races. Red Bull is at its weakest in the cold."]], focus: [500, 400], src: "DATA: OPENF1 · LAST 5 RACES" },
+  { d: 22, kick: "THE VERDICT · ONE F1 MODEL", title: [["CHANCES", ""], ["OF", ""], ["WINNING", "amb"]],
+    caps: [[0.8, "From 2026 races only: cold races <b>45%</b>, Vegas-type tracks <b>30%</b>, last five <b>20%</b>, season <b>5%</b>."], [9.0, "<span class='mer'>Antonelli</span> is the favourite. <span class='rbr'>Verstappen</span> is the threat. Then it's wide open."]], focus: null, src: "ONE F1 MODEL · 2026 DATA", cta: true },
+];
+const T0 = []; CH.reduce((a, c, i) => (T0[i] = a, a + c.d), 0);
+const DURATION = CH.reduce((a, c) => a + c.d, 0), XF = 0.8;
+
+/* ===================== graphics (1000 x 800) ===================== */
+const G = [];
+const lp = outline(LAP, [300, 40, 400, 660]);
+G[0] = `<svg viewBox="0 0 1000 800"><polyline points="${lp}" fill="none" stroke="#141E2A" stroke-width="40" stroke-linejoin="round"/>
+  <polyline id="g0l" points="${lp}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#7FD3FF" stroke-width="9" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px #7FD3FF) drop-shadow(0 0 22px #7FD3FF)"/>
+  <text id="g0q" x="500" y="420" text-anchor="middle" class="disp" font-size="300" fill="#FFB000" opacity="0" style="filter:drop-shadow(0 0 24px rgba(255,176,0,.6))">?</text>
+  <text x="500" y="770" text-anchor="middle" class="lbl" style="fill:#7FD3FF">LAS VEGAS STRIP CIRCUIT · SAT 21 NOV · 8PM LOCAL</text></svg>`;
+G[1] = (() => { const P = (a, r) => [500 + r * Math.cos(a), 470 + r * Math.sin(a)], A = (v) => Math.PI * (1 + v / 160);
+  const arc = (v0, v1, r) => { const [x0, y0] = P(A(v0), r), [x1, y1] = P(A(v1), r); return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`; };
+  const chips = [["COLD NIGHT AIR", "#7FD3FF", 7.6], ["LONG STRAIGHTS", "#7FD3FF", 8.4], ["FEW SLOW CORNERS", "#7FD3FF", 9.2]];
+  return `<svg viewBox="0 0 1000 800"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#2B6CFF"/><stop offset=".45" stop-color="#7FD3FF"/><stop offset=".56" stop-color="#5BE38F"/><stop offset=".7" stop-color="#FFB000"/><stop offset="1" stop-color="#FF3B30"/></linearGradient></defs>
+    <path d="${arc(0, 160, 300)}" fill="none" stroke="url(#gg)" stroke-width="28" stroke-linecap="round"/><path d="${arc(88, 112, 300)}" fill="none" stroke="#5BE38F" stroke-width="58" opacity=".85" style="filter:drop-shadow(0 0 12px #5BE38F)"/>
+    <text x="${P(A(100), 352)[0]}" y="${P(A(100), 352)[1]}" text-anchor="middle" class="lbl" style="fill:#5BE38F">GRIP WINDOW</text>
+    <text x="180" y="520" class="lbl" style="fill:#7FD3FF">COLD</text><text x="820" y="520" text-anchor="end" class="lbl" style="fill:#FF3B30">HOT</text>
+    <g id="g1n"><line x1="500" y1="470" x2="500" y2="200" stroke="#fff" stroke-width="9" stroke-linecap="round" style="filter:drop-shadow(0 0 8px #fff)"/></g><circle cx="500" cy="470" r="20" fill="#fff"/>
+    ${chips.map(([t, c, s], k) => `<g class="g1c" data-s="${s}" opacity="0"><rect x="${70 + k * 300}" y="600" width="270" height="64" rx="12" fill="#0B0E14" stroke="${c}" stroke-width="3"/><text x="${205 + k * 300}" y="641" text-anchor="middle" class="lbl" style="fill:${c};font-size:18px">${t}</text></g>`).join("")}
+    <text x="930" y="770" text-anchor="end" class="lbl" style="font-size:16px">ILLUSTRATION</text></svg>`; })();
+G[2] = (() => { const cards = COLD.map((c, k) => { const x = 40 + (k % 2) * 470, y = 40 + Math.floor(k / 2) * 330;
+    return `<g class="g2card" data-k="${k}" opacity="0"><rect x="${x}" y="${y}" width="450" height="300" rx="20" fill="#0B0E14" stroke="#1E3A36" stroke-width="3"/>
+      <text x="${x + 28}" y="${y + 54}" class="disp" font-size="32" fill="#F2F2F0">${c.race.toUpperCase()}</text><text x="${x + 422}" y="${y + 56}" text-anchor="end" class="ledt" font-size="38" fill="#7FD3FF">${c.temp}°C</text>
+      <line x1="${x + 28}" x2="${x + 422}" y1="${y + 84}" y2="${y + 84}" stroke="#1E2632" stroke-width="2"/>
+      <g transform="translate(${x + 28} ${y + 108})">${helmet(c.pole, { size: 90, look: 4 }).replace("<svg", '<svg x="0" y="0"')}</g><text x="${x + 132}" y="${y + 150}" class="lbl" style="font-size:18px">POLE</text><text x="${x + 132}" y="${y + 188}" class="disp" font-size="34" fill="${TEAMCOL[DRV_TEAM[c.pole]]}">${c.pole}</text>
+      <g transform="translate(${x + 238} ${y + 108})">${helmet(c.win, { size: 90, look: -4 }).replace("<svg", '<svg x="0" y="0"')}</g><text x="${x + 342}" y="${y + 150}" class="lbl" style="font-size:18px;fill:#FFD400">WIN</text><text x="${x + 342}" y="${y + 188}" class="disp" font-size="34" fill="${TEAMCOL[DRV_TEAM[c.win]]}">${c.win}</text>
+      <rect x="${x + 28}" y="${y + 236}" width="394" height="40" rx="10" fill="${TEAMCOL[DRV_TEAM[c.win]]}" opacity=".16"/><text x="${x + 225}" y="${y + 263}" text-anchor="middle" class="lbl" style="fill:${TEAMCOL[DRV_TEAM[c.win]]};font-size:17px">MERCEDES POLE + WIN</text></g>`; }).join("");
+  const teams = ["MER", "FER", "MCL", "RBR"], mx = 1.1, X = (v) => 220 + 700 * v / mx;
+  const bars = teams.map((t, k) => { const v = PACE[t], y = 120 + k * 150;
+    return `<g class="g2bar" data-k="${k}"><text x="40" y="${y + 52}" class="disp" font-size="40" fill="${TEAMCOL[t]}">${t}</text>
+      <rect class="g2b" data-k="${k}" x="220" y="${y}" width="${Math.max(6, X(v.cold) - 220)}" height="40" rx="8" fill="#7FD3FF" style="transform-box:fill-box;transform-origin:left"/><text class="g2v" data-k="${k}" x="${Math.max(232, X(v.cold) + 12)}" y="${y + 31}" class="ledt" font-size="30" fill="#7FD3FF">${v.cold.toFixed(2)}%</text>
+      <rect class="g2b" data-k="${k}" x="220" y="${y + 52}" width="${Math.max(6, X(v.rest) - 220)}" height="30" rx="8" fill="#4A5462" style="transform-box:fill-box;transform-origin:left"/><text class="g2v" data-k="${k}" x="${X(v.rest) + 12}" y="${y + 77}" class="ledt" font-size="24" fill="#8D939B">${v.rest.toFixed(2)}%</text></g>`; }).join("");
+  return `<svg viewBox="0 0 1000 800"><g id="g2a">${cards}<g id="g2stamp" opacity="0" transform="translate(500 400) rotate(-8)"><rect x="-250" y="-60" width="500" height="120" rx="16" fill="#0A0A08" stroke="#27F4D2" stroke-width="6"/><text x="0" y="22" text-anchor="middle" class="disp" font-size="58" fill="#27F4D2">4 POLES · 4 WINS</text></g></g>
+    <g id="g2b" opacity="0"><text x="40" y="60" class="lbl">RACE PACE GAP TO THE FASTEST TEAM</text>
+      <g transform="translate(500 50)"><rect x="40" y="-16" width="20" height="20" rx="4" fill="#7FD3FF"/><text x="68" y="0" class="lbl" style="fill:#7FD3FF;font-size:17px">4 COLD RACES</text><rect x="260" y="-16" width="20" height="20" rx="4" fill="#4A5462"/><text x="288" y="0" class="lbl" style="font-size:17px">OTHER DRY RACES</text></g>
+      ${bars}<g id="g2note" opacity="0"><text x="40" y="760" class="lbl" style="fill:#C9CDD2;font-size:18px">0.00% = FASTEST · AT VEGAS PACE, 1% ≈ 0.95 S A LAP</text></g></g></svg>`; })();
+G[3] = (() => { const card = (k, nm, T, who, how) => { const x = 30 + k * 480;
+    return `<g class="g3c" data-k="${k}" opacity="0"><rect x="${x}" y="40" width="460" height="700" rx="22" fill="#0B0E14" stroke="#2A3240" stroke-width="3"/>
+      <text x="${x + 30}" y="104" class="disp" font-size="48" fill="#F2F2F0">${nm}</text><text x="${x + 30}" y="138" class="lbl" style="font-size:16px">LOW DOWNFORCE · LONG STRAIGHTS</text>
+      <polyline points="${outline(T, [x + 40, 170, 380, 300])}" fill="none" stroke="#14202B" stroke-width="22" stroke-linejoin="round"/>
+      <polyline class="g3l" data-k="${k}" points="${outline(T, [x + 40, 170, 380, 300])}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#FFB000" stroke-width="6" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px #FFB000)"/>
+      <g class="g3w" data-k="${k}" opacity="0"><g transform="translate(${x + 30} 520)">${helmet(who, { size: 120, look: 4 }).replace("<svg", '<svg x="0" y="0"')}</g>
+        <text x="${x + 170}" y="566" class="lbl" style="fill:#FFD400">WINNER</text><text x="${x + 170}" y="612" class="disp" font-size="34" fill="#27F4D2">${NAME[who].toUpperCase()}</text>
+        <text x="${x + 170}" y="660" class="ledt" font-size="38" fill="#FFB000">${how}</text></g></g>`; };
+  return `<svg viewBox="0 0 1000 800">${card(0, "MONZA", TRACKS.Monza, "ANT", "FROM P19")}${card(1, "BAKU", TRACKS.Baku, "RUS", "FROM POLE")}</svg>`; })();
+G[4] = (() => { const mx = 120, X = (v) => 260 + 620 * v / mx;
+  const rows = FORM.map(([c, v], k) => { const y = 70 + k * 108, col = TEAMCOL[DRV_TEAM[c]] || "#8D939B";
+    return `<g class="g4r" data-k="${k}"><g transform="translate(40 ${y - 6})">${helmet(c, { size: 82, look: 3 }).replace("<svg", '<svg x="0" y="0"')}</g><text x="140" y="${y + 50}" class="disp" font-size="38" fill="${c === "VER" ? "#5B8DEF" : "#F2F2F0"}">${c}</text>
+      <rect class="g4b" data-k="${k}" x="260" y="${y + 18}" width="${X(v) - 260}" height="44" rx="10" fill="${col}" opacity="${c === "VER" ? 1 : .55}" style="transform-box:fill-box;transform-origin:left;${c === "VER" ? "filter:drop-shadow(0 0 14px #3671C6)" : ""}"/>
+      <text class="g4v" data-k="${k}" data-v="${v}" x="${X(v) + 14}" y="${y + 52}" class="ledt" font-size="38" fill="${c === "VER" ? "#5B8DEF" : "#C9CDD2"}">0</text></g>`; }).join("");
+  const wins = VERWINS.map((w, k) => `<g class="g4w" data-k="${k}" opacity="0"><rect x="${40 + k * 310}" y="720" width="290" height="60" rx="12" fill="#0B0E14" stroke="${w.wet ? "#7FD3FF" : "#FF7A1A"}" stroke-width="3"/>
+    <text x="${185 + k * 310}" y="758" text-anchor="middle" class="lbl" style="fill:${w.wet ? "#7FD3FF" : "#FF7A1A"};font-size:17px">${w.race} · ${w.wet ? "WET" : w.temp + "°C"}</text></g>`).join("");
+  return `<svg viewBox="0 0 1000 800"><text x="40" y="40" class="lbl">POINTS · LAST 5 RACES</text>${rows}<text id="g4wl" x="40" y="706" class="lbl" style="fill:#5B8DEF" opacity="0">VERSTAPPEN'S WINS</text>${wins}</svg>`; })();
+G[5] = (() => { const rows = [...CHANCES.drivers.map((d) => [d.code, d.chance]), ["OTHERS", CHANCES.others]], mx = 40, X = (v) => 450 + 420 * v / mx;
+  return `<svg viewBox="0 0 1000 800"><text x="40" y="40" class="lbl">CHANCE OF WINNING THE LAS VEGAS GP</text>${rows.map(([c, v], k) => { const y = 70 + k * 100, col = TEAMCOL[DRV_TEAM[c]] || "#5E6470", top = k === 0;
+    return `<g class="g5r" data-k="${k}">${c === "OTHERS" ? `<circle cx="78" cy="${y + 40}" r="30" fill="#1C2028" stroke="#3A4452" stroke-width="3"/><text x="78" y="${y + 50}" text-anchor="middle" class="disp" font-size="28" fill="#8D939B">+</text>` : `<g transform="translate(36 ${y - 6})">${helmet(c, { size: 84, look: 3 }).replace("<svg", '<svg x="0" y="0"')}</g>`}
+      <text x="140" y="${y + 50}" class="disp" font-size="${top ? 34 : 30}" fill="${top ? "#27F4D2" : "#F2F2F0"}">${c === "OTHERS" ? "OTHERS" : NAME[c].toUpperCase()}</text>
+      <rect class="g5b" data-k="${k}" x="450" y="${y + 16}" width="${X(v) - 450}" height="${top ? 52 : 44}" rx="10" fill="${col}" opacity="${top ? 1 : .7}" style="transform-box:fill-box;transform-origin:left;${top ? "filter:drop-shadow(0 0 16px #27F4D2)" : ""}"/>
+      <text class="g5v" data-k="${k}" data-v="${v}" x="${X(v) + 14}" y="${y + 56}" class="ledt" font-size="${top ? 50 : 40}" fill="${top ? "#27F4D2" : "#C9CDD2"}">0%</text></g>`; }).join("")}</svg>`; })();
+
+/* ===================== build ===================== */
+document.getElementById("chap").innerHTML = CH.map(() => "<i></i>").join("");
+document.getElementById("txts").innerHTML = CH.map((c, i) => `<div class="txt" data-i="${i}"><div class="kick">${c.kick}</div><h1 class="ttl">${c.title.map(([w, k]) => `<span class="w ${k}">${w}</span>`).join("")}</h1>
+  <div class="cap">${c.caps.map(([s, h]) => `<p data-s="${s}">${h}</p>`).join("")}</div>${c.cta ? `<div class="ctaw"><div class="ask" id="cta1">who's your pick? 👇</div><br><div class="follow" id="cta2"><span class="plus">+</span><span>FOLLOW FOR MORE <b>F1 EXPLAINED</b></span></div></div>` : ""}</div>`).join("");
+document.getElementById("gbox").innerHTML = G.map((g, i) => `<div class="g" data-i="${i}">${g}</div>`).join("");
+document.getElementById("snow").innerHTML = Array.from({ length: 40 }, () => "<i></i>").join("");
+const txts = [...document.querySelectorAll(".txt")], gs = [...document.querySelectorAll(".g")], chapDots = [...document.querySelectorAll("#chap i")], flakes = [...document.querySelectorAll("#snow i")];
+const $ = (id) => document.getElementById(id), op = (el, v) => el && el.setAttribute("opacity", v), all = (sel) => [...document.querySelectorAll(sel)];
+
+function seek(t) {
+  CH.forEach((c, i) => {
+    const lt = t - T0[i], last = i === CH.length - 1;
+    const enter = i === 0 ? 1 : clamp((lt + XF) / XF), exit = last ? 0 : clamp((lt - (c.d - XF)) / XF), vis = enter > 0 && exit < 1;
+    const tx = txts[i], g = gs[i]; tx.style.display = g.style.display = vis ? "block" : "none"; if (!vis) return;
+    tx.style.opacity = easeOut(enter) * (1 - easeIn(exit)); tx.style.transform = `translateY(${(1 - easeOut(enter)) * 40 - easeIn(exit) * 40}px)`;
+    tx.querySelectorAll(".ttl .w").forEach((w, k) => { const p = clamp((lt - k * 0.15) / 0.35); w.style.opacity = p; w.style.transform = `translateY(${(1 - easeOut(p)) * 34}px)`; });
+    const ps = [...tx.querySelectorAll(".cap p")]; ps.forEach((p, k) => { const s = +p.dataset.s, e = k < ps.length - 1 ? +ps[k + 1].dataset.s : 1e9;
+      p.style.opacity = clamp((lt - s) / 0.4) * (1 - clamp((lt - e + 0.3) / 0.3)); p.style.transform = `translateY(${(1 - easeOut(clamp((lt - s) / 0.4))) * 20}px)`; });
+    const f = c.focus || [500, 400]; g.style.transformOrigin = `${f[0] / 10}% ${f[1] / 8}%`;
+    g.style.opacity = easeOut(enter) * (1 - easeIn(exit)); g.style.transform = `scale(${(0.86 + 0.14 * easeOut(enter)) * (c.focus ? 1 + 1.8 * easeIn(exit) : 1)})`;
+    A[i](lt);
+  });
+  $("prog").style.width = (100 * t / DURATION) + "%";
+  const ci = Math.max(0, T0.findIndex((s, i) => t >= s && t < s + CH[i].d)); chapDots.forEach((d, k) => d.classList.toggle("on", k <= ci));
+  $("src").textContent = CH[ci].src;
+  const cold = clamp((t - T0[1] + 0.5) / 1) * clamp((T0[3] - t) / 0.8); $("snow").style.opacity = cold * 0.65;
+  if (cold > 0) flakes.forEach((fl, i) => { const sp = 60 + 80 * rnd(i), sz = 3 + 7 * rnd(i + 99); fl.style.width = fl.style.height = sz + "px"; fl.style.opacity = 0.2 + 0.5 * rnd(i + 7);
+    fl.style.left = (SW * rnd(i + 31) + 30 * Math.sin(t * 0.8 + i)) + "px"; fl.style.top = (((t * sp + SH * rnd(i + 57)) % (SH - 100)) + 60) + "px"; });
+}
+const A = [
+  (lt) => { $("g0l").style.strokeDashoffset = 1 - easeInOut(clamp((lt - 0.2) / 3.0)); const q = clamp((lt - 3.4) / 0.5); op($("g0q"), q); $("g0q").setAttribute("transform", `translate(500 400) scale(${0.6 + 0.4 * back(q)}) translate(-500 -400)`); },
+  (lt) => { const v = 22 + 6 * Math.sin(lt * 2.2) + (lt > 2 && lt < 6 ? 30 * Math.sin(Math.PI * clamp((lt - 2) / 4)) : 0);           // tries to climb, falls back cold
+    $("g1n").setAttribute("transform", `rotate(${-90 + 180 * v / 160} 500 470)`); all(".g1c").forEach((c) => op(c, clamp((lt - +c.dataset.s) / 0.4))); },
+  (lt) => { const a = 1 - clamp((lt - 12.4) / 0.6), b = clamp((lt - 12.8) / 0.6); op($("g2a"), a); op($("g2b"), b);
+    all(".g2card").forEach((c) => { const k = +c.dataset.k, p = clamp((lt - 0.8 - k * 1.1) / 0.45); op(c, p); c.setAttribute("transform", `translate(0 ${(1 - easeOut(p)) * 40})`); });
+    const s = clamp((lt - 6.4) / 0.4); op($("g2stamp"), s); $("g2stamp").setAttribute("transform", `translate(500 400) rotate(-8) scale(${0.6 + 0.4 * back(s)})`);
+    all(".g2b").forEach((r) => { const k = +r.dataset.k; r.style.transform = `scaleX(${easeOut(clamp((lt - 13.6 - k * 0.5) / 0.8))})`; });
+    all(".g2v").forEach((r) => { const k = +r.dataset.k; r.style.opacity = clamp((lt - 14.2 - k * 0.5) / 0.4); }); op($("g2note"), clamp((lt - 18.4) / 0.5));
+    all(".g2bar").forEach((r) => { const k = +r.dataset.k; r.style.opacity = lt > 19 && (k === 2 || k === 3) ? 0.75 + 0.25 * Math.sin(lt * 5) : 1; }); },
+  (lt) => { all(".g3c").forEach((c) => { const k = +c.dataset.k; op(c, clamp((lt - 0.6 - k * 0.6) / 0.4)); });
+    all(".g3l").forEach((l) => { const k = +l.dataset.k; l.style.strokeDashoffset = 1 - easeInOut(clamp((lt - 1.0 - k * 0.6) / 2.4)); });
+    all(".g3w").forEach((w) => { const k = +w.dataset.k; op(w, clamp((lt - 7.4 - k * 0.7) / 0.4)); }); },
+  (lt) => { all(".g4b").forEach((b) => { const k = +b.dataset.k; b.style.transform = `scaleX(${easeOut(clamp((lt - 0.8 - k * 0.3) / 0.9))})`; });
+    all(".g4v").forEach((v) => { const k = +v.dataset.k; v.textContent = Math.round(+v.dataset.v * easeOut(clamp((lt - 0.8 - k * 0.3) / 0.9))); });
+    op($("g4wl"), clamp((lt - 7.4) / 0.4)); all(".g4w").forEach((w) => { const k = +w.dataset.k; op(w, clamp((lt - 7.8 - k * 0.5) / 0.4)); }); },
+  (lt) => { all(".g5b").forEach((b) => { const k = +b.dataset.k; b.style.transform = `scaleX(${easeOut(clamp((lt - 1.4 - k * 0.45) / 1.0))})`; });
+    all(".g5v").forEach((v) => { const k = +v.dataset.k; v.textContent = Math.round(+v.dataset.v * easeOut(clamp((lt - 1.4 - k * 0.45) / 1.0))) + "%"; });
+    const a = $("cta1"), b = $("cta2"), p = clamp((lt - 12.0) / 0.45), q = clamp((lt - 13.4) / 0.45);
+    if (a) { a.style.opacity = p; a.style.transform = `rotate(-3deg) scale(${0.6 + 0.4 * back(p)})`; } if (b) { b.style.opacity = q; b.style.transform = `scale(${0.6 + 0.4 * back(q)})`; } },
+];
+async function renderSoundtrack(rate) { const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate); return ctx.startRendering(); }   // silent: voiceover goes on in the edit
+window.reel = { DURATION, seek, renderSoundtrack, T0, CH, W: SW, H: SH };
+seek(location.hash ? +location.hash.slice(1) : 4);
+</script>
