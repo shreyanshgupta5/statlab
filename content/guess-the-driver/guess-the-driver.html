@@ -81,6 +81,8 @@ body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
 .tint { position:absolute; inset:0; z-index:1; }
 .hdr, .gantry, .mystery, .ftr { z-index:5; } #scenes { position:relative; z-index:3; }
 .h, .kick, .cap, .hand, .rv .sub { text-shadow:0 4px 18px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.9); }
+.follow { display:inline-flex; align-items:center; gap:18px; margin-top:44px; padding:20px 34px 20px 20px; border-radius:999px; background:var(--red); box-shadow:0 0 34px rgba(225,6,0,.5); font-weight:900; font-style:italic; font-stretch:125%; font-size:40px; color:#fff; }
+.follow .plus { display:grid; place-items:center; width:62px; height:62px; border-radius:50%; background:#fff; color:var(--red); font-style:normal; font-size:50px; line-height:1; } .follow b { color:var(--yellow); }
 .flash { position:absolute; inset:0; background:#fff; opacity:0; z-index:7; pointer-events:none; }
 .sweep { position:absolute; top:-200px; width:260px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,176,0,.8) 45%,#fff 50%,rgba(255,176,0,.8) 55%,transparent); filter:blur(2px); opacity:0; }
 </style>
@@ -205,10 +207,11 @@ document.getElementById("scenes").innerHTML = `
   </section>
   <section class="scene rv">
     <div class="kick" data-a="fade 0.9 .4">LIGHTS OUT. IT'S…</div>
-    <div id="rvHelm" data-a="pop 0.6 .7">${meHelm(400)}</div>
+    <div id="rvHelm" data-a="pop 0.6 .7">${meHelm(330)}</div>
     <div class="name"><span data-a="up 1.2 .4" style="display:block">${DRIVER.first}</span><em data-a="up 1.4 .45">${DRIVER.last}</em></div>
     <div class="sub" data-a="fade 2.2 .5">${DRIVER.sub}</div>
-    <div data-a="pop 3.4 .5" style="margin-top:44px"><span class="hand" style="font-size:84px;display:inline-block;transform:rotate(-3deg)">which clue gave it away? 👇</span></div>
+    <div data-a="pop 3.0 .5" style="margin-top:40px"><span class="hand" style="font-size:80px;display:inline-block;transform:rotate(-3deg)">which clue gave it away? 👇</span></div>
+    <div class="follow" data-a="pop 4.3 .5"><span class="plus">+</span><span>FOLLOW FOR MORE <b>F1 TRIVIA</b></span></div>
   </section>`;
 
 // ---- timeline ----
