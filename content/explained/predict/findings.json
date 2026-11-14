@@ -1,0 +1,429 @@
+{
+ "races": [
+  "Melbourne",
+  "Shanghai",
+  "Suzuka",
+  "Sakhir",
+  "Jeddah",
+  "Miami Gardens",
+  "Montr\u00e9al",
+  "Monte Carlo",
+  "Barcelona",
+  "Spielberg",
+  "Silverstone",
+  "Spa-Francorchamps",
+  "Budapest",
+  "Zandvoort",
+  "Monza",
+  "Madrid",
+  "Baku",
+  "Kuala Lumpur",
+  "Marina Bay",
+  "Austin",
+  "Mexico City",
+  "S\u00e3o Paulo"
+ ],
+ "temps": {
+  "Melbourne": 36.0,
+  "Shanghai": 22.2,
+  "Suzuka": 34.0,
+  "Miami Gardens": 36.8,
+  "Montr\u00e9al": 17.9,
+  "Monte Carlo": 37.4,
+  "Barcelona": 50.3,
+  "Spielberg": 50.8,
+  "Silverstone": 39.7,
+  "Spa-Francorchamps": 30.6,
+  "Budapest": 50.8,
+  "Monza": 55.4,
+  "Madrid": 53.6,
+  "Baku": 44.0,
+  "Marina Bay": 42.6,
+  "Austin": 36.5,
+  "Mexico City": 42.2
+ },
+ "quali_cold": {
+  "races": {
+   "Suzuka": 29.6,
+   "Montr\u00e9al": 30.8,
+   "Shanghai": 31.2,
+   "Zandvoort": 32.5
+  },
+  "teams": {
+   "ALP": {
+    "cold": 1.373,
+    "rest": 1.471,
+    "delta": -0.098
+   },
+   "AMR": {
+    "cold": 3.717,
+    "rest": 4.03,
+    "delta": -0.313
+   },
+   "AUD": {
+    "cold": 1.464,
+    "rest": 1.707,
+    "delta": -0.243
+   },
+   "CAD": {
+    "cold": 3.99,
+    "rest": 3.963,
+    "delta": 0.027
+   },
+   "FER": {
+    "cold": 0.459,
+    "rest": 0.316,
+    "delta": 0.143
+   },
+   "HAA": {
+    "cold": 2.065,
+    "rest": 2.262,
+    "delta": -0.197
+   },
+   "MCL": {
+    "cold": 0.284,
+    "rest": 0.49,
+    "delta": -0.207
+   },
+   "MER": {
+    "cold": 0.036,
+    "rest": 0.079,
+    "delta": -0.043
+   },
+   "RB": {
+    "cold": 1.438,
+    "rest": 1.369,
+    "delta": 0.068
+   },
+   "RBR": {
+    "cold": 0.866,
+    "rest": 0.388,
+    "delta": 0.478
+   },
+   "WIL": {
+    "cold": 2.51,
+    "rest": 2.761,
+    "delta": -0.251
+   }
+  }
+ },
+ "race_cold": {
+  "races": {
+   "Montr\u00e9al": 17.9,
+   "Shanghai": 22.2,
+   "Spa-Francorchamps": 30.6,
+   "Suzuka": 34.0
+  },
+  "teams": {
+   "ALP": {
+    "cold": 1.585,
+    "rest": 1.912,
+    "delta": -0.327
+   },
+   "AMR": {
+    "cold": 5.171,
+    "rest": 3.971,
+    "delta": 1.2
+   },
+   "AUD": {
+    "cold": 2.047,
+    "rest": 2.2,
+    "delta": -0.154
+   },
+   "CAD": {
+    "cold": 3.826,
+    "rest": 4.115,
+    "delta": -0.288
+   },
+   "FER": {
+    "cold": 0.463,
+    "rest": 0.285,
+    "delta": 0.178
+   },
+   "HAA": {
+    "cold": 1.83,
+    "rest": 2.551,
+    "delta": -0.721
+   },
+   "MCL": {
+    "cold": 0.975,
+    "rest": 0.645,
+    "delta": 0.33
+   },
+   "MER": {
+    "cold": 0.0,
+    "rest": 0.208,
+    "delta": -0.208
+   },
+   "RB": {
+    "cold": 1.784,
+    "rest": 2.059,
+    "delta": -0.275
+   },
+   "RBR": {
+    "cold": 0.955,
+    "rest": 0.509,
+    "delta": 0.446
+   },
+   "WIL": {
+    "cold": 2.379,
+    "rest": 2.749,
+    "delta": -0.37
+   }
+  }
+ },
+ "warmup": {
+  "AUD": {
+   "all": 0.115,
+   "n": 41,
+   "hard": 0.028
+  },
+  "CAD": {
+   "all": 0.208,
+   "n": 40,
+   "hard": 0.169
+  },
+  "HAA": {
+   "all": 0.072,
+   "n": 47,
+   "hard": -0.025
+  },
+  "RBR": {
+   "all": 0.3,
+   "n": 46,
+   "hard": 0.028
+  },
+  "MCL": {
+   "all": 0.335,
+   "n": 45,
+   "hard": -0.099
+  },
+  "RB": {
+   "all": 0.21,
+   "n": 45,
+   "hard": -0.037
+  },
+  "FER": {
+   "all": 0.193,
+   "n": 58,
+   "hard": 0.014
+  },
+  "WIL": {
+   "all": -0.044,
+   "n": 50,
+   "hard": -0.114
+  },
+  "MER": {
+   "all": 0.195,
+   "n": 47,
+   "hard": -0.015
+  },
+  "AMR": {
+   "all": 0.185,
+   "n": 43,
+   "hard": -0.081
+  },
+  "ALP": {
+   "all": 0.144,
+   "n": 48,
+   "hard": -0.221
+  }
+ },
+ "speed": {
+  "ALP": {
+   "all": -5.8,
+   "lowdf": -8.0
+  },
+  "AMR": {
+   "all": -16.3,
+   "lowdf": -26.8
+  },
+  "AUD": {
+   "all": -8.4,
+   "lowdf": -8
+  },
+  "CAD": {
+   "all": -16.4,
+   "lowdf": -12.0
+  },
+  "FER": {
+   "all": -8.2,
+   "lowdf": -6.2
+  },
+  "HAA": {
+   "all": -8.5,
+   "lowdf": -1.8
+  },
+  "MCL": {
+   "all": -6.9,
+   "lowdf": -5.5
+  },
+  "MER": {
+   "all": -6.2,
+   "lowdf": -5.2
+  },
+  "RB": {
+   "all": -8.5,
+   "lowdf": -4.5
+  },
+  "RBR": {
+   "all": -10.1,
+   "lowdf": -6.0
+  },
+  "WIL": {
+   "all": -8.7,
+   "lowdf": -3
+  }
+ },
+ "last5": {
+  "VER": {
+   "pts": 108.0,
+   "team": "RBR",
+   "races": 20
+  },
+  "ANT": {
+   "pts": 83.0,
+   "team": "MER",
+   "races": 20
+  },
+  "LEC": {
+   "pts": 64.0,
+   "team": "FER",
+   "races": 20
+  },
+  "NOR": {
+   "pts": 59.0,
+   "team": "MCL",
+   "races": 20
+  },
+  "HAM": {
+   "pts": 55.0,
+   "team": "FER",
+   "races": 20
+  },
+  "HAD": {
+   "pts": 36.0,
+   "team": "RBR",
+   "races": 17
+  },
+  "PIA": {
+   "pts": 32.0,
+   "team": "MCL",
+   "races": 20
+  },
+  "RUS": {
+   "pts": 26.0,
+   "team": "MER",
+   "races": 20
+  },
+  "LAW": {
+   "pts": 26.0,
+   "team": "RB",
+   "races": 20
+  },
+  "HUL": {
+   "pts": 5.0,
+   "team": "AUD",
+   "races": 20
+  },
+  "BOR": {
+   "pts": 4.0,
+   "team": "AUD",
+   "races": 20
+  },
+  "OCO": {
+   "pts": 4.0,
+   "team": "HAA",
+   "races": 18
+  },
+  "ALO": {
+   "pts": 4.0,
+   "team": "AMR",
+   "races": 20
+  },
+  "LIN": {
+   "pts": 1.0,
+   "team": "RB",
+   "races": 20
+  },
+  "GAS": {
+   "pts": 1.0,
+   "team": "ALP",
+   "races": 20
+  },
+  "TSU": {
+   "pts": 1.0,
+   "team": "RB",
+   "races": 3
+  },
+  "HIR": {
+   "pts": 1.0,
+   "team": "HAA",
+   "races": 1
+  },
+  "BEA": {
+   "pts": 0,
+   "team": "HAA",
+   "races": 20
+  },
+  "ALB": {
+   "pts": 0,
+   "team": "WIL",
+   "races": 20
+  },
+  "COL": {
+   "pts": 0,
+   "team": "ALP",
+   "races": 20
+  },
+  "SAI": {
+   "pts": 0,
+   "team": "WIL",
+   "races": 20
+  },
+  "PER": {
+   "pts": 0,
+   "team": "CAD",
+   "races": 20
+  },
+  "STR": {
+   "pts": 0,
+   "team": "AMR",
+   "races": 20
+  },
+  "BOT": {
+   "pts": 0,
+   "team": "CAD",
+   "races": 20
+  },
+  "CAM": {
+   "pts": 0,
+   "team": "HAA",
+   "races": 1
+  }
+ },
+ "quali_avg": {
+  "ANT": 3.3,
+  "RUS": 3.45,
+  "LEC": 4.2,
+  "HAM": 4.4,
+  "NOR": 4.7,
+  "VER": 5.37,
+  "HAD": 6.2,
+  "PIA": 6.35,
+  "LAW": 10.26,
+  "GAS": 10.45,
+  "LIN": 11.15,
+  "HUL": 12,
+  "COL": 13.15,
+  "BOR": 13.25,
+  "BEA": 14.37,
+  "SAI": 15.16,
+  "OCO": 15.28,
+  "ALB": 16.45,
+  "ALO": 18.1,
+  "STR": 20.06,
+  "PER": 20.1,
+  "BOT": 20.25
+ }
+}

@@ -15,6 +15,7 @@ def load(s):
     t = f'{s["session_name"][0]}_{s["session_key"]}'
     drv = {d["driver_number"]: d for d in J(t + "_drivers")}
     w = [x["track_temperature"] for x in J(t + "_weather") if x.get("track_temperature") is not None]
+    if sum(1 for x in J(t + "_weather") if x.get("rainfall")) > 5: return t, drv, None, J(t + "_laps"), J(t + "_stints"), J(t + "_session_result")   # wet: leave out of the temperature comparison
     if s["session_name"] == "Race" and len(w) > 10: w = w[4:]           # skip the grid-heat readings at the start
     return t, drv, (med(w) if w else None), J(t + "_laps"), J(t + "_stints"), J(t + "_session_result")
 
@@ -32,7 +33,7 @@ for s in ses:
         pole = min(best.values()) if best else None
         if pole: quali.append({"loc": loc, "temp": temp, "gap": {k: 100 * (v / pole - 1) for k, v in best.items() if v < 1e8}})
         for r in res:
-            if r.get("position"): qpos[code_of(drv, r["driver_number"])].append(r["position"])
+            if isinstance(r.get("position"), int): qpos[code_of(drv, r["driver_number"])].append(r["position"])
         continue
     # race: clean-lap pace per team (no lap 1, no pit in/out laps, within 107% of the driver's own median)
     by = defaultdict(list)
@@ -71,7 +72,7 @@ for s in ses:
         if r.get("points") is not None: form_pts[code_of(drv, r["driver_number"])].append((s["date_start"], r.get("points") or 0, team_of(drv, r["driver_number"])))
 
 teams = sorted({k for q in quali for k in q["gap"]})
-def cold_split(rows, n_cold=5):
+def cold_split(rows, n_cold=4):
     rows = [r for r in rows if r["temp"] is not None]; cold = sorted(rows, key=lambda r: r["temp"])[:n_cold]; cl = {r["loc"] for r in cold}
     out = {}
     for tm in teams:
