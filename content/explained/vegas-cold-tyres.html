@@ -1,0 +1,181 @@
+<title>Explained: Vegas cold tyres</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* ONE F1 EXPLAINED: "Why does Vegas eat cold tyres?"  1080x1920, ~46 s, paced for a voiceover added later (script: vegas-cold-tyres-vo.md).
+   Engineering-HUD look in ONE F1 colours: side rulers, mono labels, one coloured keyword per headline
+   (ice = cold, orange = heat, red = trouble, amber = data). Beats are set in BEATS; diagrams are drawn in SVG. */
+:root { --bg:#090A0E; --fg:#F2F2F0; --soft:#C9CDD2; --muted:#7D838C; --amber:#FFB000; --yellow:#FFD400; --red:#E10600; --ice:#7FD3FF; --heat:#FF7A1A; --good:#5BE38F; --hud:#1D2733;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; }
+* { box-sizing:border-box; }
+body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
+.stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:
+  linear-gradient(rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px, linear-gradient(90deg,rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px,
+  radial-gradient(80% 50% at 50% 40%,#121722,#090A0E 75%); }
+.ruler { position:absolute; top:240px; bottom:340px; width:26px; z-index:2; background:repeating-linear-gradient(180deg,rgba(255,176,0,.5) 0 2px,transparent 2px 24px); }
+.ruler::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(255,176,0,.9) 0 3px,transparent 3px 120px); width:44px; }
+.ruler.l { left:26px; } .ruler.r { right:26px; transform:scaleX(-1); }
+.hdr { position:absolute; left:72px; right:72px; top:110px; display:flex; justify-content:space-between; align-items:center; z-index:5; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); } .brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:#0A0A0A; }
+.tag { font-family:var(--mono); font-weight:700; font-size:22px; letter-spacing:3px; color:var(--muted); } .tag b { color:var(--amber); }
+.prog { position:absolute; left:72px; right:72px; top:176px; height:6px; border-radius:3px; background:#1A1D24; z-index:5; } .prog i { display:block; height:100%; border-radius:3px; background:var(--amber); box-shadow:0 0 10px var(--amber); }
+.ftr { position:absolute; left:72px; right:72px; bottom:318px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:22px; letter-spacing:2px; color:var(--muted); z-index:5; }
+.scene { position:absolute; left:0; top:230px; width:1080px; height:1360px; padding:0 84px; display:flex; flex-direction:column; align-items:center; text-align:center; z-index:3; }
+.h { margin:30px 0 0; font-weight:900; font-style:italic; font-stretch:125%; font-size:84px; line-height:1; text-transform:uppercase; }
+.h .w { display:inline-block; margin:0 .12em; }
+.ice { color:var(--ice); text-shadow:0 0 22px rgba(127,211,255,.5); } .heat { color:var(--heat); text-shadow:0 0 22px rgba(255,122,26,.5); } .bad { color:#FF3B30; } .amb { color:var(--amber); } .grn { color:var(--good); }
+.sub { margin-top:auto; margin-bottom:40px; font-family:var(--mono); font-weight:700; font-size:30px; letter-spacing:1px; line-height:1.4; color:var(--soft); max-width:880px; }
+.sub b { color:var(--fg); }
+.dia { position:relative; margin-top:40px; width:100%; display:flex; flex-direction:column; align-items:center; }
+.lbl { font-family:var(--mono); font-weight:700; font-size:22px; letter-spacing:3px; fill:var(--muted); color:var(--muted); text-transform:uppercase; }
+.led { font-family:var(--led); font-weight:900; }
+.chip { display:inline-block; padding:14px 26px; border:2px solid var(--amber); border-radius:12px; font-family:var(--led); font-weight:900; font-size:44px; color:var(--amber); background:rgba(10,10,8,.85); box-shadow:0 0 22px rgba(255,176,0,.25); }
+.follow { display:inline-flex; align-items:center; gap:18px; margin-top:40px; padding:20px 34px 20px 20px; border-radius:999px; background:var(--red); box-shadow:0 0 34px rgba(225,6,0,.5); font-weight:900; font-style:italic; font-stretch:125%; font-size:40px; color:#fff; }
+.follow .plus { display:grid; place-items:center; width:62px; height:62px; border-radius:50%; background:#fff; color:var(--red); font-style:normal; font-size:50px; line-height:1; } .follow b { color:var(--yellow); }
+.snow { position:absolute; inset:0; z-index:2; pointer-events:none; } .snow i { position:absolute; border-radius:50%; background:#CFEFFF; box-shadow:0 0 8px #9FE3FF; }
+.sweep { position:absolute; top:-200px; width:200px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(127,211,255,.6) 45%,#fff 50%,rgba(127,211,255,.6) 55%,transparent); filter:blur(2px); opacity:0; }
+</style>
+<div class="stage">
+  <div class="ruler l"></div><div class="ruler r"></div>
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="tag">EXPLAINED · <b>LAS VEGAS GP</b></span></div>
+  <div class="prog"><i id="prog"></i></div>
+  <div class="snow" id="snow"></div>
+  <div id="scenes"></div>
+  <div class="sweep"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span id="src">DATA: OPENF1</span></div>
+</div>
+<script>
+const LAP = [[510,935,325,100,0],[514,931,325,100,0],[525,919,326,100,0],[536,906,327,100,0],[547,893,328,100,0],[560,879,326,100,0],[568,870,276,63,1],[576,861,218,0,1],[583,854,183,0,1],[588,847,160,0,1],[591,839,144,0,1],[591,833,132,0,1],[590,827,124,0,1],[586,821,117,0,1],[583,817,112,0,0],[577,813,116,42,0],[573,811,122,63,0],[567,810,132,64,0],[558,810,148,78,0],[550,811,162,100,0],[542,814,174,100,0],[534,819,189,100,0],[527,824,201,100,0],[519,831,210,100,0],[508,842,222,100,0],[502,846,228,65,0],[489,852,228,67,0],[479,852,230,72,0],[468,850,234,76,0],[458,845,240,100,0],[446,837,246,100,0],[437,828,250,100,0],[430,814,251,100,0],[427,805,260,100,0],[425,793,265,100,0],[424,776,271,100,0],[423,761,277,100,0],[422,747,283,100,0],[421,735,288,100,0],[421,719,294,100,0],[420,707,301,100,0],[420,690,305,100,0],[419,674,309,100,0],[418,658,313,100,0],[418,644,316,100,0],[417,628,319,100,0],[417,611,321,100,0],[416,594,324,100,0],[415,576,326,100,0],[415,560,329,100,0],[414,540,330,100,0],[414,528,333,100,0],[413,512,335,100,0],[413,495,337,100,0],[412,476,337,100,0],[411,460,336,100,0],[411,444,336,100,0],[410,428,304,100,1],[410,414,253,0,1],[409,403,201,0,1],[409,394,163,0,1],[410,387,143,0,1],[412,380,130,0,1],[413,375,118,0,1],[416,370,112,0,0],[420,366,111,23,0],[425,363,117,43,0],[431,362,125,56,0],[437,362,140,75,0],[446,362,160,100,0],[455,362,175,100,0],[468,362,190,100,0],[476,362,203,100,0],[486,362,212,100,0],[497,362,227,100,0],[509,362,235,100,0],[521,360,245,100,0],[533,357,252,100,0],[546,350,258,100,0],[556,344,264,100,0],[566,336,267,100,0],[578,323,269,100,0],[583,315,266,89,0],[590,303,250,0,0],[594,291,226,0,1],[595,282,180,0,1],[595,274,143,0,1],[594,268,128,0,1],[593,266,117,0,1],[590,261,107,0,1],[587,258,98,0,0],[582,256,93,16,0],[577,255,102,23,0],[573,253,107,29,0],[569,249,103,5,0],[567,245,100,16,0],[566,240,101,22,0],[567,233,105,50,0],[568,229,114,55,0],[571,223,126,72,0],[576,216,137,76,0],[579,211,134,63,1],[580,206,120,0,1],[582,200,111,0,1],[582,195,104,0,1],[581,190,96,0,0],[580,186,89,0,0],[577,182,90,22,0],[572,179,94,38,0],[567,179,104,58,0],[562,179,115,73,0],[556,179,132,86,0],[545,179,156,100,0],[539,179,173,100,0],[530,179,189,100,0],[520,180,199,100,0],[509,180,213,100,0],[498,180,224,100,0],[485,180,235,100,0],[475,180,243,100,0],[462,180,250,100,0],[448,180,259,100,0],[435,180,265,100,0],[419,180,271,100,0],[406,180,278,100,0],[393,178,282,100,0],[379,175,286,100,0],[365,170,290,100,0],[352,165,294,100,0],[335,154,296,100,0],[328,147,298,100,0],[318,136,298,100,0],[309,123,299,100,0],[303,110,303,100,0],[296,96,306,100,0],[290,82,309,100,0],[283,68,311,100,0],[275,54,312,100,0],[265,42,312,100,0],[253,31,312,100,0],[240,22,311,100,0],[225,14,308,100,0],[209,8,303,100,0],[197,6,267,74,0],[185,3,208,0,1],[180,2,174,0,1],[172,1,140,0,1],[166,0,121,0,1],[161,1,108,0,1],[156,4,100,0,0],[153,6,98,27,0],[150,11,106,53,0],[149,17,119,68,0],[147,23,135,83,0],[145,30,156,100,0],[142,37,172,100,0],[138,45,188,100,0],[133,56,203,100,0],[128,66,214,100,0],[121,80,227,100,0],[117,88,237,100,0],[111,98,245,100,0],[105,109,252,100,0],[98,121,261,100,0],[92,131,267,100,0],[86,144,274,100,0],[78,159,279,100,0],[72,169,285,100,0],[64,186,290,100,0],[57,200,292,100,0],[53,209,299,100,0],[47,225,302,100,0],[42,239,305,100,0],[38,252,309,100,0],[33,268,311,100,0],[29,283,313,100,0],[25,298,315,100,0],[21,313,317,100,0],[17,329,318,100,0],[13,348,321,100,0],[11,361,322,100,0],[9,376,324,100,0],[6,398,325,100,0],[5,409,326,100,0],[3,425,327,100,0],[3,442,328,100,0],[2,458,330,100,0],[2,475,331,100,0],[2,498,331,100,0],[2,511,332,100,0],[2,525,332,100,0],[2,546,334,100,0],[2,560,335,100,0],[3,576,337,100,0],[3,601,338,100,0],[3,612,340,100,0],[3,628,340,100,0],[3,649,341,100,0],[2,664,342,100,0],[2,681,343,100,0],[2,699,343,100,0],[2,716,344,100,0],[2,734,344,100,0],[2,751,345,100,0],[2,769,346,100,0],[2,786,346,100,0],[2,803,346,100,0],[1,821,346,100,0],[1,838,346,100,0],[1,861,347,100,0],[1,874,345,100,0],[1,892,345,100,0],[0,896,345,100,0],[0,911,306,100,0],[0,922,225,0,1],[0,932,183,0,1],[0,940,155,0,1],[0,946,124,0,1],[1,952,111,0,1],[2,957,103,0,1],[4,963,94,0,1],[5,966,90,1,1],[9,971,93,16,0],[11,973,105,61,0],[17,976,124,89,0],[23,977,139,85,0],[30,979,150,86,0],[38,983,170,100,0],[45,989,183,100,0],[51,994,195,100,0],[63,999,206,100,0],[71,999,215,100,0],[84,1000,228,100,0],[95,1000,239,100,0],[109,1000,246,100,0],[120,999,258,100,0],[133,999,264,100,0],[150,999,271,100,0],[161,998,277,100,0],[174,998,283,100,0],[192,998,289,100,0],[204,997,293,100,0],[219,997,297,100,0],[236,996,298,100,0],[249,996,305,100,0],[267,996,308,100,0],[280,996,311,100,0],[296,997,313,100,0],[312,997,316,100,0],[328,997,318,100,0],[345,996,320,100,0],[361,996,322,100,0],[387,996,324,100,0],[406,995,325,100,0],[422,993,326,100,0],[440,990,326,100,0],[458,983,326,100,0],[470,976,326,100,0],[481,967,325,100,0],[494,954,322,100,0],[505,941,322,100,0]];            // Russell's 2024 pole lap: x, y, km/h, throttle %, brake (vegas-preview-carousel/build-lap.py)
+const TEMPS = [["Mexico City",51.3],["Montreal",49.5],["Spielberg",49.2],["Catalunya",48.7],["Austin",45.5],["Monza",43.8],["Monte Carlo",43.3],["Imola",42.7],["Miami",38.4],["Jeddah",38.0],["Shanghai",35.0],["Singapore",33.8],["Hungaroring",31.7],["Sakhir",31.6],["Yas Marina",30.9],["Interlagos",30.7],["Zandvoort",28.1],["Lusail",28.1],["Baku",25.6],["Spa-Francorchamps",24.1],["Silverstone",23.6],["Suzuka",20.4],["Melbourne",19.0],["Las Vegas",17.7]];   // median track temperature, every 2025 race (OpenF1), hottest first
+const SHARE = [["2023", 81, 19, "2 STOPS"], ["2024", 77, 23, "2 STOPS"], ["2025", 61, 39, "1 STOP"]];   // hard / medium share of top-10 race laps; usual strategy
+/* beats: [start, length]; words: headline, with class per word; sub: on-screen line (the voiceover says more) */
+const BEATS = [
+  { d: 4.6, words: [["WHY", ""], ["DOES", ""], ["VEGAS", "amb"], ["EAT", "bad"], ["COLD", "ice"], ["TYRES?", "ice"]], sub: "The one race where the tyres just won't wake up.", dia: "hook" },
+  { d: 6.6, words: [["TYRES", ""], ["NEED", ""], ["HEAT", "heat"]], sub: "F1 tyres grip properly in a narrow window: <b>around 100°C</b>.", dia: "gauge" },
+  { d: 7.6, words: [["COLDEST", "ice"], ["TRACK", ""], ["OF", ""], ["2025", "amb"]], sub: "Race-night track temperature at every 2025 Grand Prix.", dia: "temps", src: "DATA: OPENF1 · 2025 RACES" },
+  { d: 7.6, words: [["STRAIGHTS", ""], ["COOL", "ice"], ["THEM", ""], ["DOWN", ""]], sub: "<b>69%</b> of a lap is flat out. Long straights, cold air, few big corners to build heat.", dia: "lap", src: "DATA: OPENF1 · 2024 POLE LAP" },
+  { d: 7.2, words: [["COLD", "ice"], ["TYRES", ""], ["SLIDE", "bad"]], sub: "Sliding tears the surface into rolls of rubber: <b>graining</b>.", dia: "grain" },
+  { d: 7.0, words: [["SO", ""], ["TEAMS", ""], ["GO", ""], ["HARD", ""]], sub: "Share of top-10 race laps on the hard tyre.", dia: "rings", src: "DATA: OPENF1 · TOP 10" },
+  { d: 5.4, words: [["WARM", "heat"], ["TYRES", ""], ["WIN", ""], ["VEGAS", "amb"]], sub: "", dia: "cta" },
+];
+const TR = 0.5, T0 = []; BEATS.reduce((a, b, i) => (T0[i] = a, a + b.d), 0);
+const DURATION = BEATS.reduce((a, b) => a + b.d, 0);
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const pts = LAP.map((p) => p[0] + "," + p[1]).join(" ");
+
+/* ---------- diagrams ---------- */
+const DIA = {
+  hook: () => `<svg viewBox="-60 -60 715 1120" width="520" height="815"><polyline points="${pts}" fill="none" stroke="#14202B" stroke-width="54" stroke-linejoin="round"/>
+    <polyline class="hookline" points="${pts}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#7FD3FF" stroke-width="12" stroke-linejoin="round" style="filter:drop-shadow(0 0 10px #7FD3FF) drop-shadow(0 0 26px #7FD3FF)"/>
+    <g class="hookcar"><circle r="30" fill="#7FD3FF" opacity=".25"/><circle r="15" fill="#fff" stroke="#7FD3FF" stroke-width="6"/></g></svg>`,
+  gauge: () => { const P = (a, r) => [300 + r * Math.cos(a), 300 + r * Math.sin(a)], A = (v) => Math.PI * (1 + v / 160);   // 0..160 °C over a half circle
+    const arc = (v0, v1, r) => { const [x0, y0] = P(A(v0), r), [x1, y1] = P(A(v1), r); return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`; };
+    const ticks = [0, 20, 40, 60, 80, 100, 120, 140, 160].map((v) => { const [x0, y0] = P(A(v), 222), [x1, y1] = P(A(v), 246), [tx, ty] = P(A(v), 188); return `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#3A4452" stroke-width="4"/><text x="${tx}" y="${ty + 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="22" fill="#7D838C">${v}</text>`; }).join("");
+    return `<svg viewBox="0 -40 600 460" width="860" height="660"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#2B6CFF"/><stop offset=".45" stop-color="#7FD3FF"/><stop offset=".56" stop-color="#5BE38F"/><stop offset=".7" stop-color="#FFB000"/><stop offset="1" stop-color="#FF3B30"/></linearGradient></defs>
+      <path d="${arc(0, 160, 270)}" fill="none" stroke="url(#gg)" stroke-width="26" stroke-linecap="round" opacity=".9"/>
+      <path class="win" d="${arc(90, 110, 270)}" fill="none" stroke="#5BE38F" stroke-width="52" style="filter:drop-shadow(0 0 14px #5BE38F)"/>${ticks}
+      <text x="${P(A(100), 320)[0]}" y="${P(A(100), 320)[1]}" text-anchor="middle" class="lbl" style="fill:#5BE38F">WINDOW</text>
+      <text x="40" y="350" class="lbl" style="fill:#7FD3FF">COLD</text><text x="560" y="350" text-anchor="end" class="lbl" style="fill:#FF3B30">HOT</text>
+      <g class="needle"><line x1="300" y1="300" x2="300" y2="62" stroke="#fff" stroke-width="8" stroke-linecap="round" style="filter:drop-shadow(0 0 8px #fff)"/></g><circle cx="300" cy="300" r="18" fill="#fff"/>
+      <text class="gval led" x="300" y="392" text-anchor="middle" font-size="64" fill="#F2F2F0">20°C</text></svg>`; },
+  temps: () => { const W = 800, H = 620, n = TEMPS.length, bw = W / n, mx = 55;
+    const bars = TEMPS.map(([nm, v], i) => { const h = (H - 120) * v / mx, x = i * bw + 4, vg = nm === "Las Vegas";
+      return `<rect class="tb" data-i="${i}" x="${x}" y="${H - 60 - h}" width="${bw - 8}" height="${h}" rx="5" fill="${vg ? "#7FD3FF" : v > 40 ? "#FF7A1A" : v > 30 ? "#FFB000" : "#4A6A86"}" style="transform-box:fill-box;transform-origin:bottom;${vg ? "filter:drop-shadow(0 0 14px #7FD3FF)" : ""}"/>`; }).join("");
+    const med = TEMPS.map((x) => x[1]).sort((a, b) => a - b)[Math.floor(n / 2)], my = H - 60 - (H - 120) * med / mx;
+    const vx = (n - 1) * bw + bw / 2, vtop = H - 60 - (H - 120) * TEMPS[n - 1][1] / mx;
+    return `<svg viewBox="0 -20 ${W + 30} ${H + 30}" width="${W + 30}" height="${H + 30}" style="overflow:visible">${bars}
+      <line class="medline" x1="0" x2="${W}" y1="${my}" y2="${my}" stroke="#C9CDD2" stroke-width="3" stroke-dasharray="10 10"/><text class="medline lbl" x="${W * 0.42}" y="${my - 14}" text-anchor="middle" style="fill:#C9CDD2">2025 MEDIAN ${Math.round(med)}°C</text>
+      <g class="hot"><text x="10" y="${H - 60 - (H - 120) * TEMPS[0][1] / mx - 20}" class="led" font-size="46" fill="#FF7A1A">${Math.round(TEMPS[0][1])}°C</text><text x="10" y="${H - 18}" class="lbl" style="fill:#FF7A1A">${TEMPS[0][0].toUpperCase()}</text></g>
+      <g class="cold"><line x1="${vx}" y1="${vtop - 12}" x2="${vx}" y2="${vtop - 110}" stroke="#7FD3FF" stroke-width="4"/><text x="${vx + 20}" y="${vtop - 124}" text-anchor="end" class="led" font-size="72" fill="#7FD3FF" style="filter:drop-shadow(0 0 10px #7FD3FF)">${Math.round(TEMPS[n - 1][1])}°C</text>
+        <text x="${W}" y="${H - 22}" text-anchor="end" class="lbl" style="fill:#7FD3FF">LAS VEGAS</text></g></svg>`; },
+  lap: () => { const segs = LAP.slice(0, -1).map((p, i) => `<line x1="${p[0]}" y1="${p[1]}" x2="${LAP[i + 1][0]}" y2="${LAP[i + 1][1]}" stroke="${p[3] >= 99 ? "#7FD3FF" : "#FF7A1A"}" stroke-width="${p[3] >= 99 ? 22 : 16}" stroke-linecap="round"/>`).join("");
+    return `<div style="display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center"><svg viewBox="-50 -50 695 1100" width="400" height="633"><polyline points="${pts}" fill="none" stroke="#14202B" stroke-width="50" stroke-linejoin="round"/><g class="lapsegs">${segs}</g>
+      <g class="lapcar"><circle r="34" fill="#fff" opacity=".2"/><circle r="17" fill="#fff"/></g></svg>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:22px"><span class="lbl">TYRE TEMP · ILLUSTRATION</span>
+        <svg viewBox="0 0 200 330" width="210" height="346"><rect x="40" y="10" width="120" height="300" rx="34" fill="#0E1117" stroke="#3A4452" stroke-width="4"/>
+          <rect x="40" y="96" width="120" height="44" fill="#5BE38F" opacity=".22"/>
+          <rect class="tfill" x="52" y="22" width="96" height="276" rx="24" fill="#7FD3FF"/></svg>
+        <div style="display:flex;gap:18px"><span class="lbl" style="color:#7FD3FF">■ FLAT OUT</span><span class="lbl" style="color:#FF7A1A">■ CORNERS</span></div>
+        <span class="chip ff">69% FLAT OUT</span></div></div>`; },
+  grain: () => { let ridges = ""; for (let k = 0; k < 16; k++) ridges += `<ellipse class="rg" data-k="${k}" cx="${150 + k * 38}" cy="214" rx="13" ry="9" fill="#2A2E36" stroke="#555D69" stroke-width="3"/>`;
+    return `<svg viewBox="0 0 900 640" width="880" height="626">
+      <text x="450" y="40" text-anchor="middle" class="lbl">TYRE TREAD · SIDE VIEW</text>
+      <g class="tyre"><rect x="110" y="220" width="680" height="190" rx="40" fill="#15181E" stroke="#3A4452" stroke-width="5"/>
+        <rect class="tread" x="110" y="220" width="680" height="64" rx="30" fill="#7FD3FF" opacity=".55"/>${ridges}</g>
+      <rect x="40" y="430" width="820" height="26" fill="#2A3038"/><g class="road">${Array.from({ length: 22 }, (_, k) => `<rect x="${40 + k * 40}" y="440" width="22" height="6" fill="#4A525E"/>`).join("")}</g>
+      <g class="arrow"><line x1="300" y1="540" x2="600" y2="540" stroke="#FF3B30" stroke-width="10"/><path d="M600 516 L650 540 L600 564 Z" fill="#FF3B30"/><text x="450" y="600" text-anchor="middle" class="lbl" style="fill:#FF3B30">SLIDING, NOT GRIPPING</text></g>
+      <g class="gl"><line x1="700" y1="150" x2="610" y2="200" stroke="#FFB000" stroke-width="4"/><text x="706" y="140" class="lbl" style="fill:#FFB000">GRAINING</text></g></svg>`; },
+  rings: () => `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;width:100%">${SHARE.map(([y, h, m, st], k) => `<div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      <svg viewBox="0 0 200 200" width="250" height="250"><circle cx="100" cy="100" r="96" fill="#0E0E10" stroke="#000" stroke-width="3"/><circle cx="100" cy="100" r="74" fill="none" stroke="#26262B" stroke-width="18"/>
+        <circle class="rm" data-k="${k}" data-len="${h + m}" cx="100" cy="100" r="74" fill="none" stroke="#FFD400" stroke-width="18" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 100 100)"/>
+        <circle class="rh" data-k="${k}" data-len="${h}" cx="100" cy="100" r="74" fill="none" stroke="#F2F2F0" stroke-width="18" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 5px rgba(255,255,255,.5))"/>
+        <circle cx="100" cy="100" r="56" fill="#15161A"/><text class="rv led" data-k="${k}" data-v="${h}" x="100" y="110" text-anchor="middle" font-size="44" fill="#F2F2F0">0%</text><text x="100" y="134" text-anchor="middle" font-family="JetBrains Mono" font-size="14" fill="#7D838C" letter-spacing="2">HARD</text></svg>
+      <span class="led" style="font-size:38px;color:#C9CDD2">${y}</span><span class="chip rs" data-k="${k}" style="font-size:30px;padding:10px 18px;${st === "1 STOP" ? "border-color:#5BE38F;color:#5BE38F" : ""}">${st}</span></div>`).join("")}</div>
+    <div style="display:flex;gap:28px;justify-content:center;margin-top:30px"><span class="lbl" style="color:#F2F2F0">■ HARD</span><span class="lbl" style="color:#FFD400">■ MEDIUM</span></div>`,
+  cta: () => `<div style="margin-top:20px;font-family:var(--hand);color:var(--yellow);font-size:82px;transform:rotate(-3deg)" class="ctaq">who switches them on first? 👇</div>
+    <div class="follow ctaf"><span class="plus">+</span><span>FOLLOW FOR MORE <b>F1 EXPLAINED</b></span></div>
+    <div class="lbl" style="margin-top:40px">LAS VEGAS GP · SAT 21 NOV · 8PM LOCAL</div>`,
+};
+document.getElementById("scenes").innerHTML = BEATS.map((b, i) => `<section class="scene" data-i="${i}">
+  <h2 class="h">${b.words.map(([w, c]) => `<span class="w ${c}">${w}</span>`).join(" ")}</h2>
+  <div class="dia">${DIA[b.dia]()}</div>${b.sub ? `<div class="sub">${b.sub}</div>` : ""}</section>`).join("");
+document.getElementById("snow").innerHTML = Array.from({ length: 40 }, () => "<i></i>").join("");
+
+/* ---------- timeline ---------- */
+const scenes = [...document.querySelectorAll(".scene")], sweep = document.querySelector(".sweep"), flakes = [...document.querySelectorAll("#snow i")];
+const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const lapAt = (f) => { const N = LAP.length - 1, i = Math.min(N - 1, Math.floor(f)), k = f - i, a = LAP[i], b = LAP[i + 1]; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[3]]; };
+const op = (el, v) => el && (el.style.opacity = v);
+function seek(t) {
+  scenes.forEach((sc, i) => {
+    const lt = t - T0[i], d = BEATS[i].d; let x = 0;
+    const vis = lt > -TR && lt < d + 0.01; sc.style.display = vis ? "flex" : "none"; if (!vis) return;
+    if (i > 0 && lt < 0) x = 1080 * easeInOut(clamp(-lt / TR));
+    if (i < scenes.length - 1 && lt > d - TR) x = -1080 * easeInOut(clamp((lt - (d - TR)) / TR));
+    sc.style.transform = `translateX(${x}px)`;
+    sc.querySelectorAll(".h .w").forEach((w, k) => { const p = clamp((lt - 0.1 - k * 0.22) / 0.35); w.style.opacity = p; w.style.transform = `translateY(${(1 - easeOut(p)) * 50}px)`; });
+    const sub = sc.querySelector(".sub"); if (sub) { const p = clamp((lt - 1.2) / 0.5); sub.style.opacity = p; sub.style.transform = `translateY(${(1 - easeOut(p)) * 30}px)`; }
+    beat[BEATS[i].dia](sc, lt, d);
+  });
+  document.getElementById("prog").style.width = (100 * t / DURATION) + "%";
+  const cur = BEATS[Math.max(0, T0.findIndex((s, i) => t >= s && t < s + BEATS[i].d))] || BEATS[0];
+  document.getElementById("src").textContent = cur.src || "DATA: OPENF1";
+  const cold = clamp((t - T0[2] + 0.3) / 0.8) * clamp((T0[5] - t) / 0.6);       // snow over the cold beats
+  document.getElementById("snow").style.opacity = cold * 0.8;
+  if (cold > 0) flakes.forEach((f, i) => { const sp = 70 + 90 * rnd(i), sz = 4 + 7 * rnd(i + 99); f.style.width = f.style.height = sz + "px"; f.style.opacity = 0.2 + 0.5 * rnd(i + 7);
+    f.style.left = (1080 * rnd(i + 31) + 30 * Math.sin(t * 0.8 + i)) + "px"; f.style.top = (((t * sp + 1920 * rnd(i + 57)) % 1700) + 100) + "px"; });
+  let sw = -1; T0.slice(1).forEach((c) => { const q = (t - (c - TR)) / TR; if (q >= 0 && q <= 1) sw = q; });
+  sweep.style.opacity = sw < 0 ? 0 : 0.8 * Math.sin(Math.PI * sw); sweep.style.left = (sw < 0 ? -400 : -400 + 1900 * sw) + "px";
+}
+const beat = {
+  hook: (sc, lt) => { const p = easeInOut(clamp((lt - 0.4) / 2.6)); sc.querySelector(".hookline").style.strokeDashoffset = 1 - p;
+    const [x, y] = lapAt(((lt - 0.4) / 2.6 < 1 ? p : (((lt - 3.0) / 4) % 1)) * (LAP.length - 1)); sc.querySelector(".hookcar").setAttribute("transform", `translate(${x} ${y})`); op(sc.querySelector(".hookcar"), lt > 0.4 ? 1 : 0); },
+  gauge: (sc, lt) => { const p1 = easeInOut(clamp((lt - 1.4) / 1.6)), p2 = clamp((lt - 4.0) / 0.8);
+    const v = 20 + 80 * p1 - 0 * p2, wob = lt > 3 ? 3 * Math.sin(lt * 7) * (1 - clamp((lt - 3) / 1.5)) : 0;
+    sc.querySelector(".needle").setAttribute("transform", `rotate(${-90 + 180 * (v + wob) / 160} 300 300)`);
+    sc.querySelector(".gval").textContent = Math.round(v) + "°C"; sc.querySelector(".gval").setAttribute("fill", v > 88 ? "#5BE38F" : "#7FD3FF");
+    op(sc.querySelector(".win"), 0.35 + 0.65 * clamp((lt - 2.8) / 0.4) * (0.75 + 0.25 * Math.sin(lt * 6))); },
+  temps: (sc, lt) => { const n = TEMPS.length; sc.querySelectorAll(".tb").forEach((b) => { const i = +b.dataset.i, p = easeOut(clamp((lt - 1.0 - i * 0.07) / 0.5)); b.style.transform = `scaleY(${p})`; });
+    sc.querySelectorAll(".medline").forEach((e) => op(e, clamp((lt - 3.0) / 0.4))); op(sc.querySelector(".hot"), clamp((lt - 2.9) / 0.4)); op(sc.querySelector(".cold"), clamp((lt - 3.6) / 0.4));
+    const c = sc.querySelector(".cold"); if (c) c.style.transform = `scale(${lt > 3.6 ? 1 + 0.04 * Math.sin(lt * 5) : 1})`; },
+  lap: (sc, lt) => { const N = LAP.length - 1, f = (clamp((lt - 1.0) / 6.0)) * N, [x, y, th] = lapAt(f);
+    sc.querySelector(".lapcar").setAttribute("transform", `translate(${x} ${y})`);
+    let heat = 0.55; for (let i = 0; i < Math.floor(f); i++) heat += LAP[i][3] >= 99 ? -0.0042 : 0.0062; heat = Math.max(0.12, Math.min(0.75, heat));   // illustrative: straights cool, corners warm
+    const r = sc.querySelector(".tfill"), h = 276 * heat; r.setAttribute("y", 298 - h); r.setAttribute("height", h); r.setAttribute("fill", heat > 0.62 ? "#5BE38F" : "#7FD3FF");
+    op(sc.querySelector(".ff"), clamp((lt - 4.5) / 0.4)); },
+  grain: (sc, lt) => { const slide = clamp((lt - 1.4) / 0.4), g = clamp((lt - 2.4) / 2.6);
+    sc.querySelector(".tyre").setAttribute("transform", `translate(${slide * 14 * Math.sin(lt * 30)} 0)`);
+    sc.querySelector(".road").setAttribute("transform", `translate(${-((lt * 260) % 40)} 0)`); op(sc.querySelector(".arrow"), slide);
+    sc.querySelectorAll(".rg").forEach((r) => { const k = +r.dataset.k, p = clamp((g * 16 - k) / 1.5); r.style.opacity = p; r.setAttribute("ry", 4 + 9 * p); });
+    op(sc.querySelector(".gl"), clamp((lt - 4.0) / 0.4)); sc.querySelector(".tread").setAttribute("fill", g > 0.5 ? "#FF7A1A" : "#7FD3FF"); },
+  rings: (sc, lt) => { sc.querySelectorAll(".rh,.rm").forEach((c) => { const k = +c.dataset.k, p = easeInOut(clamp((lt - 1.2 - k * 0.6) / 1.2)); c.setAttribute("stroke-dasharray", `${(+c.dataset.len) * p} 100`); });
+    sc.querySelectorAll(".rv").forEach((c) => { const k = +c.dataset.k, p = easeOut(clamp((lt - 1.2 - k * 0.6) / 1.2)); c.textContent = Math.round(+c.dataset.v * p) + "%"; });
+    sc.querySelectorAll(".rs").forEach((c) => { const k = +c.dataset.k, p = clamp((lt - 3.6 - k * 0.4) / 0.35); c.style.opacity = p; c.style.transform = `scale(${0.6 + 0.4 * back(p)})`; }); },
+  cta: (sc, lt) => { const a = sc.querySelector(".ctaq"), b = sc.querySelector(".ctaf"); const p = clamp((lt - 1.4) / 0.45), q = clamp((lt - 2.4) / 0.45);
+    a.style.opacity = p; a.style.transform = `rotate(-3deg) scale(${0.6 + 0.4 * back(p)})`; b.style.opacity = q; b.style.transform = `scale(${0.6 + 0.4 * back(q)})`; },
+};
+// silent: the voiceover and music go on in the edit
+async function renderSoundtrack(rate) { const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate); return ctx.startRendering(); }
+window.reel = { DURATION, seek, renderSoundtrack, T0, BEATS };
+seek(location.hash ? +location.hash.slice(1) : 3);
+</script>
