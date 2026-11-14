@@ -29,7 +29,7 @@ body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
 .ttl { margin:16px 0 0; font-weight:900; font-style:italic; font-stretch:125%; line-height:.98; text-transform:uppercase; } .land .ttl { font-size:74px; } .port .ttl { font-size:80px; }
 .ttl .w { display:inline-block; margin-right:.22em; }
 .cap { position:relative; margin-top:32px; min-height:220px; }
-.cap p { position:absolute; left:0; right:0; top:0; margin:0; font-family:var(--mono); font-weight:700; font-size:30px; line-height:1.45; color:var(--soft); }
+.cap p { position:absolute; left:0; right:0; top:0; margin:0; font-family:var(--mono); font-weight:700; font-size:34px; line-height:1.45; color:var(--soft); }
 .cap p b { color:var(--fg); }
 .ice { color:var(--ice); text-shadow:0 0 22px rgba(127,211,255,.45); } .heat { color:var(--heat); } .bad { color:var(--bad); } .amb { color:var(--amber); } .mer { color:var(--mer); text-shadow:0 0 22px rgba(39,244,210,.4); } .rbr { color:#5B8DEF; }
 .gbox { position:absolute; z-index:4; } .land .gbox { left:820px; top:160px; width:1000px; height:800px; } .port .gbox { left:40px; top:650px; width:1000px; height:800px; }
@@ -65,17 +65,17 @@ const outline = (T, box) => { const xs = T.map((p) => p[0]), ys = T.map((p) => p
 /* ===================== chapters ===================== */
 const CH = [
   { d: 8, kick: "ONE F1 EXPLAINED", title: [["WHO", ""], ["WINS", ""], ["VEGAS?", "amb"]],
-    caps: [[1.2, "Night race. November. <span class='ice'>Desert air.</span>"], [4.2, "Expect the <span class='ice'>coldest track</span> of the season. So: who is fast in the cold?"]], focus: [500, 400], src: "ONE F1 · 2026 DATA ONLY" },
-  { d: 18, kick: "THE PROBLEM", title: [["COLD", "ice"], ["TYRES,", "ice"], ["LONG", ""], ["STRAIGHTS", ""]],
-    caps: [[0.8, "F1 tyres need heat to grip. Too cold and they slide, wear and lose time."], [7.0, "Vegas gives them almost none: <span class='ice'>cold night air</span>, <b>long straights</b>, few slow corners to build heat."], [13.0, "Some cars switch their tyres on in the cold. <b>Others never do.</b>"]], focus: [500, 400], src: "ILLUSTRATION" },
+    caps: [[1.2, "Night race. November. <span class='ice'>Desert air.</span>"], [4.2, "So who's fast in the <span class='ice'>cold</span>?"]], focus: [500, 400], src: "ONE F1 · 2026 DATA ONLY" },
+  { d: 22, kick: "THE PROBLEM", title: [["COLD", "ice"], ["TYRES,", "ice"], ["LONG", ""], ["STRAIGHTS", ""]],
+    caps: [[0.6, "Tyres need <span class='heat'>heat</span> to grip."], [5.4, "<span class='heat'>Braking</span> and <span class='heat'>cornering</span> put heat in."], [11.2, "<b>Long straights</b> and <span class='ice'>cold air</span> take it away."], [17.2, "Cold tyres don't grip. <span class='bad'>They slide.</span>"]], focus: [500, 400], src: "ILLUSTRATION" },
   { d: 26, kick: "EVIDENCE 1 · COLD RACES", title: [["WHO'S", ""], ["FAST", ""], ["IN", ""], ["THE", ""], ["COLD?", "ice"]],
-    caps: [[0.8, "The four coldest dry races of 2026, by track temperature."], [6.4, "<span class='mer'>Mercedes</span>: <b>4 poles, 4 wins.</b> Antonelli won every one."], [13.2, "Race pace gap to the fastest team, cold races vs the rest."], [19.0, "Mercedes was fastest in all four. <span class='rbr'>Red Bull</span> and McLaren lose the most when it's cold."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
+    caps: [[0.8, "The 4 coldest dry races of 2026."], [6.4, "<span class='mer'>Mercedes</span>: <b>4 poles, 4 wins.</b>"], [13.2, "Race pace vs the fastest team."], [19.0, "<span class='rbr'>Red Bull</span> and McLaren fade in the cold."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
   { d: 16, kick: "EVIDENCE 2 · VEGAS-TYPE TRACKS", title: [["BUILT", ""], ["FOR", ""], ["STRAIGHTS", "amb"]],
-    caps: [[0.8, "Monza and Baku: long straights, low downforce. The closest thing to Vegas."], [7.4, "<span class='mer'>Mercedes won both.</span> Antonelli from <b>P19</b> at Monza, Russell from pole in Baku."]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
+    caps: [[0.8, "Long straights, low downforce. <b>Like Vegas.</b>"], [7.4, "<span class='mer'>Mercedes won both.</span>"]], focus: [500, 400], src: "DATA: OPENF1 · 2026 RACES" },
   { d: 16, kick: "THE TWIST · LAST 5 RACES", title: [["BUT", ""], ["VERSTAPPEN", "rbr"], ["IS", ""], ["ON", ""], ["FIRE", "heat"]],
-    caps: [[0.8, "Most points of anyone in the last five races: <b>108</b>."], [7.4, "His three wins came in <span class='heat'>hot or wet</span> races. Red Bull is at its weakest in the cold."]], focus: [500, 400], src: "DATA: OPENF1 · LAST 5 RACES" },
+    caps: [[0.8, "<b>108 points</b> in the last five races."], [7.4, "But his wins came in <span class='heat'>hot or wet</span> races."]], focus: [500, 400], src: "DATA: OPENF1 · LAST 5 RACES" },
   { d: 22, kick: "THE VERDICT · ONE F1 MODEL", title: [["CHANCES", ""], ["OF", ""], ["WINNING", "amb"]],
-    caps: [[0.8, "From 2026 races only: cold races <b>45%</b>, Vegas-type tracks <b>30%</b>, last five <b>20%</b>, season <b>5%</b>."], [9.0, "<span class='mer'>Antonelli</span> is the favourite. <span class='rbr'>Verstappen</span> is the threat. Then it's wide open."]], focus: null, src: "ONE F1 MODEL · 2026 DATA", cta: true },
+    caps: [[0.8, "Cold races <b>45%</b> · Vegas-type tracks <b>30%</b> · form <b>20%</b> · season <b>5%</b>"], [9.0, "<span class='mer'>Antonelli</span> the favourite. <span class='rbr'>Verstappen</span> the threat."]], focus: null, src: "ONE F1 MODEL · 2026 DATA", cta: true },
 ];
 const T0 = []; CH.reduce((a, c, i) => (T0[i] = a, a + c.d), 0);
 const DURATION = CH.reduce((a, c) => a + c.d, 0), XF = 0.8;
@@ -87,16 +87,47 @@ G[0] = `<svg viewBox="0 0 1000 800"><polyline points="${lp}" fill="none" stroke=
   <polyline id="g0l" points="${lp}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#7FD3FF" stroke-width="9" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px #7FD3FF) drop-shadow(0 0 22px #7FD3FF)"/>
   <text id="g0q" x="500" y="420" text-anchor="middle" class="disp" font-size="300" fill="#FFB000" opacity="0" style="filter:drop-shadow(0 0 24px rgba(255,176,0,.6))">?</text>
   <text x="500" y="770" text-anchor="middle" class="lbl" style="fill:#7FD3FF">LAS VEGAS STRIP CIRCUIT · SAT 21 NOV · 8PM LOCAL</text></svg>`;
-G[1] = (() => { const P = (a, r) => [500 + r * Math.cos(a), 470 + r * Math.sin(a)], A = (v) => Math.PI * (1 + v / 160);
-  const arc = (v0, v1, r) => { const [x0, y0] = P(A(v0), r), [x1, y1] = P(A(v1), r); return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`; };
-  const chips = [["COLD NIGHT AIR", "#7FD3FF", 7.6], ["LONG STRAIGHTS", "#7FD3FF", 8.4], ["FEW SLOW CORNERS", "#7FD3FF", 9.2]];
-  return `<svg viewBox="0 0 1000 800"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#2B6CFF"/><stop offset=".45" stop-color="#7FD3FF"/><stop offset=".56" stop-color="#5BE38F"/><stop offset=".7" stop-color="#FFB000"/><stop offset="1" stop-color="#FF3B30"/></linearGradient></defs>
-    <path d="${arc(0, 160, 300)}" fill="none" stroke="url(#gg)" stroke-width="28" stroke-linecap="round"/><path d="${arc(88, 112, 300)}" fill="none" stroke="#5BE38F" stroke-width="58" opacity=".85" style="filter:drop-shadow(0 0 12px #5BE38F)"/>
-    <text x="${P(A(100), 352)[0]}" y="${P(A(100), 352)[1]}" text-anchor="middle" class="lbl" style="fill:#5BE38F">GRIP WINDOW</text>
-    <text x="180" y="520" class="lbl" style="fill:#7FD3FF">COLD</text><text x="820" y="520" text-anchor="end" class="lbl" style="fill:#FF3B30">HOT</text>
-    <g id="g1n"><line x1="500" y1="470" x2="500" y2="200" stroke="#fff" stroke-width="9" stroke-linecap="round" style="filter:drop-shadow(0 0 8px #fff)"/></g><circle cx="500" cy="470" r="20" fill="#fff"/>
-    ${chips.map(([t, c, s], k) => `<g class="g1c" data-s="${s}" opacity="0"><rect x="${70 + k * 300}" y="600" width="270" height="64" rx="12" fill="#0B0E14" stroke="${c}" stroke-width="3"/><text x="${205 + k * 300}" y="641" text-anchor="middle" class="lbl" style="fill:${c};font-size:18px">${t}</text></g>`).join("")}
-    <text x="930" y="770" text-anchor="end" class="lbl" style="font-size:16px">ILLUSTRATION</text></svg>`; })();
+G[1] = (() => {
+  // a top-down car, nose up, centred on 0,0; tyres are coloured by temperature in the animation
+  const car = (id) => `<g id="${id}"><rect x="-58" y="-92" width="116" height="16" rx="5" fill="#3A4452"/><path d="M-18 -84 L18 -84 L26 -20 L36 30 L36 70 L18 92 L-18 92 L-36 70 L-36 30 L-26 -20 Z" fill="#1C222C" stroke="#5E6672" stroke-width="3"/>
+    <ellipse cx="0" cy="22" rx="12" ry="20" fill="#0E1117" stroke="#5E6672" stroke-width="2"/><rect x="-60" y="84" width="120" height="14" rx="4" fill="#3A4452"/>
+    ${[[-46, -50], [46, -50], [-50, 52], [50, 52]].map(([x, y], k) => `<g transform="translate(${x} ${y})"><rect class="ty" x="-13" y="-24" width="26" height="48" rx="7" fill="#7FD3FF" stroke="#0A0A0A" stroke-width="3"/><circle class="disc" r="9" fill="#FF7A1A" opacity="0"/></g>`).join("")}</g>`;
+  const P = (a, r) => [760 + r * Math.cos(a), 470 + r * Math.sin(a)], Aa = (v) => Math.PI * (1 + v / 160);
+  const arc = (v0, v1, r) => { const [x0, y0] = P(Aa(v0), r), [x1, y1] = P(Aa(v1), r); return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`; };
+  const tyreShape = "M200 250 Q200 214 236 214 L484 214 Q520 214 520 250 L540 520 Q540 556 504 556 L216 556 Q180 556 180 520 Z";
+  const road = "M300 840 L300 430 Q300 270 470 270 L960 270", slide = "M300 840 L300 400 Q290 190 480 175 L960 150";
+  const lapStrip = LAP.slice(0, -1).map((p, i) => `<rect x="${60 + i * 880 / LAP.length}" y="0" width="${880 / LAP.length + 0.6}" height="34" fill="${p[3] >= 99 ? "#7FD3FF" : "#FF7A1A"}"/>`).join("");
+  return `<svg viewBox="0 0 1000 800"><defs><linearGradient id="gg1" x1="0" x2="1"><stop offset="0" stop-color="#2B6CFF"/><stop offset=".45" stop-color="#7FD3FF"/><stop offset=".56" stop-color="#5BE38F"/><stop offset=".7" stop-color="#FFB000"/><stop offset="1" stop-color="#FF3B30"/></linearGradient>
+      <clipPath id="tyc"><path d="${tyreShape}"/></clipPath></defs>
+    <!-- A · tyres need heat: a tyre cross-section filling with heat + a gauge -->
+    <g id="b1a" opacity="0"><text x="360" y="190" text-anchor="middle" class="lbl">TYRE · CROSS-SECTION</text>
+      <path d="${tyreShape}" fill="#0E1117" stroke="#3A4452" stroke-width="5"/><g clip-path="url(#tyc)"><rect id="b1fill" x="170" y="556" width="380" height="0" fill="#7FD3FF"/>
+        ${Array.from({ length: 7 }, (_, k) => `<line x1="${215 + k * 48}" y1="214" x2="${205 + k * 50}" y2="556" stroke="#000" stroke-width="3" opacity=".25"/>`).join("")}</g>
+      <text id="b1t" x="360" y="400" text-anchor="middle" class="ledt" font-size="80" fill="#F2F2F0">20°C</text>
+      <path d="${arc(0, 160, 170)}" fill="none" stroke="url(#gg1)" stroke-width="18" stroke-linecap="round"/><path d="${arc(88, 112, 170)}" fill="none" stroke="#5BE38F" stroke-width="40" opacity=".85" style="filter:drop-shadow(0 0 10px #5BE38F)"/>
+      <g id="b1n"><line x1="760" y1="470" x2="760" y2="320" stroke="#fff" stroke-width="7" stroke-linecap="round"/></g><circle cx="760" cy="470" r="14" fill="#fff"/>
+      <text x="760" y="540" text-anchor="middle" class="lbl" style="fill:#5BE38F">GRIP WINDOW ~100°C</text>
+      <text x="940" y="780" text-anchor="end" class="lbl" style="font-size:15px">ILLUSTRATION</text></g>
+    <!-- B · heat in: braking then cornering -->
+    <g id="b1b" opacity="0"><path d="${road}" fill="none" stroke="#1A1F28" stroke-width="190" stroke-linejoin="round"/><path d="${road}" fill="none" stroke="#2E3644" stroke-width="194" stroke-dasharray="14 14" stroke-linejoin="round" opacity=".6" style="mix-blend-mode:screen"/>
+      <path d="${road}" fill="none" stroke="#1A1F28" stroke-width="176" stroke-linejoin="round"/><path id="b1path" d="${road}" fill="none" stroke="#FFB000" stroke-width="3" stroke-dasharray="10 12" opacity=".5"/>
+      <rect x="205" y="560" width="190" height="120" fill="#FF7A1A" opacity=".1"/><g id="b1l1" opacity="0"><text x="440" y="610" class="disp" font-size="40" fill="#FF7A1A">① BRAKING</text><text x="440" y="644" class="lbl" style="font-size:17px">discs glow, heat soaks in</text></g>
+      <g id="b1l2" opacity="0"><text x="560" y="420" class="disp" font-size="40" fill="#FFB000">② CORNERING</text><text x="560" y="454" class="lbl" style="font-size:17px">load flexes the tyres</text></g>
+      <g id="b1arr" opacity="0">${[-30, 0, 30].map((d) => `<path d="M-150 ${d} L-80 ${d}" stroke="#FFB000" stroke-width="8" stroke-linecap="round"/><path d="M-84 ${d - 14} L-62 ${d} L-84 ${d + 14} Z" fill="#FFB000"/>`).join("")}</g>${car("b1carB")}</g>
+    <!-- C · heat out: long straight, cold air -->
+    <g id="b1c" opacity="0"><clipPath id="rdc"><rect x="370" y="0" width="260" height="680"/></clipPath><rect x="370" y="0" width="260" height="680" fill="#1A1F28"/><rect x="362" y="0" width="8" height="680" fill="#F2F2F0" opacity=".5"/><rect x="630" y="0" width="8" height="680" fill="#F2F2F0" opacity=".5"/>
+      <g clip-path="url(#rdc)"><g id="b1dash">${Array.from({ length: 12 }, (_, k) => `<rect x="496" y="${k * 80 - 80}" width="8" height="44" fill="#F2F2F0" opacity=".45"/>`).join("")}</g></g>
+      <g id="b1wind">${Array.from({ length: 26 }, (_, k) => `<line class="wd" data-k="${k}" x1="0" y1="0" x2="0" y2="${30 + (k % 4) * 14}" stroke="#7FD3FF" stroke-width="3" stroke-linecap="round" opacity=".6"/>`).join("")}</g>
+      <g transform="translate(500 360)">${car("b1carC")}</g>
+      <g id="b1cl" opacity="0"><text x="670" y="200" class="disp" font-size="36" fill="#7FD3FF">LONG</text><text x="670" y="244" class="disp" font-size="36" fill="#7FD3FF">STRAIGHTS</text><text x="670" y="300" class="disp" font-size="36" fill="#7FD3FF">COLD AIR</text><text x="670" y="338" class="lbl" style="font-size:16px">the tyres cool</text></g>
+      <g id="b1strip" opacity="0" transform="translate(0 730)">${lapStrip}<text x="60" y="-14" class="lbl" style="font-size:16px">ONE VEGAS LAP · <tspan fill="#FF7A1A">ORANGE = HEAT IN</tspan> · <tspan fill="#7FD3FF">BLUE = COOLING</tspan></text></g></g>
+    <!-- D · cold tyres slide wide -->
+    <g id="b1d" opacity="0"><path d="${road}" fill="none" stroke="#1A1F28" stroke-width="190" stroke-linejoin="round"/>
+      <path d="${road}" fill="none" stroke="#5BE38F" stroke-width="4" stroke-dasharray="12 12" opacity=".7"/><text x="700" y="320" class="lbl" style="fill:#5BE38F;font-size:17px">THE LINE IT WANTS</text>
+      <path id="b1slide" d="${slide}" fill="none" stroke="#FF3B30" stroke-width="5" opacity=".0"/><path id="b1trail" d="${slide}" fill="none" stroke="#FF3B30" stroke-width="5" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+      <text id="b1sl" x="430" y="660" class="disp" font-size="38" fill="#FF3B30" opacity="0">NO GRIP → SLIDE</text>
+      <g id="b1spk">${Array.from({ length: 16 }, (_, k) => `<circle class="spk" r="${3 + (k % 3)}" fill="#3A3F48" stroke="#8D939B" stroke-width="1.5" opacity="0"/>`).join("")}</g>${car("b1carD")}
+      <g transform="translate(840 440)"><text x="0" y="-18" class="lbl" style="font-size:16px">GRIP</text><rect x="0" y="0" width="44" height="260" rx="10" fill="#0E1117" stroke="#3A4452" stroke-width="3"/><rect id="b1grip" x="6" y="6" width="32" height="248" rx="6" fill="#5BE38F"/></g></g></svg>`; })();
 G[2] = (() => { const cards = COLD.map((c, k) => { const x = 40 + (k % 2) * 470, y = 40 + Math.floor(k / 2) * 330;
     return `<g class="g2card" data-k="${k}" opacity="0"><rect x="${x}" y="${y}" width="450" height="300" rx="20" fill="#0B0E14" stroke="#1E3A36" stroke-width="3"/>
       <text x="${x + 28}" y="${y + 54}" class="disp" font-size="32" fill="#F2F2F0">${c.race.toUpperCase()}</text><text x="${x + 422}" y="${y + 56}" text-anchor="end" class="ledt" font-size="38" fill="#7FD3FF">${c.temp}°C</text>
@@ -168,8 +199,29 @@ function seek(t) {
 }
 const A = [
   (lt) => { $("g0l").style.strokeDashoffset = 1 - easeInOut(clamp((lt - 0.2) / 3.0)); const q = clamp((lt - 3.4) / 0.5); op($("g0q"), q); $("g0q").setAttribute("transform", `translate(500 400) scale(${0.6 + 0.4 * back(q)}) translate(-500 -400)`); },
-  (lt) => { const v = 22 + 6 * Math.sin(lt * 2.2) + (lt > 2 && lt < 6 ? 30 * Math.sin(Math.PI * clamp((lt - 2) / 4)) : 0);           // tries to climb, falls back cold
-    $("g1n").setAttribute("transform", `rotate(${-90 + 180 * v / 160} 500 470)`); all(".g1c").forEach((c) => op(c, clamp((lt - +c.dataset.s) / 0.4))); },
+  (lt) => { const beat = (s0, s1) => clamp((lt - s0) / 0.5) * (1 - clamp((lt - s1 + 0.4) / 0.4));
+    op($("b1a"), beat(0, 5.4)); op($("b1b"), beat(5.2, 11.2)); op($("b1c"), beat(11.0, 17.2)); op($("b1d"), beat(17.0, 99));
+    const heatCol = (h) => h > 0.66 ? "#FF7A1A" : h > 0.33 ? "#FFB000" : "#7FD3FF";
+    // A: the tyre warms to the window
+    const h = easeInOut(clamp((lt - 0.8) / 3.4)), temp = 20 + 80 * h; $("b1fill").setAttribute("y", 556 - 342 * h); $("b1fill").setAttribute("height", 342 * h); $("b1fill").setAttribute("fill", temp > 85 ? "#FF7A1A" : temp > 50 ? "#FFB000" : "#7FD3FF");
+    $("b1t").textContent = Math.round(temp) + "°C"; $("b1n").setAttribute("transform", `rotate(${-90 + 180 * temp / 160} 760 470)`);
+    // B: car brakes, then turns; tyres heat up
+    const pB = $("b1path"), LB = pB.getTotalLength(), qB = easeInOut(clamp((lt - 5.6) / 5.0)), at = (path, L, q) => { const a = path.getPointAtLength(L * q), b = path.getPointAtLength(Math.min(L, L * q + 2)); return [a.x, a.y, Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90]; };
+    const [bx, by, br] = at(pB, LB, qB); $("b1carB").setAttribute("transform", `translate(${bx} ${by}) rotate(${br})`);
+    const braking = qB > 0.12 && qB < 0.42, corner = qB >= 0.42 && qB < 0.8, hb = clamp((qB - 0.12) / 0.7);
+    $("b1carB").querySelectorAll(".disc").forEach((d) => op(d, braking ? 0.9 : hb > 0.3 ? 0.35 : 0)); $("b1carB").querySelectorAll(".ty").forEach((t) => t.setAttribute("fill", heatCol(hb)));
+    op($("b1l1"), clamp((qB - 0.12) / 0.06)); op($("b1l2"), clamp((qB - 0.45) / 0.06)); op($("b1arr"), corner ? 1 : 0); $("b1arr").setAttribute("transform", `translate(${bx} ${by}) rotate(${br - 90})`);
+    // C: straight, cold air, tyres cool down
+    const c = clamp((lt - 11.4) / 5.0); $("b1dash").setAttribute("transform", `translate(0 ${(lt * 900) % 80})`);
+    $("b1carC").querySelectorAll(".ty").forEach((t) => t.setAttribute("fill", heatCol(1 - c))); $("b1carC").querySelectorAll(".disc").forEach((d) => op(d, 0));
+    all(".wd").forEach((w) => { const k = +w.dataset.k, x = 300 + ((k * 137) % 400), y = ((lt * (700 + (k % 5) * 90) + k * 61) % 820) - 60; w.setAttribute("transform", `translate(${x} ${y})`); });
+    op($("b1cl"), clamp((lt - 11.8) / 0.4)); op($("b1strip"), clamp((lt - 13.4) / 0.5));
+    // D: next corner on cold tyres: slides wide, grip drains, rubber specks
+    const pD = $("b1slide"), LD = pD.getTotalLength(), qD = easeInOut(clamp((lt - 17.4) / 3.6)), [dx, dy, dr] = at(pD, LD, qD), slideAmt = clamp((qD - 0.35) / 0.4);
+    $("b1carD").setAttribute("transform", `translate(${dx} ${dy}) rotate(${dr + 14 * slideAmt * Math.sin(lt * 9)})`); $("b1carD").querySelectorAll(".ty").forEach((t) => t.setAttribute("fill", "#7FD3FF"));
+    $("b1trail").style.strokeDashoffset = 1 - qD; op($("b1sl"), clamp((lt - 19.0) / 0.4)); $("b1grip").setAttribute("height", 248 * (1 - 0.75 * slideAmt)); $("b1grip").setAttribute("y", 6 + 248 * 0.75 * slideAmt);
+    $("b1grip").setAttribute("fill", slideAmt > 0.5 ? "#FF3B30" : "#5BE38F");
+    all(".spk").forEach((p, k) => { const o = clamp((slideAmt - k / 20) * 3); op(p, o * 0.9); p.setAttribute("cx", dx + 40 * Math.cos(k * 1.7) + 18 * Math.sin(lt * 3 + k)); p.setAttribute("cy", dy + 50 * Math.sin(k * 2.3)); }); },
   (lt) => { const a = 1 - clamp((lt - 12.4) / 0.6), b = clamp((lt - 12.8) / 0.6); op($("g2a"), a); op($("g2b"), b);
     all(".g2card").forEach((c) => { const k = +c.dataset.k, p = clamp((lt - 0.8 - k * 1.1) / 0.45); op(c, p); c.setAttribute("transform", `translate(0 ${(1 - easeOut(p)) * 40})`); });
     const s = clamp((lt - 6.4) / 0.4); op($("g2stamp"), s); $("g2stamp").setAttribute("transform", `translate(500 400) rotate(-8) scale(${0.6 + 0.4 * back(s)})`);
