@@ -1,0 +1,270 @@
+<title>Why Vegas eats cold tyres</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Doto:wght@800;900&family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+/* ONE F1 EXPLAINED, long form: "Why Vegas eats cold tyres" (~90 s), one continuous flow.
+   ?land = 1920x1080 (default), ?port = 1080x1920. Built by build-flow.py from flow-template.html; edit the template.
+   Each chapter = a text column (kicker, title with coloured keywords, captions that change in phases) + one SVG graphic
+   on a 1000x800 canvas. Chapters hand over with a camera move: the old graphic zooms into a focal point while the new one settles in. */
+:root { --fg:#F2F2F0; --soft:#C9CDD2; --muted:#7D838C; --amber:#FFB000; --yellow:#FFD400; --red:#E10600; --ice:#7FD3FF; --heat:#FF7A1A; --good:#5BE38F; --bad:#FF3B30;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --led:'Doto',monospace; --hand:'Caveat Brush',cursive; }
+* { box-sizing:border-box; }
+body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
+.stage { position:relative; overflow:hidden; background:
+  linear-gradient(rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px, linear-gradient(90deg,rgba(127,211,255,.035) 1px,transparent 1px) 0 0/60px 60px,
+  radial-gradient(80% 60% at 60% 45%,#121722,#08090D 75%); }
+.land { width:1920px; height:1080px; } .port { width:1080px; height:1920px; }
+.ruler { position:absolute; width:22px; z-index:2; background:repeating-linear-gradient(180deg,rgba(255,176,0,.45) 0 2px,transparent 2px 24px); }
+.land .ruler { top:140px; bottom:110px; } .port .ruler { top:240px; bottom:340px; }
+.ruler.l { left:24px; } .ruler.r { right:24px; }
+.hdr { position:absolute; display:flex; justify-content:space-between; align-items:center; z-index:6; }
+.land .hdr { left:110px; right:110px; top:52px; } .port .hdr { left:72px; right:72px; top:110px; }
+.brand { display:inline-block; padding:6px 20px; background:var(--red); transform:skewX(-16deg); } .brand span { display:inline-block; transform:skewX(16deg); font-weight:900; font-style:italic; font-stretch:125%; font-size:26px; color:#0A0A0A; }
+.tag { font-family:var(--mono); font-weight:700; font-size:22px; letter-spacing:3px; color:var(--muted); } .tag b { color:var(--amber); }
+.prog { position:absolute; height:6px; border-radius:3px; background:#1A1D24; z-index:6; } .prog i { display:block; height:100%; border-radius:3px; background:var(--amber); box-shadow:0 0 10px var(--amber); }
+.land .prog { left:110px; right:110px; top:112px; } .port .prog { left:72px; right:72px; top:176px; }
+.chap { position:absolute; display:flex; gap:10px; z-index:6; } .chap i { width:22px; height:6px; border-radius:3px; background:#2A2E36; } .chap i.on { background:var(--amber); }
+.land .chap { right:110px; top:126px; } .port .chap { right:72px; top:190px; }
+.ftr { position:absolute; display:flex; justify-content:space-between; font-family:var(--mono); font-size:20px; letter-spacing:2px; color:var(--muted); z-index:6; }
+.land .ftr { left:110px; right:110px; bottom:40px; } .port .ftr { left:72px; right:72px; bottom:318px; }
+/* text column */
+.txt { position:absolute; z-index:5; }
+.land .txt { left:120px; top:250px; width:640px; } .port .txt { left:84px; top:250px; width:912px; text-align:center; }
+.kick { font-family:var(--led); font-weight:900; font-size:30px; letter-spacing:4px; color:var(--amber); text-shadow:0 0 10px rgba(255,176,0,.5); }
+.ttl { margin:16px 0 0; font-weight:900; font-style:italic; font-stretch:125%; line-height:.98; text-transform:uppercase; }
+.land .ttl { font-size:76px; } .port .ttl { font-size:82px; }
+.ttl .w { display:inline-block; margin-right:.22em; }
+.cap { position:relative; margin-top:34px; min-height:200px; }
+.cap p { position:absolute; left:0; right:0; top:0; margin:0; font-family:var(--mono); font-weight:700; font-size:30px; line-height:1.45; color:var(--soft); }
+.cap p b { color:var(--fg); } .cap p .ice { color:var(--ice); } .cap p .heat { color:var(--heat); }
+.ice { color:var(--ice); text-shadow:0 0 22px rgba(127,211,255,.45); } .heat { color:var(--heat); text-shadow:0 0 22px rgba(255,122,26,.45); } .bad { color:var(--bad); } .amb { color:var(--amber); } .grn { color:var(--good); }
+/* graphic stage */
+.gbox { position:absolute; z-index:4; } .land .gbox { left:820px; top:160px; width:1000px; height:800px; } .port .gbox { left:40px; top:650px; width:1000px; height:800px; }
+.g { position:absolute; inset:0; will-change:transform,opacity; } .g svg { width:100%; height:100%; overflow:visible; }
+.lbl { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; letter-spacing:3px; fill:#7D838C; }
+.ledt { font-family:'Doto',monospace; font-weight:900; }
+.follow { display:inline-flex; align-items:center; gap:18px; margin-top:34px; padding:18px 30px 18px 18px; border-radius:999px; background:var(--red); box-shadow:0 0 34px rgba(225,6,0,.5); font-weight:900; font-style:italic; font-stretch:125%; font-size:34px; color:#fff; }
+.follow .plus { display:grid; place-items:center; width:54px; height:54px; border-radius:50%; background:#fff; color:var(--red); font-style:normal; font-size:44px; line-height:1; } .follow b { color:var(--yellow); }
+.port .ctaw { position:absolute; left:0; right:0; top:1150px; text-align:center; }
+.snow { position:absolute; inset:0; z-index:3; pointer-events:none; } .snow i { position:absolute; border-radius:50%; background:#CFEFFF; box-shadow:0 0 8px #9FE3FF; }
+.sky { position:absolute; left:0; right:0; bottom:0; z-index:1; }
+</style>
+<div class="stage" id="stage">
+  <svg class="sky" id="sky" preserveAspectRatio="none"></svg>
+  <div class="ruler l"></div><div class="ruler r"></div>
+  <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="tag">EXPLAINED · <b>LAS VEGAS GP</b></span></div>
+  <div class="prog"><i id="prog"></i></div><div class="chap" id="chap"></div>
+  <div class="snow" id="snow"></div>
+  <div id="txts"></div>
+  <div class="gbox" id="gbox"></div>
+  <div class="ftr"><span>@F1STATLAB</span><span id="src"></span></div>
+</div>
+<script>
+/*DATA*/
+const MODE = location.search.includes("port") ? "port" : "land", SW = MODE === "land" ? 1920 : 1080, SH = MODE === "land" ? 1080 : 1920;
+document.getElementById("stage").className = "stage " + MODE;
+const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeIn = (x) => x * x * x, easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const N = LAP.length - 1;
+// lap geometry: cumulative distance from x/y (scaled so the lap is 6.2 km), classes, flat-out run
+const dist = [0]; for (let i = 1; i <= N; i++) dist.push(dist[i - 1] + Math.hypot(LAP[i][0] - LAP[i - 1][0], LAP[i][1] - LAP[i - 1][1]));
+const KM = (i) => 6.201 * dist[i] / dist[N];
+const CLS = LAP.map((p) => (p[4] ? 2 : p[3] >= 99 ? 0 : 1));                      // 0 flat out, 1 part throttle, 2 braking
+const CCOL = ["#7FD3FF", "#8D939B", "#FF7A1A"];
+let flat = [0, 0]; { let s = -1; CLS.concat([9]).forEach((c, i) => { if (c === 0) { if (s < 0) s = i; } else { if (s >= 0 && i - s > flat[1] - flat[0]) flat = [s, i - 1]; s = -1; } }); }
+const iMin = LAP.reduce((m, p, i) => (p[2] < LAP[m][2] ? i : m), 0), iMax = LAP.reduce((m, p, i) => (p[2] > LAP[m][2] ? i : m), 0);
+const lapPts = (sx, sy, ox, oy) => LAP.map((p) => `${(ox + p[0] * sx).toFixed(1)},${(oy + p[1] * sy).toFixed(1)}`).join(" ");
+
+/* ===================== chapters ===================== */
+// d = length (s); focus = where the camera zooms on the way out (in the 1000x800 graphic); caps = [start, html]
+const CH = [
+  { d: 9, kick: "ONE F1 EXPLAINED", title: [["WHY", ""], ["VEGAS", "amb"], ["EATS", "bad"], ["COLD", "ice"], ["TYRES", "ice"]],
+    caps: [[1.6, "8pm. November. <b>The desert.</b>"], [4.6, "The one track where F1 tyres <span class='ice'>never really warm up.</span>"]], focus: [500, 400], src: "DATA: OPENF1" },
+  { d: 14, kick: "01 · THE BASICS", title: [["TYRES", ""], ["NEED", ""], ["HEAT", "heat"]],
+    caps: [[0.8, "Grip peaks in a narrow window: <b>roughly 100°C</b>. Below it, the rubber is hard and slippery."], [6.6, "The heat comes from three places: <span class='heat'>braking</span>, <span class='heat'>cornering load</span> and <span class='heat'>sliding</span>."]], focus: [500, 420], src: "ILLUSTRATION" },
+  { d: 11, kick: "02 · THE PLACE", title: [["THE", ""], ["COLDEST", "ice"], ["TRACK", ""], ["OF", ""], ["2025", "amb"]],
+    caps: [[0.8, "Median track temperature during every 2025 Grand Prix."], [5.2, "Mexico City: <span class='heat'>51°C</span>. Las Vegas: <span class='ice'>18°C</span>. About half the season median."]], focus: [975, 640], src: "DATA: OPENF1 · 2025 RACES" },
+  { d: 10, kick: "03 · THE NIGHT", title: [["AND", ""], ["IT", ""], ["KEEPS", ""], ["COOLING", "ice"]],
+    caps: [[0.8, "Track temperature through each Vegas race, start to chequered flag."], [5.0, "No sun, desert night air. In all three races the track <span class='ice'>only lost heat</span>, 1 to 1.5°C by the flag."]], focus: [500, 400], src: "DATA: OPENF1 · RACE WEATHER 2023–25" },
+  { d: 14, kick: "04 · THE LAP", title: [["LONG", ""], ["STRAIGHTS", "ice"], ["FEW", ""], ["BIG", ""], ["CORNERS", "heat"]],
+    caps: [[0.8, "The 2024 pole lap. <span class='ice'>Blue</span> = flat out, <span class='heat'>orange</span> = braking."], [6.0, "<b>69%</b> of the lap is flat out, including a <b>1.8 km</b> blast where the tyres just cool in the wind."], [10.5, "Then a hard stop into slow corners, on tyres that have gone cold."]], focus: null, src: "DATA: OPENF1 · RUSSELL 2024 POLE LAP" },
+  { d: 10, kick: "05 · THE PROBLEM", title: [["COLD", "ice"], ["TYRES", ""], ["SLIDE", "bad"]],
+    caps: [[0.8, "Without grip, the tyre slides across the asphalt instead of biting into it."], [4.6, "The sliding tears the surface into rolls of rubber: <span class='heat'>graining</span>. Less grip, more sliding, more graining."]], focus: [500, 600], src: "ILLUSTRATION" },
+  { d: 14, kick: "06 · THE STRATEGY", title: [["SO", ""], ["TEAMS", ""], ["GO", ""], ["HARD", ""]],
+    caps: [[0.8, "Every stint of the top 10 finishers, lap 1 to 50."], [5.4, "The <b>hard</b> tyre does most of the laps. <span class='heat'>Pink lines</span> are pit stops."], [10.0, "2023 and 2024: mostly two stops. 2025: <b>nine of the top ten stopped once.</b>"]], focus: [500, 400], src: "DATA: OPENF1 · TOP-10 STINTS" },
+  { d: 8, kick: "07 · THIS WEEKEND", title: [["WARM", "heat"], ["TYRES", ""], ["WIN", ""], ["VEGAS", "amb"]],
+    caps: [[0.8, "Whoever switches the tyres on first takes it."]], focus: null, src: "DATA: ONE F1 · STANDINGS AFTER R20", cta: true },
+];
+const T0 = []; CH.reduce((a, c, i) => (T0[i] = a, a + c.d), 0);
+const DURATION = CH.reduce((a, c) => a + c.d, 0), XF = 0.8;                // crossfade / camera move length
+
+/* ===================== graphics (1000 x 800) ===================== */
+const G = [];
+// 0 · cold open: the circuit drawn in neon over a moon
+G[0] = `<svg viewBox="0 0 1000 800"><circle cx="780" cy="150" r="70" fill="#151B26" stroke="#7FD3FF" stroke-width="2" opacity=".7"/><circle cx="780" cy="150" r="90" fill="none" stroke="#7FD3FF" stroke-width="10" opacity=".08"/>
+  <polyline points="${lapPts(0.72, 0.72, 286, 40)}" fill="none" stroke="#141E2A" stroke-width="40" stroke-linejoin="round"/>
+  <polyline id="g0line" points="${lapPts(0.72, 0.72, 286, 40)}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#7FD3FF" stroke-width="9" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px #7FD3FF) drop-shadow(0 0 22px #7FD3FF)"/>
+  <g id="g0car"><circle r="22" fill="#7FD3FF" opacity=".3"/><circle r="11" fill="#fff"/></g>
+  <text id="g0t" x="500" y="790" text-anchor="middle" class="lbl" style="fill:#7FD3FF">LAS VEGAS STRIP CIRCUIT · 6.2 KM · 50 LAPS</text></svg>`;
+// 1 · grip window curve, then the three heat sources on a top-down car
+G[1] = (() => { const X = (c) => 90 + c * 5.2, Y = (g) => 600 - g * 440, curve = [];
+  for (let c = 0; c <= 160; c += 2) curve.push(`${X(c)},${Y(Math.exp(-Math.pow((c - 100) / 32, 2)))}`);
+  const car = `<g id="g1car" transform="translate(500 420)">
+    <rect x="-46" y="-250" width="92" height="40" rx="8" fill="#2A3240"/><rect x="-140" y="-262" width="280" height="22" rx="6" fill="#3A4452"/>
+    <path d="M-40 -230 L40 -230 L56 -40 L80 60 L80 170 L40 230 L-40 230 L-80 170 L-80 60 L-56 -40 Z" fill="#1C222C" stroke="#4A5462" stroke-width="4"/>
+    <ellipse cx="0" cy="40" rx="30" ry="50" fill="#0E1117" stroke="#4A5462" stroke-width="3"/><rect x="-150" y="214" width="300" height="26" rx="6" fill="#3A4452"/>
+    ${[[-128, -150], [128, -150], [-138, 150], [138, 150]].map(([x, y], k) => `<g class="g1w" data-k="${k}" transform="translate(${x} ${y})"><rect x="-34" y="-60" width="68" height="120" rx="16" fill="#7FD3FF" stroke="#0A0A0A" stroke-width="5"/><circle class="g1disc" r="20" fill="#FF7A1A" opacity="0"/></g>`).join("")}
+    <g id="g1arrows" opacity="0">${[-90, 0, 90].map((y) => `<path d="M-330 ${y} L-210 ${y}" stroke="#FFB000" stroke-width="10" stroke-linecap="round"/><path d="M-214 ${y - 18} L-186 ${y} L-214 ${y + 18} Z" fill="#FFB000"/>`).join("")}</g></g>`;
+  return `<svg viewBox="0 0 1000 800"><g id="g1a">
+    <rect x="${X(85)}" y="140" width="${X(115) - X(85)}" height="460" fill="#5BE38F" opacity=".12"/><text x="${X(100)}" y="128" text-anchor="middle" class="lbl" style="fill:#5BE38F">WINDOW</text>
+    <line x1="90" y1="600" x2="950" y2="600" stroke="#3A4452" stroke-width="3"/><line x1="90" y1="140" x2="90" y2="600" stroke="#3A4452" stroke-width="3"/>
+    ${[0, 40, 80, 120, 160].map((c) => `<text x="${X(c)}" y="640" text-anchor="middle" class="lbl">${c}°C</text>`).join("")}<text x="70" y="160" text-anchor="end" class="lbl" transform="rotate(-90 70 160)">GRIP</text>
+    <polyline id="g1curve" points="${curve.join(" ")}" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" fill="none" stroke="#F2F2F0" stroke-width="7"/>
+    <circle id="g1dot" r="18" fill="#7FD3FF" style="filter:drop-shadow(0 0 12px #7FD3FF)"/><text id="g1v" class="ledt" font-size="54" fill="#7FD3FF" text-anchor="middle"></text>
+    <text x="940" y="760" text-anchor="end" class="lbl">ILLUSTRATION · NOT TO SCALE</text></g>
+    <g id="g1b" opacity="0">${car}
+      <g id="g1l0" opacity="0"><text x="660" y="190" class="lbl" style="fill:#FF7A1A;font-size:24px">① BRAKING</text><text x="660" y="220" class="lbl" style="font-size:18px">discs glow, heat soaks in</text></g>
+      <g id="g1l1" opacity="0"><text x="20" y="640" class="lbl" style="fill:#FFB000;font-size:24px">② CORNERING LOAD</text><text x="20" y="670" class="lbl" style="font-size:18px">the tyre flexes, it warms</text></g>
+      <g id="g1l2" opacity="0"><text x="660" y="640" class="lbl" style="fill:#FF3B30;font-size:24px">③ SLIDING</text><text x="660" y="670" class="lbl" style="font-size:18px">fast heat, but it hurts</text></g></g></svg>`; })();
+// 2 · every 2025 race, hottest to coldest
+G[2] = (() => { const n = TEMPS.length, bw = 880 / n, mx = 55, base = 640, hh = 500, med = TEMPS.map((x) => x[1]).sort((a, b) => a - b)[Math.floor(n / 2)];
+  const bars = TEMPS.map(([nm, v], i) => { const h = hh * v / mx, x = 60 + i * bw, vg = nm === "Las Vegas";
+    return `<rect class="g2b" data-i="${i}" x="${x + 3}" y="${base - h}" width="${bw - 6}" height="${h}" rx="5" fill="${vg ? "#7FD3FF" : v > 40 ? "#FF7A1A" : v > 30 ? "#FFB000" : "#4A6A86"}" style="transform-box:fill-box;transform-origin:bottom;${vg ? "filter:drop-shadow(0 0 14px #7FD3FF)" : ""}"/>
+      <text class="g2n" data-i="${i}" x="${x + bw / 2}" y="${base + 14}" transform="rotate(60 ${x + bw / 2} ${base + 14})" class="lbl" style="font-family:JetBrains Mono;font-size:15px;fill:${vg ? "#7FD3FF" : "#6A707A"}">${nm.toUpperCase().slice(0, 11)}</text>`; }).join("");
+  const my = base - hh * med / mx, vx = 60 + (n - 0.5) * bw, vy = base - hh * TEMPS[n - 1][1] / mx;
+  return `<svg viewBox="0 0 1000 800">${bars}<line id="g2med" x1="60" x2="940" y1="${my}" y2="${my}" stroke="#C9CDD2" stroke-width="3" stroke-dasharray="10 10" opacity="0"/>
+    <g id="g2medt" opacity="0"><rect x="560" y="${my - 46}" width="300" height="36" rx="8" fill="#0B0E14" stroke="#3A4452"/><text x="710" y="${my - 21}" text-anchor="middle" class="lbl" style="fill:#C9CDD2">2025 MEDIAN ${Math.round(med)}°C</text></g>
+    <text id="g2hot" x="62" y="${base - hh * TEMPS[0][1] / mx - 18}" class="ledt" font-size="54" fill="#FF7A1A" opacity="0">${Math.round(TEMPS[0][1])}°C</text>
+    <g id="g2cold" opacity="0"><line x1="${vx}" y1="${vy - 12}" x2="${vx}" y2="${vy - 120}" stroke="#7FD3FF" stroke-width="4"/><text x="${vx + 14}" y="${vy - 134}" text-anchor="end" class="ledt" font-size="78" fill="#7FD3FF" style="filter:drop-shadow(0 0 10px #7FD3FF)">${Math.round(TEMPS[n - 1][1])}°C</text></g></svg>`; })();
+// 3 · track temperature through each Vegas race (from minute 4)
+const NY = Object.keys(NIGHT).sort(), NALL = NY.flatMap((y) => NIGHT[y]);
+const NM1 = Math.max(...NALL.map((x) => x[0])), NT0 = 15.5, NT1 = 19.5;
+const NX = (m) => 110 + 820 * (m - 4) / (NM1 - 4), NYv = (v) => 600 - 440 * (v - NT0) / (NT1 - NT0), NCOL = { 2023: "#4A6A86", 2024: "#8FB8D8", 2025: "#7FD3FF" };
+G[3] = (() => { const yt = []; for (let v = 16; v <= 19; v += 1) yt.push(`<line x1="110" x2="930" y1="${NYv(v)}" y2="${NYv(v)}" stroke="#1E2632" stroke-width="2"/><text x="96" y="${NYv(v) + 6}" text-anchor="end" class="lbl" style="font-size:16px">${v}°</text>`);
+  const lines = NY.map((y) => { const s = NIGHT[y], p = s.map(([m, v]) => `${NX(m).toFixed(1)},${NYv(v).toFixed(1)}`).join(" "), z = s[s.length - 1];
+    return `<g clip-path="url(#g3c)"><polyline points="${p}" fill="none" stroke="${NCOL[y]}" stroke-width="${y === "2025" ? 6 : 4}" stroke-linejoin="round" style="${y === "2025" ? "filter:drop-shadow(0 0 8px #7FD3FF)" : ""}"/></g>
+      <circle class="g3end" cx="${NX(z[0])}" cy="${NYv(z[1])}" r="8" fill="${NCOL[y]}" opacity="0"/>`; }).join("");
+  const st = `<g class="g3st" opacity="0"><rect x="560" y="70" width="380" height="${40 + NY.length * 40}" rx="12" fill="#0B0E14" stroke="#2A3240"/>` + NY.map((y, k) => { const s = NIGHT[y];
+    return `<rect x="584" y="${98 + k * 40}" width="26" height="8" rx="4" fill="${NCOL[y]}"/><text x="624" y="${108 + k * 40}" class="ledt" font-size="28" fill="${NCOL[y]}">${y}  ${s[0][1].toFixed(1)}° → ${s[s.length - 1][1].toFixed(1)}°</text>`; }).join("") + `</g>`;
+  return `<svg viewBox="0 0 1000 800"><defs><clipPath id="g3c"><rect id="g3clip" x="0" y="0" width="0" height="800"/></clipPath></defs>
+    ${yt.join("")}<line x1="110" y1="600" x2="930" y2="600" stroke="#3A4452" stroke-width="3"/>${lines}${st}
+    <text x="110" y="650" class="lbl">START</text><text x="930" y="650" text-anchor="end" class="lbl">CHEQUERED FLAG · ~${Math.round(NM1)} MIN</text>
+    <text x="110" y="100" class="lbl">TRACK TEMPERATURE · °C</text></svg>`; })();
+// 4 · the lap: map + speed trace, a car riding both
+G[4] = (() => { const sx = 0.7, ox = 40, oy = 50, sp = LAP.map((p) => p[2]);
+  const TX = (i) => 500 + 460 * KM(i) / 6.201, TY = (v) => 520 - 360 * (v - 60) / 300;
+  const segsMap = LAP.slice(0, -1).map((p, i) => `<line class="g4m" data-i="${i}" x1="${ox + p[0] * sx}" y1="${oy + p[1] * sx}" x2="${ox + LAP[i + 1][0] * sx}" y2="${oy + LAP[i + 1][1] * sx}" stroke="${CCOL[CLS[i]]}" stroke-width="${CLS[i] === 0 ? 14 : 12}" stroke-linecap="round"/>`).join("");
+  const segsTr = LAP.slice(0, -1).map((p, i) => `<line class="g4t" data-i="${i}" x1="${TX(i)}" y1="${TY(p[2])}" x2="${TX(i + 1)}" y2="${TY(LAP[i + 1][2])}" stroke="${CCOL[CLS[i]]}" stroke-width="5" stroke-linecap="round"/>`).join("");
+  const fx0 = TX(flat[0]), fx1 = TX(flat[1]);
+  return `<svg viewBox="0 0 1000 800"><polyline points="${lapPts(sx, sx, ox, oy)}" fill="none" stroke="#141E2A" stroke-width="32" stroke-linejoin="round"/>${segsMap}
+    <g id="g4car"><circle r="20" fill="#fff" opacity=".25"/><circle r="10" fill="#fff"/></g>
+    <text x="500" y="130" class="lbl">SPEED · KM/H</text>${[100, 200, 300].map((v) => `<line x1="500" x2="960" y1="${TY(v)}" y2="${TY(v)}" stroke="#1E2632" stroke-width="2"/><text x="966" y="${TY(v) + 6}" class="lbl" style="font-size:16px">${v}</text>`).join("")}
+    <line x1="500" x2="960" y1="520" y2="520" stroke="#3A4452" stroke-width="3"/><text x="500" y="552" class="lbl" style="font-size:16px">0 KM</text><text x="960" y="552" text-anchor="end" class="lbl" style="font-size:16px">6.2 KM</text>
+    <g>${segsTr}</g><line id="g4cur" x1="500" x2="500" y1="150" y2="520" stroke="#fff" stroke-width="2" opacity=".6"/><text id="g4v" x="0" y="0" class="ledt" font-size="44" fill="#fff" text-anchor="middle"></text>
+    <g id="g4flat" opacity="0"><rect x="${fx0}" y="140" width="${fx1 - fx0}" height="390" fill="#7FD3FF" opacity=".1"/><text x="${(fx0 + fx1) / 2}" y="590" text-anchor="middle" class="ledt" font-size="40" fill="#7FD3FF">1.8 KM FLAT OUT</text></g>
+    <g id="g4chips" opacity="0"><text x="500" y="680" class="ledt" font-size="64" fill="#FFB000">69%</text><text x="640" y="672" class="lbl" style="fill:#C9CDD2">FULL THROTTLE</text>
+      <text x="500" y="760" class="ledt" font-size="64" fill="#FF7A1A">14%</text><text x="640" y="752" class="lbl" style="fill:#C9CDD2">BRAKING</text></g>
+    <g id="g4slow" opacity="0"><circle cx="${ox + LAP[iMin][0] * sx}" cy="${oy + LAP[iMin][1] * sx}" r="34" fill="none" stroke="#FF7A1A" stroke-width="5"/><text x="${ox + LAP[iMin][0] * sx - 44}" y="${oy + LAP[iMin][1] * sx + 8}" text-anchor="end" class="ledt" font-size="34" fill="#FF7A1A">${Math.round(LAP[iMin][2])} KM/H</text></g></svg>`; })();
+CH[4].focus = [40 + LAP[iMin][0] * 0.7, 50 + LAP[iMin][1] * 0.7];               // dive into the slowest corner
+// 5 · the contact patch: slide, then graining
+G[5] = (() => { let r = ""; for (let k = 0; k < 18; k++) r += `<ellipse class="g5r" data-k="${k}" cx="${150 + k * 40}" cy="294" rx="14" ry="10" fill="#2A2E36" stroke="#5E6672" stroke-width="3" opacity="0"/>`;
+  return `<svg viewBox="0 0 1000 800"><text x="500" y="90" text-anchor="middle" class="lbl">TYRE TREAD · SIDE VIEW</text>
+    <g id="g5tyre"><rect x="110" y="300" width="780" height="210" rx="44" fill="#15181E" stroke="#3A4452" stroke-width="5"/><rect id="g5tread" x="110" y="300" width="780" height="70" rx="34" fill="#7FD3FF" opacity=".55"/>${r}</g>
+    <rect x="40" y="530" width="920" height="30" fill="#2A3038"/><g id="g5road">${Array.from({ length: 26 }, (_, k) => `<rect x="${40 + k * 40}" y="541" width="22" height="7" fill="#4A525E"/>`).join("")}</g>
+    <g id="g5arrow" opacity="0"><line x1="330" y1="650" x2="640" y2="650" stroke="#FF3B30" stroke-width="10"/><path d="M640 626 L690 650 L640 674 Z" fill="#FF3B30"/><text x="500" y="712" text-anchor="middle" class="lbl" style="fill:#FF3B30">SLIDING, NOT GRIPPING</text></g>
+    <g id="g5lab" opacity="0"><line x1="780" y1="200" x2="700" y2="282" stroke="#FFB000" stroke-width="4"/><text x="790" y="190" class="ledt" font-size="40" fill="#FFB000">GRAINING</text></g>
+    <g id="g5loop" opacity="0"><text x="500" y="770" text-anchor="middle" class="lbl" style="fill:#C9CDD2">LESS GRIP → MORE SLIDING → MORE GRAINING</text></g></svg>`; })();
+// 6 · top-10 stints, 2023-25
+G[6] = (() => { const C = { SOFT: "#E8002D", MEDIUM: "#FFD400", HARD: "#F2F2F0", INTERMEDIATE: "#3CB043", WET: "#0067FF" }, X = (l) => 140 + 820 * (l - 1) / 50;
+  let y = 60, out = ""; Object.keys(STINTS).sort().forEach((yr, b) => {
+    out += `<text x="0" y="${y + 24}" class="ledt" font-size="38" fill="#C9CDD2">${yr}</text>`;
+    STINTS[yr].forEach(([code, st], r) => { const yy = y + 44 + r * 17;
+      out += `<text x="132" y="${yy + 11}" text-anchor="end" class="lbl" style="font-size:12px;letter-spacing:1px">${code}</text><g class="g6row" data-b="${b}" data-r="${r}">` +
+        st.map(([c, a, z]) => `<rect x="${X(a)}" y="${yy}" width="${Math.max(2, X(z + 1) - X(a) - 3)}" height="13" rx="3" fill="${C[c] || "#888"}"/>`).join("") +
+        st.slice(1).map(([c, a]) => `<rect x="${X(a) - 3}" y="${yy - 3}" width="3" height="19" fill="#FF3EA5"/>`).join("") + `</g>`; });
+    y += 44 + 10 * 17 + 34; });
+  return `<svg viewBox="0 0 1000 800">${out}<text x="140" y="790" class="lbl" style="font-size:16px">LAP 1</text><text x="960" y="790" text-anchor="end" class="lbl" style="font-size:16px">LAP 50</text>
+    <g transform="translate(470 780)"><rect x="0" y="-14" width="16" height="16" fill="#F2F2F0"/><text x="22" y="0" class="lbl" style="font-size:15px">HARD</text><rect x="100" y="-14" width="16" height="16" fill="#FFD400"/><text x="122" y="0" class="lbl" style="font-size:15px">MEDIUM</text><rect x="230" y="-14" width="16" height="16" fill="#E8002D"/><text x="252" y="0" class="lbl" style="font-size:15px">SOFT</text></g></svg>`; })();
+// 7 · the 2026 title fight + lights-out time
+G[7] = `<svg viewBox="0 0 1000 800"><text x="80" y="140" class="lbl">2026 STANDINGS · AFTER ROUND 20</text>
+  ${[["ANT", 390, "#27F4D2"], ["VER", 279, "#3671C6"], ["RUS", 262, "#27F4D2"], ["HAM", 261, "#E8002D"]].map(([c, v, col], k) => `<g class="g7r" data-k="${k}"><text x="80" y="${226 + k * 92}" class="ledt" font-size="40" fill="#F2F2F0">${c}</text>
+    <rect x="200" y="${196 + k * 92}" width="${600 * v / 400}" height="42" rx="10" fill="${col}" class="g7b" style="transform-box:fill-box;transform-origin:left"/><text x="${210 + 600 * v / 400}" y="${230 + k * 92}" class="ledt" font-size="38" fill="${col}">${v}</text></g>`).join("")}
+  <g id="g7t" opacity="0"><rect x="80" y="590" width="840" height="140" rx="20" fill="#0A0A08" stroke="#3A3418" stroke-width="3"/><text x="120" y="650" class="lbl" style="fill:#FFB000">LIGHTS OUT IN LAS VEGAS</text><text x="120" y="706" class="ledt" font-size="46" fill="#F2F2F0">SAT 21 NOV · 8PM LOCAL</text></g></svg>`;
+
+/* ===================== build the page ===================== */
+document.getElementById("chap").innerHTML = CH.map(() => "<i></i>").join("");
+document.getElementById("txts").innerHTML = CH.map((c, i) => `<div class="txt" data-i="${i}"><div class="kick">${c.kick}</div><h1 class="ttl">${c.title.map(([w, k]) => `<span class="w ${k}">${w}</span>`).join("")}</h1>
+  <div class="cap">${c.caps.map(([s, h]) => `<p data-s="${s}">${h}</p>`).join("")}</div>${c.cta ? `<div class="ctaw"><div class="follow" id="ctaf"><span class="plus">+</span><span>FOLLOW FOR MORE <b>F1 EXPLAINED</b></span></div></div>` : ""}</div>`).join("");
+document.getElementById("gbox").innerHTML = G.map((g, i) => `<div class="g" data-i="${i}">${g}</div>`).join("");
+document.getElementById("snow").innerHTML = Array.from({ length: 44 }, () => "<i></i>").join("");
+// skyline for the first and last chapters
+(() => { const sky = document.getElementById("sky"), w = SW, h = MODE === "land" ? 220 : 330; sky.setAttribute("viewBox", `0 0 ${w} ${h}`); sky.style.height = h + "px"; let s = "", x = 0, k = 0;
+  while (x < w) { const bw = 40 + 70 * rnd(k), bh = h * (0.35 + 0.55 * rnd(k + 50)); s += `<rect x="${x}" y="${h - bh}" width="${bw}" height="${bh}" fill="#11141C" stroke="#232A38" stroke-width="2"/>`;
+    for (let wy = h - bh + 14; wy < h - 10; wy += 22) for (let wx = x + 8; wx < x + bw - 10; wx += 16) if (rnd(wx * 3 + wy) > 0.55) s += `<rect x="${wx}" y="${wy}" width="6" height="10" fill="${rnd(wx + wy) > 0.8 ? "#FF3EA5" : "#FFC94A"}" opacity=".7"/>`;
+    x += bw + 4; k++; } sky.innerHTML = s; })();
+const txts = [...document.querySelectorAll(".txt")], gs = [...document.querySelectorAll(".g")], chapDots = [...document.querySelectorAll("#chap i")], flakes = [...document.querySelectorAll("#snow i")];
+const $ = (id) => document.getElementById(id), op = (el, v) => el && el.setAttribute("opacity", v);
+const lapAt = (f) => { const i = Math.min(N - 1, Math.max(0, Math.floor(f))), k = f - i, a = LAP[i], b = LAP[i + 1]; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, i]; };
+
+/* ===================== timeline ===================== */
+function seek(t) {
+  CH.forEach((c, i) => {
+    const lt = t - T0[i], last = i === CH.length - 1;
+    const enter = i === 0 ? 1 : clamp((lt + XF) / XF), exit = last ? 0 : clamp((lt - (c.d - XF)) / XF), vis = enter > 0 && exit < 1;
+    const tx = txts[i], g = gs[i];
+    tx.style.display = g.style.display = vis ? "block" : "none"; if (!vis) return;
+    tx.style.opacity = easeOut(enter) * (1 - easeIn(exit)); tx.style.transform = `translateY(${(1 - easeOut(enter)) * 40 - easeIn(exit) * 40}px)`;
+    tx.querySelectorAll(".ttl .w").forEach((w, k) => { const p = clamp((lt - k * 0.16) / 0.35); w.style.opacity = p; w.style.transform = `translateY(${(1 - easeOut(p)) * 34}px)`; });
+    const ps = [...tx.querySelectorAll(".cap p")]; ps.forEach((p, k) => { const s = +p.dataset.s, e = k < ps.length - 1 ? +ps[k + 1].dataset.s : 1e9;
+      p.style.opacity = clamp((lt - s) / 0.4) * (1 - clamp((lt - e + 0.3) / 0.3)); p.style.transform = `translateY(${(1 - easeOut(clamp((lt - s) / 0.4))) * 20}px)`; });
+    // camera: settle in from slightly small, leave by zooming into the focal point
+    const f = c.focus || [500, 400]; g.style.transformOrigin = `${f[0] / 10}% ${f[1] / 8}%`;
+    g.style.opacity = easeOut(enter) * (1 - easeIn(exit)); g.style.transform = `scale(${(0.86 + 0.14 * easeOut(enter)) * (c.focus ? 1 + 2.2 * easeIn(exit) : 1 - 0.1 * exit)})`;
+    A[i](lt, c.d);
+  });
+  $("prog").style.width = (100 * t / DURATION) + "%";
+  const ci = Math.max(0, T0.findIndex((s, i) => t >= s && t < s + CH[i].d)); chapDots.forEach((d, k) => d.classList.toggle("on", k <= (ci < 0 ? CH.length - 1 : ci)));
+  $("src").textContent = (CH[ci] || CH[CH.length - 1]).src;
+  const sky = clamp(1 - (t - T0[1] + 1) / 1) + clamp((t - T0[7] + 0.5) / 1); $("sky").style.opacity = Math.min(1, sky) * 0.9;
+  const cold = clamp((t - T0[2] + 0.4) / 1) * clamp((T0[6] - t) / 0.8); $("snow").style.opacity = cold * 0.7;
+  if (cold > 0) flakes.forEach((fl, i) => { const sp = 60 + 80 * rnd(i), sz = 3 + 7 * rnd(i + 99); fl.style.width = fl.style.height = sz + "px"; fl.style.opacity = 0.2 + 0.5 * rnd(i + 7);
+    fl.style.left = (SW * rnd(i + 31) + 30 * Math.sin(t * 0.8 + i)) + "px"; fl.style.top = (((t * sp + SH * rnd(i + 57)) % (SH - 100)) + 60) + "px"; });
+}
+/* per-chapter animation, lt = seconds into the chapter */
+const A = [
+  (lt) => { const p = easeInOut(clamp((lt - 0.3) / 3.2)); $("g0line").style.strokeDashoffset = 1 - p;
+    const [x, y] = lapAt((lt < 3.5 ? p : ((lt - 3.5) / 5) % 1) * N); $("g0car").setAttribute("transform", `translate(${286 + x * 0.72} ${40 + y * 0.72})`); op($("g0t"), clamp((lt - 2.5) / 0.6)); },
+  (lt) => { const a = 1 - clamp((lt - 5.8) / 0.6), b = clamp((lt - 6.0) / 0.6); op($("g1a"), a); op($("g1b"), b);
+    $("g1curve").style.strokeDashoffset = 1 - easeInOut(clamp((lt - 0.3) / 1.4));
+    const c = 15 + 85 * easeInOut(clamp((lt - 1.6) / 2.6)), gr = Math.exp(-Math.pow((c - 100) / 32, 2)), X = 90 + c * 5.2, Y = 600 - gr * 440;
+    $("g1dot").setAttribute("cx", X); $("g1dot").setAttribute("cy", Y); $("g1dot").setAttribute("fill", c > 84 ? "#5BE38F" : "#7FD3FF");
+    $("g1v").setAttribute("x", X); $("g1v").setAttribute("y", Y - 34); $("g1v").textContent = Math.round(c) + "°C"; $("g1v").setAttribute("fill", c > 84 ? "#5BE38F" : "#7FD3FF");
+    const s = [7.2, 9.0, 10.8].map((s0) => clamp((lt - s0) / 0.5)); [0, 1, 2].forEach((k) => op($("g1l" + k), s[k]));
+    const heat = (s[0] + s[1] + s[2]) / 3; document.querySelectorAll(".g1w").forEach((w, k) => { const r = w.querySelector("rect"), d = w.querySelector(".g1disc");
+      r.setAttribute("fill", heat > 0.6 ? "#FF7A1A" : heat > 0.3 ? "#FFB000" : "#7FD3FF"); op(d, s[0] * (0.5 + 0.5 * Math.sin(lt * 9 + k)));
+      w.setAttribute("transform", w.getAttribute("transform").replace(/rotate\([^)]*\)/, "") + (s[2] > 0 ? ` rotate(${6 * s[2] * Math.sin(lt * 14 + k)})` : "")); });
+    op($("g1arrows"), s[1] * (lt < 10.6 ? 1 : 0.5)); $("g1car").setAttribute("transform", `translate(${500 + (s[2] > 0 ? 8 * s[2] * Math.sin(lt * 10) : 0)} 420)`); },
+  (lt) => { document.querySelectorAll(".g2b").forEach((b) => { const i = +b.dataset.i; b.style.transform = `scaleY(${easeOut(clamp((lt - 0.6 - i * 0.07) / 0.5))})`; });
+    document.querySelectorAll(".g2n").forEach((n) => { n.style.opacity = clamp((lt - 0.8 - +n.dataset.i * 0.07) / 0.4); });
+    op($("g2med"), clamp((lt - 2.8) / 0.4)); op($("g2medt"), clamp((lt - 2.8) / 0.4)); op($("g2hot"), clamp((lt - 2.6) / 0.4)); op($("g2cold"), clamp((lt - 3.4) / 0.4)); },
+  (lt) => { const p = easeInOut(clamp((lt - 0.6) / 4.6)); $("g3clip").setAttribute("width", 110 + 830 * p);
+    document.querySelectorAll(".g3st").forEach((e) => op(e, clamp((lt - 0.7) / 0.4))); document.querySelectorAll(".g3end").forEach((e, k) => op(e, clamp((lt - 5.2 - k * 0.25) / 0.4))); },
+  (lt) => { const p = clamp((lt - 0.6) / 9.0), f = p * N, [x, y, v, i] = lapAt(f);
+    $("g4car").setAttribute("transform", `translate(${40 + x * 0.7} ${50 + y * 0.7})`);
+    document.querySelectorAll(".g4m").forEach((s) => s.style.opacity = +s.dataset.i <= i ? 1 : 0.18); document.querySelectorAll(".g4t").forEach((s) => s.style.opacity = +s.dataset.i <= i ? 1 : 0);
+    const cx = 500 + 460 * KM(Math.min(N, Math.round(f))) / 6.201; $("g4cur").setAttribute("x1", cx); $("g4cur").setAttribute("x2", cx);
+    $("g4v").setAttribute("x", Math.min(930, Math.max(540, cx))); $("g4v").setAttribute("y", 166 + 0 * v); $("g4v").textContent = Math.round(v);
+    op($("g4flat"), clamp((lt - 6.0) / 0.5)); op($("g4chips"), clamp((lt - 7.0) / 0.5)); op($("g4slow"), clamp((lt - 10.6) / 0.4)); },
+  (lt) => { const slide = clamp((lt - 1.2) / 0.4), g = clamp((lt - 2.6) / 3.2);
+    $("g5tyre").setAttribute("transform", `translate(${slide * 14 * Math.sin(lt * 30)} 0)`); $("g5road").setAttribute("transform", `translate(${-((lt * 260) % 40)} 0)`);
+    op($("g5arrow"), slide); document.querySelectorAll(".g5r").forEach((r) => { const k = +r.dataset.k, q = clamp((g * 18 - k) / 1.5); r.setAttribute("opacity", q); r.setAttribute("ry", 4 + 10 * q); });
+    $("g5tread").setAttribute("fill", g > 0.5 ? "#FF7A1A" : "#7FD3FF"); op($("g5lab"), clamp((lt - 4.6) / 0.4)); op($("g5loop"), clamp((lt - 6.6) / 0.4)); },
+  (lt) => { document.querySelectorAll(".g6row").forEach((row) => { const b = +row.dataset.b, r = +row.dataset.r, p = easeInOut(clamp((lt - 0.8 - b * 1.4 - r * 0.06) / 1.0));
+      row.style.clipPath = `inset(-6px ${100 - 100 * p}% -6px 0)`; }); },
+  (lt) => { document.querySelectorAll(".g7b").forEach((b, k) => b.style.transform = `scaleX(${easeOut(clamp((lt - 0.5 - k * 0.25) / 0.8))})`);
+    op($("g7t"), clamp((lt - 2.6) / 0.5)); const f = $("ctaf"); if (f) { const q = clamp((lt - 3.4) / 0.45); f.style.opacity = q; f.style.transform = `scale(${0.6 + 0.4 * back(q)})`; } },
+];
+async function renderSoundtrack(rate) { const ctx = new OfflineAudioContext(2, Math.ceil(rate * DURATION), rate); return ctx.startRendering(); }   // silent: voiceover added in the edit
+window.reel = { DURATION, seek, renderSoundtrack, T0, CH, W: SW, H: SH };
+seek(location.hash ? +location.hash.slice(1) : 4);
+</script>
