@@ -76,10 +76,16 @@ body { margin:0; background:#000; color:var(--fg); font-family:var(--display); }
 .cd { align-items:center; text-align:center; }
 .cdwrap { position:relative; width:560px; height:560px; margin-top:30px; } .cdwrap svg { width:100%; height:100%; }
 .cdnum { position:absolute; left:50%; top:50%; transform:translate(-50%,-55%); font-size:330px; line-height:1; color:#fff; text-shadow:0 0 40px rgba(255,42,42,.7); }
+.photos { position:absolute; inset:0; z-index:0; }
+.photos div { position:absolute; inset:-40px; background-size:cover; background-position:center; opacity:0; filter:blur(1.2px) saturate(.9) brightness(.78); will-change:transform,opacity; }
+.tint { position:absolute; inset:0; z-index:1; }
+.hdr, .gantry, .mystery, .ftr { z-index:5; } #scenes { position:relative; z-index:3; }
+.h, .kick, .cap, .hand, .rv .sub { text-shadow:0 4px 18px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.9); }
 .flash { position:absolute; inset:0; background:#fff; opacity:0; z-index:7; pointer-events:none; }
 .sweep { position:absolute; top:-200px; width:260px; height:2400px; z-index:6; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,176,0,.8) 45%,#fff 50%,rgba(255,176,0,.8) 55%,transparent); filter:blur(2px); opacity:0; }
 </style>
 <div class="stage">
+  <div class="photos" id="photos"></div><div class="tint" id="tint"></div>
   <div class="hdr"><span class="brand"><span>ONE F1</span></span><span class="series" id="series"></span></div>
   <div class="gantry" id="gantry"></div>
   <div class="mystery" id="mystery"></div>
@@ -97,15 +103,17 @@ const DRIVER = {
   helmet: ["#D9DDE2", "#16181C", "#27F4D2", "#F0C4A0", "#4B88C9", "focus"], number: "6",
   backdrop: { glow: "#454B52", base: "#0E1013", stripe: "rgba(205,210,216,.07)", sheen: "rgba(220,225,230,.10)" },   // a subtle hint of his team: Mercedes silver
   source: "DATA: JOLPICA F1 RESULTS",
+  // background photos (free licences, see img/CREDITS.md); never one that shows the answer
+  photos: { hook: ["img/hook-indy-2000-start.jpg", "PHOTO: RICKADIKEMAN · CC0"], countdown: ["img/countdown-2022-car.jpg", "PHOTO: JEN ROSS · CC BY 2.0"] },
   clues: [
     { type: "plates", title: "Seven race numbers", plates: ["10", "16", "7", "4", "8", "9", "6"],
-      cap: "One driver raced under <b>7 different numbers</b> in 11 seasons." },
+      cap: "One driver raced under <b>7 different numbers</b> in 11 seasons.", photo: ["img/clue1-1970s-cars.jpg", "PHOTO: BEN SUTHERLAND · CC BY 2.0"] },
     { type: "seasons", title: "The slow start", cols: [["YR 1", 0], ["YR 2", 0], ["YR 3", 2], ["YR 4", 0]], total: 57, totalLbl: "CAREER",
-      cap: "<b>2 podiums</b> in his first 4 seasons. He finished with <b>57</b>." },
+      cap: "<b>2 podiums</b> in his first 4 seasons. He finished with <b>57</b>.", photo: ["img/clue2-podium-2009.jpg", "PHOTO: JANE BELINDA SMITH · CC BY 2.0"] },
     { type: "count", title: "The wait", n: 111, unit: "starts",
-      cap: "His first win came at <b>start number 111</b>." },
+      cap: "His first win came at <b>start number 111</b>.", photo: ["img/clue3-tyres.jpg", "PHOTO: GREGORY MOINE · CC BY 2.0"] },
     { type: "streak", title: "The streak", n: 7, splitAfter: 3, left: "SEASON A · 3 WINS", right: "SEASON B · 4 WINS",
-      cap: "<b>7 wins in a row</b>, across two seasons." },
+      cap: "<b>7 wins in a row</b>, across two seasons.", photo: ["img/clue4-champagne-2018.jpg", "PHOTO: PEDRIK (FLICKR) · CC BY 2.0"] },
   ],
 };
 /* ============================================================ */
@@ -156,8 +164,9 @@ const esc=(s)=>String(s);const team={RBR:{color:"#3B6FD4"},MER:{color:"#27E0C2"}
 
 
 document.getElementById("series").textContent = DRIVER.episode;
-if (DRIVER.backdrop) { const B = DRIVER.backdrop; document.querySelector(".stage").style.background =
-  `linear-gradient(115deg,transparent 30%,${B.sheen} 48%,transparent 62%),repeating-linear-gradient(105deg,transparent 0 46px,${B.stripe} 46px 48px),radial-gradient(90% 55% at 65% 35%,${B.glow},${B.base} 72%)`; }
+if (DRIVER.backdrop) { const B = DRIVER.backdrop;   // team-colour hint: solid behind everything, and as a see-through tint over the photos
+  document.querySelector(".stage").style.background = `radial-gradient(90% 55% at 65% 35%,${B.glow},${B.base} 72%)`;
+  document.getElementById("tint").style.background = `linear-gradient(115deg,transparent 30%,${B.sheen} 48%,transparent 62%),repeating-linear-gradient(105deg,transparent 0 46px,${B.stripe} 46px 48px),linear-gradient(180deg,rgba(14,16,19,.45),rgba(30,34,38,.12) 38%,rgba(14,16,19,.7)),radial-gradient(90% 55% at 65% 35%,${B.glow}33,${B.base}88 75%)`; }
 document.getElementById("src").textContent = DRIVER.source;
 document.getElementById("gantry").style.gridTemplateColumns = `repeat(${DRIVER.clues.length},1fr)`;
 document.getElementById("gantry").innerHTML = DRIVER.clues.map((_, i) => `<div><i></i><i></i><b>CLUE ${i + 1}</b></div>`).join("");
@@ -209,6 +218,10 @@ const DURATION = DUR.reduce((a, b) => a + b, 0), TREV = T0[T0.length - 1], TC = 
 const clamp = (x) => Math.max(0, Math.min(1, x)), easeOut = (x) => 1 - Math.pow(1 - x, 3), easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const back = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const anims = scenes.map((sc) => [...sc.querySelectorAll("[data-a]")].map((el) => { const [type, s, d] = el.dataset.a.split(" "); return { el, type, s: +s, d: +d }; }));
+// one photo layer per scene (hook, clues, countdown); the reveal stays on the plain team backdrop
+const PH = [DRIVER.photos && DRIVER.photos.hook, ...DRIVER.clues.map((c) => c.photo), DRIVER.photos && DRIVER.photos.countdown, null];
+document.getElementById("photos").innerHTML = PH.map((p) => `<div style="${p ? `background-image:url('${p[0]}')` : ""}"></div>`).join("");
+const phEls = [...document.querySelectorAll("#photos div")], srcEl = document.getElementById("src");
 const sweep = document.querySelector(".sweep"), gant = [...document.querySelectorAll("#gantry > div")], mystery = document.getElementById("mystery"), mh = document.getElementById("mysteryHelm");
 function seek(t) {
   scenes.forEach((sc, i) => {
@@ -242,6 +255,12 @@ function seek(t) {
   mystery.style.opacity = inClues ? clamp((t - HOOK + 0.2) / 0.4) * clamp((TREV - 0.1 - t) / 0.3) : 0;
   mh.style.filter = `blur(${40 - clueIdx * (22 / DRIVER.clues.length)}px) brightness(.55)`;
   mystery.style.top = "350px";
+  // photos: crossfade across each cut, slow zoom while on screen; footer shows the credit of the photo in view
+  let topI = -1, topW = 0;
+  phEls.forEach((el, i) => { if (!PH[i]) { el.style.opacity = 0; return; }
+    const lt = t - T0[i], w = clamp((lt + TR) / TR) * clamp((DUR[i] - lt + 0.05) / TR * (i === scenes.length - 2 ? 99 : 1));
+    el.style.opacity = w; el.style.transform = `scale(${1.04 + 0.1 * clamp(lt / DUR[i])})`; if (w > topW) { topW = w; topI = i; } });
+  srcEl.textContent = topI >= 0 && topW > 0.5 ? PH[topI][1] : DRIVER.source;
   // reveal flash
   const fl = t - TREV; document.getElementById("flash").style.opacity = fl >= 0 && fl < 0.5 ? 0.8 * (1 - fl / 0.5) : 0;
   let sw = -1; T0.slice(1, -1).forEach((c) => { const q = (t - (c - TR)) / TR; if (q >= 0 && q <= 1) sw = q; });
