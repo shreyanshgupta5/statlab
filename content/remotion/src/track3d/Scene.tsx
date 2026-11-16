@@ -89,6 +89,9 @@ const Director: React.FC<{ v: number }> = ({ v }) => {
   const pos = new THREE.Vector3(), look = new THREE.Vector3(); const K = 6;
   for (let k = 0; k < K; k++) { const s = shot(Math.max(0, v - (0.5 * k) / (K - 1))); pos.add(s.pos); look.add(s.look); }
   pos.divideScalar(K); look.divideScalar(K);
+  // mid-move between two shots the averaged position can cut through the track: arc upward by how spread out the samples are
+  let spread = 0; for (let k = 0; k < K; k++) spread = Math.max(spread, shot(Math.max(0, v - (0.5 * k) / (K - 1))).pos.distanceTo(pos));
+  pos.y += Math.min(6, spread * 0.6);
   camera.position.copy(pos); camera.lookAt(look); camera.near = 0.05; camera.far = 4000; camera.fov = 50; camera.updateProjectionMatrix();
   return null;
 };
