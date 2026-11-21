@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Number font options</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400..900&family=Inter+Tight:wght@400..900&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Titillium+Web:wght@400;600;700;900&family=Saira:wdth,wght@100,400..900&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400..700&family=Chakra+Petch:wght@400;600;700&family=Big+Shoulders+Display:wght@400..900&family=JetBrains+Mono:wght@400..800&family=Oswald:wght@400..700&family=Manrope:wght@400..800&display=swap">
+<style>
+:root{--bg:#0E0F12;--card:#17191E;--line:#2A2D33;--fg:#F2F2F0;--muted:#9AA0A6;--mer:#27F4D2;--mcl:#FF8000}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:'JetBrains Mono',monospace;padding:28px;width:1680px}
+h1{font:800 34px Archivo;letter-spacing:-.01em} p.lead{color:var(--muted);font-size:13px;margin:6px 0 24px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.f{background:var(--card);border-radius:16px;padding:18px 18px 14px}
+.hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.hd b{font:700 13px 'JetBrains Mono';letter-spacing:.06em} .hd span{font-size:10px;color:var(--muted);letter-spacing:.08em}
+.w{display:grid;grid-template-columns:44px 1fr;align-items:center;border-top:1px solid var(--line);padding:8px 0;gap:8px}
+.w>i{font-style:normal;font-size:10px;color:var(--muted)}
+.row{display:flex;align-items:baseline;gap:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.big{font-size:44px;line-height:1;letter-spacing:-.01em;color:var(--mcl)} .big small{font-size:.4em;color:var(--muted)}
+.mid{font-size:28px;line-height:1} .sm{font-size:16px}
+.st{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:10px 12px;border-radius:10px;background:#111317;border-left:4px solid var(--mer)}
+.st .n{font:500 12px 'JetBrains Mono';color:var(--muted);margin-right:10px} .st .nm{font-weight:800;font-style:italic;font-family:Archivo;font-stretch:112%}
+.st .p{font-size:26px;line-height:1;text-align:right} .st .p small{display:block;font:500 10px 'JetBrains Mono';color:var(--muted);margin-top:3px}
+.tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:99px;background:#27F4D2;color:#000;font:700 9px 'JetBrains Mono';letter-spacing:.08em;vertical-align:middle}
+.note{margin-top:10px;font:400 11px/1.5 Archivo;color:var(--muted)}
+</style></head><body>
+<h1>Number font options</h1>
+<p class="lead">Each card shows the same app numbers at different thicknesses. Big = qualifying gap · middle = points and positions · small = lap times. Bottom = a standings row as it would look. Names stay in the current Archivo italic.</p>
+<div class="grid" id="g"></div>
+<script>
+const F=[
+ ['Archivo','current',[500,700,800,900],'What the app uses now. Wide, sturdy, very legible; 800 is the current setting.',''],
+ ['Inter Tight','',[400,600,800],'The cleanest, most "app-like". Neutral, compact, excellent at small sizes.',''],
+ ['Barlow Semi Condensed','',[400,600,800],'Slightly narrow, sporty and calm. Fits more digits per row.',''],
+ ['Titillium Web','',[400,600,900],'Technical, squared curves — the face F1 itself used for years. Strong motorsport feel.',''],
+ ['Saira','',[400,600,800],'Squarish and racy without being gimmicky. Good bridge between clean and techy.',''],
+ ['Rajdhani','',[500,600,700],'Very squared, dashboard look. Narrow; best large, weaker at small sizes.',''],
+ ['Space Grotesk','',[400,500,700],'Modern with character (quirky 2 and 4). Distinctive, slightly editorial.',''],
+ ['Chakra Petch','',[400,600,700],'Chamfered corners, telemetry-screen feel. Bold choice, keeps an F1-tech mood.',''],
+ ['Big Shoulders Display','',[500,700,900],'Tall and condensed, scoreboard style. Huge impact for hero numbers only.',''],
+ ['Oswald','',[400,500,700],'Classic condensed sports-headline face. Punchy, familiar from match graphics.',''],
+ ['Manrope','',[400,600,800],'Soft, rounded, friendly. Easiest on the eye, least "racing".',''],
+ ['JetBrains Mono','',[400,600,800],'Monospaced: every digit the same width, so columns line up perfectly. Reads as "data".',''],
+];
+document.getElementById('g').innerHTML=F.map(([f,tag,ws,note])=>`<div class="f">
+ <div class="hd"><b style="font-family:'${f}'">${f.toUpperCase()}${tag?`<span class="tag">${tag.toUpperCase()}</span>`:''}</b><span>WEIGHTS ${ws.join(' · ')}</span></div>
+ ${ws.map(w=>`<div class="w"><i>${w}</i><div class="row" style="font-family:'${f}';font-weight:${w}">
+   <span class="big">0.204<small>s</small></span><span class="mid">390</span><span class="mid">P1</span><span class="mid">8–12</span><span class="sm">1:27.470</span></div></div>`).join('')}
+ <div class="st" style="font-family:'${f}'"><span><span class="n">02</span><span class="nm">Verstappen</span></span><span class="p" style="font-weight:${ws[Math.min(ws.length-1,1)+ (ws.length>3?1:0)]}">279<small>−111</small></span></div>
+ <p class="note">${note}</p></div>`).join('');
+</script></body></html>
