@@ -529,3 +529,51 @@ h1, .sh h2 { text-transform: uppercase; }
 .drow.grid.fav b::after { content: " ★"; color: var(--yellow); font-style: normal; font-size: 12px; }
 .drow.grid .dn { color: var(--red-text); font-size: 11px; }
 .drow.grid .r small { font-size: 9px; }
+
+/* ---- Season tab: minimal surfaces, numbers first (v24) ---- */
+.season .num { font-family: var(--display); font-style: normal; font-weight: 800; font-stretch: 100%; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; color: var(--fg); text-shadow: none; }
+.season .kicker { font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-shadow: none; }
+.season .sh h2 { font-size: 22px; }
+.season .pill { display: inline-block; padding: 2px 8px; margin-right: 2px; border-radius: 999px; background: var(--tc); color: #0A0A08; font-weight: 700; letter-spacing: .1em; }
+/* hero: flat card, big white numbers with small labels */
+.season .hero { background: var(--card); border: 0; border-top: 4px solid var(--tc); overflow: hidden; }
+.season .hero .kicker { color: var(--muted); }
+.season .hero-row { align-items: center; margin-top: 18px; }
+.season .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; flex: 1; }
+.season .hero-stats > div { display: flex; flex-direction: column; gap: 4px; }
+.season .hero-stats b { font-family: var(--display); font-style: normal; font-weight: 800; font-stretch: 100%; font-size: 34px; line-height: 1; color: var(--fg); text-shadow: none; font-variant-numeric: tabular-nums; }
+.season .hero-stats span { font-size: 10px; letter-spacing: .12em; }
+.season .hero .helmet { filter: none; }
+/* next race: plain countdown */
+.season .next.t-wet { background: var(--card); border-top: 4px solid var(--ice); }
+.season .t-wet .kicker { color: var(--muted); text-shadow: none; }
+.season .next b { font-size: 20px; }
+.season .t-wet .countdown { font-family: var(--display); font-style: normal; font-weight: 800; font-size: 32px; letter-spacing: -0.01em; color: var(--fg); text-shadow: none; font-variant-numeric: tabular-nums; }
+.season .next .note { color: var(--soft); }
+/* standings: no underline bars, team colour only as a thin left rule, big points with the gap below */
+.season .row .bar { display: none; }
+.season .row { grid-template-columns: 26px minmax(0, 1fr) 72px; min-height: 60px; }
+.season .row .pos { font-family: var(--mono); font-weight: 500; font-size: 13px; color: var(--muted); text-shadow: none; }
+.season .standings li:first-child .pos { color: var(--fg); }
+.season .row .pts { display: flex; flex-direction: column; align-items: flex-end; font-size: 24px; line-height: 1; }
+.season .row .pts small { margin-top: 4px; font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--muted); letter-spacing: 0; }
+.season .standings li:first-child .pts { color: var(--tc); }
+/* team table: thin bars, clear totals */
+.season .trow { grid-template-columns: 22px 112px minmax(0, 1fr) 54px; min-height: 48px; }
+.season .trow .pos { font-family: var(--mono); font-weight: 500; font-size: 13px; color: var(--muted); text-shadow: none; }
+.season .tbar { height: 4px; border-radius: 2px; }
+.season .trow .pts { font-size: 20px; }
+/* teammate battles: the score is the headline */
+.season .battle { padding: 14px 16px; }
+.season .b-top { margin-bottom: 8px; font-size: 11px; }
+.season .b-names { align-items: center; font-size: 16px; gap: 8px; }
+.season .b-names b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.season .b-names b:last-child { text-align: right; }
+.season .score { display: flex; align-items: baseline; gap: 6px; font-size: 30px; line-height: 1; }
+.season .score i { font-style: normal; color: var(--muted); } .season .score i.lead { color: var(--fg); }
+.season .score em { font-style: normal; font-size: 18px; color: var(--muted); }
+.season .split { height: 4px; margin-top: 10px; }
+.season .foot .ver { font-family: var(--mono); font-weight: 500; color: var(--muted); }
+.season .b-names { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); font-size: 15px; }
+.season .score { font-size: 28px; gap: 4px; }
+.season .b-names b { font-stretch: 100%; font-size: 15px; }

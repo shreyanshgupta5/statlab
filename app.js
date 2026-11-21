@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v23"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v24"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -197,9 +197,8 @@
       const d = driver[s.id];
       return `<li class="reveal" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}"><a class="row ${isFollowed("drivers", d.id) ? "fav" : ""}" href="#/driver/${d.id}">
         <span class="pos mono">${String(s.rank).padStart(2, "0")}</span>
-        <span class="bar" style="--w:${(s.points / maxPts) * 100}%"></span>
         <span class="who">${dName(d)}<small>${esc(team[d.team].name)}</small></span>
-        <span class="pts mono">${s.points}</span>
+        <span class="pts num">${s.points}${i ? `<small>−${leader.points - s.points}</small>` : `<small>leader</small>`}</span>
       </a></li>`;
     }).join("");
 
@@ -208,7 +207,7 @@
         <span class="pos mono">${i + 1}</span>
         <span class="tname">${esc(t.name)}</span>
         <span class="tbar"><i style="transform:scaleX(${t.points / teamMax})"></i></span>
-        <span class="pts mono">${t.points}</span>
+        <span class="pts num">${t.points}</span>
       </a></li>`).join("");
 
     // Following: your drivers and teams first, like a "My teams" feed
@@ -256,16 +255,14 @@
       const tot = q.a + q.b || 1;
       return `<a class="battle reveal" href="#/duel/${a.id}/${b.id}" style="--tc:${t.color}">
         <div class="b-top"><span>${esc(t.name)}</span><span class="mono dim">Δ ${Math.abs(q.median).toFixed(3)}s</span></div>
-        <div class="b-names"><b class="${q.a >= q.b ? "lead" : ""}">${esc(a.last)}</b><span class="mono">${q.a}–${q.b}</span><b class="${q.b > q.a ? "lead" : ""}">${esc(b.last)}</b></div>
+        <div class="b-names"><b class="${q.a >= q.b ? "lead" : ""}">${esc(a.last)}</b><span class="score num"><i class="${q.a >= q.b ? "lead" : ""}">${q.a}</i><em>–</em><i class="${q.b > q.a ? "lead" : ""}">${q.b}</i></span><b class="${q.b > q.a ? "lead" : ""}">${esc(b.last)}</b></div>
         <div class="split"><i style="flex:${q.a / tot}"></i><i style="flex:${q.b / tot}"></i></div>
       </a>`;
     }).join("");
 
-    return `
+    return `<div class="season">
       <section class="hero t-night reveal" style="--tc:${tc(ld.team)}">
-        ${sticker(remaining * 25 < leader.points - second.points ? "CHAMPION!" : "LEADER")}
-        <span class="kicker">Championship leader · after R${S.RESULTS.length}</span>
-        <div class="hero-num mono" aria-hidden="true">${ld.num}</div>
+        <span class="kicker">${remaining * 25 < leader.points - second.points ? `<b class="pill">Champion</b>` : "Championship leader"} · after R${S.RESULTS.length}</span>
         <h1 style="--len:${[...ld.last].length}"><span>${esc(ld.first)}</span>${esc(ld.last)}</h1>
         <div class="hero-row">
           <div class="hero-stats">
@@ -299,7 +296,7 @@
       ${sectionHead("Qualifying head-to-head", "Teammate battles", `<p class="note">Median gap shown. Tap a pair to open the duel.</p>`)}
       <div class="battles">${battles}</div>
       <p class="foot">${esc(S.NOTE || "")}<br><span class="ver">App ${APP_VERSION} · data after R${S.RESULTS.length ? S.RESULTS[S.RESULTS.length - 1].round : 0}</span></p>
-    `;
+    </div>`;
   }
 
   function viewRace(round) {
