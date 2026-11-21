@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v26"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v27"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -608,19 +608,21 @@
     const res = S.RESULTS.find((x) => x.round === round);
     const rr = res && res.race.find((x) => x.id === q.id);
     const st = DSmap[q.id];
+    const gridPos = !rr && (S.GRID || {})[round] ? S.GRID[round].indexOf(q.id) + 1 : 0;
     const kv = (k) => `<div class="kv"><span>${k.toUpperCase()}</span><b class="mono">${lapOrDash(q[k])}</b></div>`;
     return `<div class="dcard" style="--tc:${color}">
       <div class="dcard-top"><span class="big">${d ? d.num : ""}</span><small>${side}</small></div>
       <b class="dname">${esc(d ? d.last : q.id)}</b>
       <small style="color:${color}">${esc(team[q.team] ? team[q.team].name : q.team).toUpperCase()}</small>
-      <div class="dstats"><div><b class="num">P${q.pos}</b><small>QUALI</small></div><div><b class="num">${!rr ? "–" : rr.pos ? "P" + rr.pos : "DNF"}</b><small>RACE</small></div></div>
+      <div class="dstats"><div><b class="num">P${q.pos}</b><small>QUALI</small></div><div><b class="num">${gridPos ? "P" + gridPos : !rr ? "–" : rr.pos ? "P" + rr.pos : "DNF"}</b><small>${gridPos ? "GRID" : "RACE"}</small></div></div>
       ${kv("q1")}${kv("q2")}${kv("q3")}
       <div class="kv"><span>SEASON PTS</span><b class="mono">${st ? st.points : "–"}</b></div>
     </div>`;
   }
 
   function viewDuelRace(aId, bId, roundArg) {
-    const done = S.RESULTS.map((r) => r.round);
+    // finished rounds plus any round whose qualifying is in (tools/add_quali.py) before the race has run
+    const done = [...new Set([...S.RESULTS.map((r) => r.round), ...Object.keys(S.QUALI_DETAIL || {}).map(Number)])].sort((x, y) => x - y);
     const round = done.includes(roundArg) ? roundArg : telRounds[telRounds.length - 1] || done[done.length - 1];
     const cal = raceByRound[round], info = (S.RACE_INFO || {})[round] || {};
     const pool = ((S.QUALI_DETAIL || {})[round] || []).filter((q) => q.best != null);
@@ -635,7 +637,7 @@
     const lead = gap > 0 ? qa : qb, leadCol = gap > 0 ? ca : cb;
     const h2h = qualiH2H(qa.id, qb.id);
 
-    const chips = S.RESULTS.map((r) => {
+    const chips = done.map((rd) => ({ round: rd })).map((r) => {
       const ri = (S.RACE_INFO || {})[r.round] || {};
       // each race opens on that race's front row: the P1 and P2 qualifiers
       const front = ((S.QUALI_DETAIL || {})[r.round] || []).filter((q) => q.best != null).sort((x, y) => x.pos - y.pos);
@@ -751,10 +753,12 @@
       pb.addEventListener("change", go);
     }
 
-    document.querySelectorAll(".tchips").forEach((strip) => {
+    // centre the selected race chip; again once fonts have loaded, since chip widths change with the font on first open
+    const centreChips = () => document.querySelectorAll(".tchips").forEach((strip) => {
       const cur = strip.querySelector('[aria-current="true"]');
-      if (cur) strip.scrollLeft = cur.offsetLeft - (strip.clientWidth - cur.offsetWidth) / 2;
+      if (cur) strip.scrollLeft += cur.getBoundingClientRect().left - strip.getBoundingClientRect().left - (strip.clientWidth - cur.offsetWidth) / 2;
     });
+    centreChips(); requestAnimationFrame(centreChips); if (document.fonts) document.fonts.ready.then(centreChips);
 
     clearInterval(timer);
     const cd = document.querySelector(".countdown");

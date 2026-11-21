@@ -1,6 +1,6 @@
 """Adds a round's qualifying and starting grid to data.js before the race has run (so the race preview can show the grid).
 
-    python3 tools/add_quali.py 21
+    python3 tools/add_quali.py 21 LVG "Las Vegas"
 
 Qualifying times (Q1/Q2/Q3) come from OpenF1 session_result; the grid (after penalties) from OpenF1 starting_grid.
 add_round.py later overwrites QUALI_DETAIL for the round with the same data when the race result goes in.
@@ -40,6 +40,8 @@ def main():
     grid = [acr[g['driver_number']]['name_acronym'] for g in sorted(openf1(f'starting_grid?session_key={key}'), key=lambda g: g['position'] or 99)]
     S['QUALI_DETAIL'][str(rnd)] = detail
     S.setdefault('GRID', {})[str(rnd)] = grid
+    if len(sys.argv) > 3:  # optional: SHORT LOCATION, e.g. LVG "Las Vegas"
+        S['RACE_INFO'].setdefault(str(rnd), {'short': sys.argv[2], 'location': sys.argv[3]})
     with open(path, 'w', encoding='utf-8') as f:
         f.write(head + 'window.SEASON = ' + json.dumps(S, ensure_ascii=False, separators=(',', ':')) + ';\nwindow.NEWS = ' + news_part)
     print(f"round {rnd} ({q['location']}): fastest {detail[0]['id']}, grid P1 {grid[0] if grid else '-'}, {len(grid)} on the grid")
