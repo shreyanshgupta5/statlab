@@ -577,3 +577,24 @@ h1, .sh h2 { text-transform: uppercase; }
 .season .b-names { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); font-size: 15px; }
 .season .score { font-size: 28px; gap: 4px; }
 .season .b-names b { font-stretch: 100%; font-size: 15px; }
+
+/* ---- Duel: same number-first type as the Season tab (v25) ---- */
+.duel .gapbig { display: flex; align-items: baseline; gap: 4px; font-family: var(--display); font-style: normal; font-weight: 800; font-stretch: 100%; font-size: clamp(56px, 18vw, 84px); letter-spacing: -0.02em; text-shadow: none; margin: 6px 0 10px; }
+.duel .gapbig small { font-size: 0.4em; font-weight: 700; color: var(--muted); }
+.duel .panel > small { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--muted); }
+.duel .h2h { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+.duel .h2h-score { display: flex; align-items: baseline; gap: 10px; }
+.duel .h2h-score em { font-family: var(--mono); font-style: normal; font-size: 12px; font-weight: 700; }
+.duel .h2h-score b { font-size: 28px; line-height: 1; }
+.duel .h2h-score i { font-style: normal; margin: 0 5px; color: var(--muted); font-size: 18px; }
+.duel .dcard .big { font-family: var(--display); font-style: normal; font-weight: 800; font-stretch: 100%; font-size: 30px; color: var(--tc); -webkit-text-stroke: 0; text-shadow: none; }
+.duel .dcard { border-top-width: 4px; }
+.duel .dstats b { font-size: 28px; line-height: 1; }
+.duel .dstats small { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--muted); }
+.duel .kv b { font-family: var(--display); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+.duel .drow .mono.r { font-family: var(--display); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
+.duel .drow .mono.r[style] { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+.duel .drow > b.mono { font-family: var(--mono); font-weight: 500; color: var(--muted); }
+.duel .sector .mono.r { font-weight: 700; }
+.duel .tchip[aria-current="true"] { border-color: var(--fg); }
+.duel .tchip i { width: 6px; height: 6px; }

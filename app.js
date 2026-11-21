@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v24"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v25"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -613,7 +613,7 @@
       <div class="dcard-top"><span class="big">${d ? d.num : ""}</span><small>${side}</small></div>
       <b class="dname">${esc(d ? d.last : q.id)}</b>
       <small style="color:${color}">${esc(team[q.team] ? team[q.team].name : q.team).toUpperCase()}</small>
-      <div class="dstats"><div><b>P${q.pos}</b><small>QUALI</small></div><div><b>${!rr ? "–" : rr.pos ? "P" + rr.pos : "DNF"}</b><small>RACE</small></div></div>
+      <div class="dstats"><div><b class="num">P${q.pos}</b><small>QUALI</small></div><div><b class="num">${!rr ? "–" : rr.pos ? "P" + rr.pos : "DNF"}</b><small>RACE</small></div></div>
       ${kv("q1")}${kv("q2")}${kv("q3")}
       <div class="kv"><span>SEASON PTS</span><b class="mono">${st ? st.points : "–"}</b></div>
     </div>`;
@@ -688,7 +688,7 @@
         ${latest ? `<a class="btn" href="#/duel/${qa.id}/${qb.id}/race/${latest}">Open ${esc(((S.RACE_INFO || {})[latest] || {}).location || "")} →</a>` : ""}</div>`;
     }
 
-    return `
+    return `<div class="season duel">
       <div class="page-title reveal"><span class="kicker">Head-to-head</span><h1>Duel</h1></div>
       <div class="tchips">${chips}</div>
       <div class="ttitle"><b>${cal.flag} ${esc(cal.name)}</b><small>ROUND ${round} · ${esc(cal.place).toUpperCase()}</small></div>
@@ -699,13 +699,14 @@
       </div>
       <div class="panel reveal" style="margin-top:12px">
         <small>${esc(lastName(lead.id)).toUpperCase()} FASTER IN ${sess.toUpperCase()} BY</small>
-        <div class="gapbig" style="color:${leadCol}">${Math.abs(gap).toFixed(3)}s</div>
-        <small>SEASON QUALI H2H · <span style="color:${ca}">${qa.id} ${h2h.a}</span> – <span style="color:${cb}">${h2h.b} ${qb.id}</span></small>
+        <div class="gapbig num" style="color:${leadCol}">${Math.abs(gap).toFixed(3)}<small>s</small></div>
+        <div class="h2h"><span class="kicker">Season quali H2H</span><span class="h2h-score"><em style="color:${ca}">${qa.id}</em><b class="num">${h2h.a}<i>–</i>${h2h.b}</b><em style="color:${cb}">${qb.id}</em></span></div>
       </div>
       <div class="dcards reveal">${duelDriverCard(qa, round, ca, "DRIVER A")}${duelDriverCard(qb, round, cb, "DRIVER B")}</div>
       ${sectionHead("Qualifying", "Session by session")}
       <ul class="drows reveal"><li class="drow head" style="grid-template-columns:40px minmax(0,1fr) minmax(0,1fr) 84px"><span></span><span class="r">${qa.id}</span><span class="r">${qb.id}</span><span class="r">Gap</span></li>${sessRows}</ul>
-      ${tele}`;
+      ${tele}
+    </div>`;
   }
 
   function viewMissing(msg) {
