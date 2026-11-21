@@ -598,3 +598,13 @@ h1, .sh h2 { text-transform: uppercase; }
 .duel .sector .mono.r { font-weight: 700; }
 .duel .tchip[aria-current="true"] { border-color: var(--fg); }
 .duel .tchip i { width: 6px; height: 6px; }
+
+/* ---- number font: Chakra Petch on Season + Duel (v26) ---- */
+:root { --num: 'Chakra Petch', var(--display); }
+.season .num, .season .hero-stats b, .season .t-wet .countdown, .duel .gapbig, .duel .kv b, .duel .drow .mono.r, .duel .dcard .big,
+.season .row .pts, .season .trow .pts, .season .score, .duel .h2h-score b, .duel .dstats b { font-family: var(--num); font-style: normal; font-stretch: 100%; letter-spacing: 0; }
+.season .hero-stats b, .duel .gapbig, .season .t-wet .countdown, .season .row .pts, .season .score, .duel .h2h-score b, .duel .dstats b, .duel .dcard .big { font-weight: 700; }
+.season .trow .pts, .duel .kv b, .duel .drow .mono.r { font-weight: 600; }
+.season .hero-stats b { font-size: 36px; }
+.season .row .pts { font-size: 25px; }
+.duel .gapbig { font-size: clamp(60px, 19vw, 88px); }
