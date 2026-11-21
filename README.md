@@ -42,6 +42,12 @@ If you change `styles.css` or `app.js`, also bump `VERSION` in `sw.js` (for exam
 Repository **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, folder `/ (root)` → Save.**
 The site appears at `https://<your-username>.github.io/<repo-name>/`.
 
+## After qualifying
+
+```bash
+python3 tools/add_quali.py 21     # qualifying times + starting grid (after penalties) from OpenF1, shown on the race preview
+```
+
 ## After each race
 
 ```bash

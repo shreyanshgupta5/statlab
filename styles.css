@@ -523,3 +523,9 @@ h1, .sh h2 { text-transform: uppercase; }
 .pl-board b small { margin-left: 6px; padding: 2px 6px; border-radius: 6px; background: var(--amber); color: #0A0A08; font: 700 10px var(--mono); font-style: normal; vertical-align: middle; }
 .pl-board .led { font-size: 18px; color: var(--amber); }
 .pl-boardwrap { margin-top: 18px; text-align: left; }
+
+.drow.grid { grid-template-columns: 30px minmax(0, 1fr) 50px 92px; gap: 8px; }
+.drow.grid b { font-weight: 900; font-style: italic; font-stretch: 112%; font-size: 15px; border-left: 4px solid var(--tc); padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drow.grid.fav b::after { content: " ★"; color: var(--yellow); font-style: normal; font-size: 12px; }
+.drow.grid .dn { color: var(--red-text); font-size: 11px; }
+.drow.grid .r small { font-size: 9px; }

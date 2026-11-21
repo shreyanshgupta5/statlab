@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v22"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v23"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -283,6 +283,7 @@
         <b>${upcoming.flag} ${esc(upcoming.name)}</b>
         <span class="mono countdown" data-date="${upcoming.date}" data-start="${upcoming.raceStart || ""}"></span>
         <span class="mono dim">Lights out ${esc(localStart(upcoming))} your time</span>
+        ${(S.GRID || {})[upcoming.round] ? `<span class="note">Pole: ${esc(lastName(S.GRID[upcoming.round][0]))} · starting grid is in</span>` : ""}
         ${awaiting.length ? `<span class="note">Results for ${awaiting.map((r) => esc(((S.RACE_INFO || {})[r.round] || {}).short || r.name)).join(", ")} are on the way.</span>` : ""}</a>
         <button class="cal" type="button" data-ics="${upcoming.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
       </div>` : ""}
@@ -449,6 +450,28 @@
       <g transform="translate(${x0} ${y0}) rotate(${ang.toFixed(0)})"><rect x="-3" y="-13" width="6" height="26" fill="#F2F2F0"/><path d="M14 0 l-9 -7 v14 z" fill="#F2F2F0"/></g></svg>`;
   }
 
+  // qualifying + starting grid for a round whose race hasn't run yet (tools/add_quali.py)
+  const fmtLap = (t) => (t == null ? "no time" : `${Math.floor(t / 60)}:${(t % 60).toFixed(3).padStart(6, "0")}`);
+  function gridBlock(round) {
+    const qd = (S.QUALI_DETAIL || {})[round], g = (S.GRID || {})[round];
+    if (!qd || !qd.length || S.RESULTS.some((x) => x.round === +round)) return "";
+    const order = g && g.length ? g : qd.slice().sort((x, y) => x.pos - y.pos).map((x) => x.id);
+    const fastest = qd.filter((x) => x.best != null).sort((x, y) => x.pos - y.pos)[0];
+    const rows = order.map((id, i) => { const q = qd.find((x) => x.id === id) || { pos: null, best: null, team: (driver[id] || {}).team };
+      const moved = q.pos ? `<span class="mono ${q.pos < i + 1 && q.best != null ? "dn" : "dim"}">Q${q.pos}${q.pos < i + 1 && q.best != null ? " ↓" : ""}</span>` : `<span></span>`;
+      const decide = q.q3 ?? q.q2 ?? q.q1, sess = q.q3 != null ? "Q3" : q.q2 != null ? "Q2" : q.q1 != null ? "Q1" : "";
+      const gap = decide != null ? `${fmtLap(decide)} <small class="dim">${sess}</small>` : "no time";
+      return `<li><a class="drow grid ${isFollowed("drivers", id) ? "fav" : ""}" href="#/driver/${id}" style="--tc:${tc(q.team) || "#5E6470"}">
+        <span class="pos mono">${i + 1}</span><b>${esc(lastName(id))}</b>${moved}<span class="mono r">${gap}</span></a></li>`; }).join("");
+    const pens = order.filter((id, i) => { const q = qd.find((x) => x.id === id); return q && q.pos && q.pos < i + 1 && q.best != null; });
+    const note = fastest && order[0] !== fastest.id
+      ? `<p class="note">${esc(lastName(fastest.id))} was fastest (${fmtLap(fastest.best)}) but ${esc(lastName(order[0]))} starts on pole after grid penalties.</p>`
+      : fastest ? `<p class="note">Pole: ${esc(lastName(fastest.id))}, ${fmtLap(fastest.best)}.</p>` : "";
+    return `${sectionHead("Qualifying", "Starting grid", note)}
+      <ul class="drows reveal"><li class="drow head grid"><span>Grid</span><span>Driver</span><span>Quali</span><span class="r">Lap</span></li>${rows}</ul>
+      ${pens.length ? `<p class="note">↓ starts behind where they qualified (grid penalty or back-of-grid start): ${pens.map((id) => esc(lastName(id))).join(", ")}.</p>` : ""}`;
+  }
+
   function viewPreview(round) {
     const r = raceByRound[round], P = PREVIEWS[round];
     const hist = P ? P.history : [];
@@ -492,9 +515,10 @@
       ${mine.length ? `${sectionHead("Your drivers here", "Following")}<div class="favs reveal">${mine.map((d) => `<a class="fav-card has-helmet" href="#/driver/${d.id}" style="--tc:${codeCol(d.id)}">${helmet(d.id, { size: 56, look: 3 })}<span class="mono dim">${d.starts} START${d.starts === 1 ? "" : "S"} HERE</span><b>${esc(codeName(d.id))}</b><span class="note">${d.wins} win${d.wins === 1 ? "" : "s"} · ${d.podiums} podium${d.podiums === 1 ? "" : "s"} · best ${d.best ? "P" + d.best : "–"} · avg ${d.avg ?? "–"}</span></a>`).join("")}</div>` : ""}
       ${kings ? `${sectionHead(`Current grid · ${span}`, "Best on this track", best ? `<p class="note">${esc(codeName(best.id))} leads with ${best.wins} win${best.wins === 1 ? "" : "s"} and ${best.podiums} podium${best.podiums === 1 ? "" : "s"}.</p>` : "")}
         <ul class="drows reveal"><li class="drow head king"><span></span><span>Driver</span><span class="r">Wins</span><span class="r">Pod</span><span class="r">Poles</span><span class="r">Avg</span></li>${kings}</ul>` : ""}
+      ${gridBlock(round)}
       ${past ? `${sectionHead("Winners", "Past results")}<ul class="drows reveal">${past}</ul>` : ""}
       ${!P ? `<div class="panel reveal" style="margin-top:20px"><p class="note">Track history for this round isn't loaded yet.</p></div>` : ""}
-      <p class="foot">Data: Jolpica (results history) and OpenF1 (track layout) · unofficial fan project.</p>`;
+      <p class="foot">Data: Jolpica (results history) and OpenF1 (track layout, qualifying, grid) · unofficial fan project.</p>`;
   }
 
   function viewNews() {
