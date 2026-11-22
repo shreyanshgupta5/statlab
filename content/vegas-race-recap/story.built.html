@@ -78,7 +78,9 @@ html,body { width:1080px; height:1920px; overflow:hidden; background:var(--bg); 
 
 <!-- 3 FERRARI: what happened -->
 <section class="f" id="f3">
-  <div class="split"><div class="a" style="background-image:url(img/leclerc.jpg);background-position:40% 50%"></div><div class="b" style="background-image:url(img/hamilton.jpg);background-position:60% 50%"></div><div class="bar"></div></div>
+  <div class="split"><div class="a" style="background:linear-gradient(160deg,#3A0A10,#14080A 70%)"></div><div class="b" style="background:linear-gradient(200deg,#3A0A10,#14080A 70%)"></div><div class="bar"></div>
+    <div class="abs num" style="left:40px;top:500px;font-size:360px;line-height:1;color:transparent;-webkit-text-stroke:5px var(--fer)">16</div>
+    <div class="abs num" style="right:40px;top:500px;font-size:360px;line-height:1;color:transparent;-webkit-text-stroke:5px var(--fer)">44</div></div>
   <div class="fade" style="top:640px;height:450px"></div><div class="top"></div>
   <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">02 / FERRARI</div>
   <div class="nm" style="left:64px;top:880px">Leclerc</div><div class="nm" style="right:64px;top:880px">Hamilton</div>
@@ -88,8 +90,8 @@ html,body { width:1080px; height:1920px; overflow:hidden; background:var(--bg); 
     <div class="step" style="--tc:var(--fer)"><i>2</i><span>Leclerc attacks anyway at <b>Turn 7</b>. Contact.</span></div>
     <div class="step" style="--tc:var(--amber)"><i>3</i><span>Hamilton <b>spins</b>. Leclerc gets a <b>10-second penalty</b>.</span></div>
   </div>
-  <svg class="abs" id="map3" style="right:64px;top:250px" width="260" height="420"></svg>
-  <div class="credit"><span>@F1STATLAB</span><span>PHOTOS: LIAUZH · CC BY 4.0</span></div>
+  <svg class="abs" id="map3" style="right:64px;top:170px" width="200" height="310"></svg>
+  <div class="credit"><span>@F1STATLAB</span><span>MAP: OPENF1 POSITION DATA</span></div>
 </section>
 
 <!-- 4 FERRARI: the fallout -->
@@ -178,7 +180,7 @@ const f = +(new URLSearchParams(location.search).get("f") || 1);
 document.getElementById("f" + f).style.display = "block";
 // mini map with the contact point (frame 3)
 (() => {
-  const s = document.getElementById("map3"), W = 260, H = 420, xs = T.outline.map((p) => p[0]), ys = T.outline.map((p) => p[1]);
+  const s = document.getElementById("map3"), W = 200, H = 310, xs = T.outline.map((p) => p[0]), ys = T.outline.map((p) => p[1]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), k = Math.min((W - 40) / (x1 - x0), (H - 40) / (y1 - y0));
   const X = (x) => 20 + (x - x0) * k, Y = (y) => H - 20 - (y - y0) * k;
   const d = T.outline.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join("") + "Z";
