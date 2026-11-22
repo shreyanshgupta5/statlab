@@ -1,0 +1,23 @@
+pos,driver,name,team,qualified,grid,places_gained,laps,gap,points,pit_stops,tyres,best_lap,penalty
+1,VER,Max Verstappen,Red Bull Racing,2,1,0,50,0,25,1,Soft > Medium,1:36.450,
+2,NOR,Lando Norris,McLaren,4,3,1,50,0.639,18,1,Soft > Medium,1:36.182,
+3,PIA,Oscar Piastri,McLaren,7,17,14,50,1.529,15,1,Soft > Medium,1:36.334,
+4,ANT,Kimi Antonelli,Mercedes,1,6,2,50,2.574,12,1,Medium > Soft,1:36.235,
+5,GAS,Pierre Gasly,Alpine,9,8,3,50,2.927,10,1,Soft > Medium,1:36.057,
+6,COL,Franco Colapinto,Alpine,10,9,3,50,7.955,8,1,Soft > Medium,1:36.207,
+7,HAM,Lewis Hamilton,Ferrari,12,11,4,50,12.795,6,1,Soft > Medium,1:36.452,10s time penalty
+8,SAI,Carlos Sainz,Williams,14,20,12,50,12.938,4,1,Soft > Medium,1:36.716,
+9,RUS,George Russell,Mercedes,3,2,-7,50,13.192,2,1,Soft > Medium,1:36.331,
+10,LEC,Charles Leclerc,Ferrari,11,10,0,50,17.554,1,1,Soft > Medium,1:36.601,10s time penalty
+11,HUL,Nico Hulkenberg,Audi,13,12,1,50,22.72,0,1,Soft > Medium,1:37.038,
+12,BOR,Gabriel Bortoleto,Audi,15,13,1,50,28.602,0,1,Soft > Medium,1:37.087,
+13,BEA,Oliver Bearman,Haas F1 Team,,22,9,50,28.843,0,1,Medium > Soft,1:37.312,
+14,HAD,Isack Hadjar,Red Bull Racing,5,4,-10,50,36.488,0,2,Soft > Medium > Soft,1:35.944,
+15,LAW,Liam Lawson,Racing Bulls,8,7,-8,50,36.588,0,1,Medium > Soft,1:35.591,
+16,CAM,Rafael Camara,Haas F1 Team,17,15,-1,50,47.814,0,2,Soft > Medium > Soft,1:37.900,
+17,STR,Lance Stroll,Aston Martin,20,21,4,50,68.353,0,1,Soft > Medium,1:38.805,
+18,BOT,Valtteri Bottas,Cadillac,21,19,1,50,71.673,0,2,Soft > Medium > Soft,1:38.443,
+19,ALO,Fernando Alonso,Aston Martin,19,18,-1,49,,0,1,Soft > Medium,1:38.560,
+DNF,LIN,Arvid Lindblad,Racing Bulls,6,5,,19,,0,1,Soft > Medium,1:37.883,
+DNF,PER,Sergio Perez,Cadillac,18,16,,17,,0,0,Soft,1:39.296,
+DNS,ALB,Alexander Albon,Williams,16,14,,0,,0,0,Soft,,
