@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v35"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v36"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -211,10 +211,7 @@
     if (L.kind === "race" || L.kind === "sprint") {
       const list = L.kind === "race" ? L.res.race : L.rows;
       const fin = list.filter((x) => x.pos).sort((a, b) => a.pos - b.pos);
-      rows = fin.slice(0, 3).map((x, k) => row(k + 1, x.id, k === 0 ? (x.points ? "+" + x.points : "WIN") : x.gap != null ? "+" + x.gap.toFixed(3) : "+" + x.points,
-        k === 0 ? `from P${x.grid || "–"}` : x.gap != null ? `${x.points} pts` : "pts", k === 0 ? "win" : "")).join("");
-      const rest = fin.slice(3, 10).map((x) => `<span><i class="num">${x.pos}</i>${nm(x.id)}</span>`).join("");
-      if (rest) rows += `<li class="ls-rest">${rest}</li>`;
+      rows = fin.slice(0, 3).map((x, k) => row(k + 1, x.id, k === 0 ? "WIN" : x.gap != null ? "+" + x.gap.toFixed(3) + "s" : "", "", k === 0 ? "win" : "")).join("");
       if (L.kind === "race") {
         const pole = L.res.quali[0]; if (pole) facts.push(["Pole", nm(pole.id)]);
         const gain = fin.filter((x) => x.grid).map((x) => ({ x, g: x.grid - x.pos })).sort((a, b) => b.g - a.g)[0];
@@ -234,13 +231,11 @@
       if (out1.length) facts.push(["Out in Q1", out1.join(", ")]);
     }
     const ld = DS[0], gap2 = DS[1] ? ld.points - DS[1].points : 0;
-    return `<section class="latest reveal">
-        <a class="ls-head" href="${href}"><span class="kicker"><b class="pill">${label}</b> · Round ${L.round} · ${fmtDate(L.kind === "race" ? c.date : new Date(L.at).toISOString().slice(0, 10), { weekday: "short", day: "numeric", month: "short" })}</span>
-          <h1>${c.flag} ${esc(info.location || c.place)}</h1></a>
+    return `<a class="latest reveal" href="${href}">
+        <span class="ls-head"><span class="kicker"><b class="pill">${label}</b> · Round ${L.round} · ${fmtDate(L.kind === "race" ? c.date : new Date(L.at).toISOString().slice(0, 10), { weekday: "short", day: "numeric", month: "short" })}</span>
+          <h1>${c.flag} ${esc(info.location || c.place)}</h1><span class="ls-go" aria-hidden="true">→</span></span>
         <ol class="ls-rows">${rows}</ol>
-        ${facts.length ? `<dl class="ls-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>` : ""}
-        <div class="ls-foot"><span>${(S.CALENDAR.length - S.RESULTS.length) * 25 < gap2 ? "Champion" : "Leader"}: <b>${esc(lastName(ld.id))}</b> <b class="num">${ld.points}</b> pts, <b class="num">+${gap2}</b></span><a href="${href}">Full ${label.toLowerCase()} →</a></div>
-      </section>`;
+      </a>`;
   }
 
   function viewSeason() {
