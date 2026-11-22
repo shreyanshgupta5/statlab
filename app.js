@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v33"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v34"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -364,7 +364,7 @@
         <div><span class="kicker">Gained most</span><ul>${wl(up, "up") || `<li class="dim">–</li>`}</ul></div>
         <div><span class="kicker">Lost most</span><ul>${wl(down, "down") || `<li class="dim">–</li>`}</ul></div></div>
       ${out.length ? `<p class="note">Did not finish: ${out.map((x) => `${nm(x.id)}${x.status === "DNS" ? " (did not start)" : ""}`).join(", ")}.</p>` : ""}`;
-    if (!D) return winlose;
+    if (!D) return { pre: "", post: winlose };
 
     const N = D.laps, W = 340, L = 30, R = 44;
     const xs = (lap) => L + ((lap) / N) * (W - L - R);
@@ -438,12 +438,11 @@
         ${tile(atLine.ch, "Leader changes at the line", `${atLine.who.length} led a lap`)}
         ${tile(O.total ?? "–", "On-track overtakes", O.lap1 != null ? `${O.lap1} on lap 1` : "")}
         ${tile(O.top && O.top[0] ? O.top[0][1] : "–", "Most overtakes", O.top && O.top[0] ? nm(O.top[0][0]) : "")}
-      </div>
-      ${sectionHead("P1 to P2 at the line", "Gap to the leader")}<figure class="chart reveal">${gapSvg}<p class="note">Seconds between first and second at the end of each lap. Bright = within 1s.</p></figure>
-      ${sectionHead("Leader by lap", "Who led")}<div class="panel reveal">${ldrStrip}</div>
-      ${ovSvg ? `${sectionHead("Passing", "Overtakes per lap")}<figure class="chart reveal">${ovSvg}<p class="note">On-track passes only: pit-stop swaps, safety-car laps and cars about to retire are left out (OpenF1 overtakes, ${O.raw} raw position changes).${O.top && O.top.length ? ` Most: ${O.top.slice(0, 3).map(([id, c]) => `${nm(id)} ${c}`).join(", ")}.` : ""}</p></figure>` : ""}`;
-
-    return moments + numbers + winlose + chart + strategy;
+      </div>`;
+    const gapSec = `${sectionHead("P1 to P2 at the line", "Gap to the leader")}<figure class="chart reveal">${gapSvg}<p class="note">Seconds between first and second at the end of each lap. Bright = within 1s.</p></figure>`;
+    const whoSec = `${sectionHead("Leader by lap", "Who led")}<div class="panel reveal">${ldrStrip}</div>`;
+    const ovSec = `${ovSvg ? `${sectionHead("Passing", "Overtakes per lap")}<figure class="chart reveal">${ovSvg}<p class="note">On-track passes only: pit-stop swaps, safety-car laps and cars about to retire are left out (OpenF1 overtakes, ${O.raw} raw position changes).${O.top && O.top.length ? ` Most: ${O.top.slice(0, 3).map(([id, c]) => `${nm(id)} ${c}`).join(", ")}.` : ""}</p></figure>` : ""}`;
+    return { pre: "", post: moments + strategy + winlose + gapSec + ovSec + numbers + whoSec + chart };
   }
 
   function viewRace(round) {
@@ -487,9 +486,9 @@
         ${hasPace ? `<div><span class="kicker">Best race pace</span><b>${esc(driver[res.fastestPace].last)}</b><span class="mono dim">${lapTime(best)}</span></div>`
           : `<div><span class="kicker">Winner from</span><b>P${res.race[0].grid || "–"}</b><span class="mono dim">on the grid</span></div>`}
       </div>
-      ${raceInsights(round, res)}
       ${sectionHead("Classification", "Result")}
       <ol class="result">${rows}</ol>
+      ${raceInsights(round, res).post}
       ${hasPace ? `${sectionHead("Average lap", "Race pace", `<p class="note">Gap to the fastest average lap.</p>`)}
       <ol class="pace">${paceRows}</ol>` : ""}`;
   }
