@@ -54,6 +54,7 @@ The home screen opens on the most recent completed session (race, sprint or qual
 
 ```bash
 python3 tools/add_round.py 21 path/to/race_results.csv --short LVG --location "Las Vegas"   # adds the round to data.js
+python3 tools/build_race_detail.py 21                                                         # race page: lap positions, stints, pit stops, key moments (racedetail.js)
 python3 tools/build_previews.py                                                             # refreshes previews.js for the races still to come
 ```
 
