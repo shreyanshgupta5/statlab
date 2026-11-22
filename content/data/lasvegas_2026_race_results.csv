@@ -12,8 +12,8 @@ pos,driver,name,team,qualified,grid,places_gained,laps,gap,points,pit_stops,tyre
 11,HUL,Nico Hulkenberg,Audi,13,12,1,50,22.72,0,1,Soft > Medium,1:37.038,
 12,BOR,Gabriel Bortoleto,Audi,15,13,1,50,28.602,0,1,Soft > Medium,1:37.087,
 13,BEA,Oliver Bearman,Haas F1 Team,,22,9,50,28.843,0,1,Medium > Soft,1:37.312,
-14,HAD,Isack Hadjar,Red Bull Racing,5,4,-10,50,36.488,0,2,Soft > Medium > Soft,1:35.944,
-15,LAW,Liam Lawson,Racing Bulls,8,7,-8,50,36.588,0,1,Medium > Soft,1:35.591,
+14,LAW,Liam Lawson,Racing Bulls,8,7,-8,50,36.588,0,1,Medium > Soft,1:35.591,
+15,HAD,Isack Hadjar,Red Bull Racing,5,4,-10,50,46.488,0,2,Soft > Medium > Soft,1:35.944,"10s time penalty (post-race, per OpenF1 classification)"
 16,CAM,Rafael Camara,Haas F1 Team,17,15,-1,50,47.814,0,2,Soft > Medium > Soft,1:37.900,
 17,STR,Lance Stroll,Aston Martin,20,21,4,50,68.353,0,1,Soft > Medium,1:38.805,
 18,BOT,Valtteri Bottas,Cadillac,21,19,1,50,71.673,0,2,Soft > Medium > Soft,1:38.443,
