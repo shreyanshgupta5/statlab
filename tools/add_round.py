@@ -50,7 +50,7 @@ def main():
         q = (r.get('duration') or []) + [None, None, None]
         times = [t for t in q[:3] if t is not None]
         best = min(times) if times else None
-        detail.append({'id': d['name_acronym'], 'team': TEAM_IDS.get(d['team_name'], d['team_name']), 'pos': r['position'],
+        detail.append({'id': d['name_acronym'], 'team': TEAM_IDS.get(d['team_name'], d['team_name']), 'pos': r.get('position') or len(detail) + 1,
                        'q1': q[0], 'q2': q[1], 'q3': q[2], 'best': best})
         if best is not None:
             quali.append({'id': d['name_acronym'], 'time': best})
@@ -65,8 +65,15 @@ def main():
     for row in csv.DictReader(open(a.race_csv, encoding='utf-8')):
         finished = row['pos'].isdigit()
         pts = int(float(row['points'] or 0))
-        race.append({'id': row['driver'], 'pos': int(row['pos']) if finished else None, 'points': pts,
-                     'grid': int(row['grid'] or 0), 'dnf': not finished})
+        entry = {'id': row['driver'], 'pos': int(row['pos']) if finished else None, 'points': pts,
+                 'grid': int(row['grid'] or 0), 'dnf': not finished}
+        if finished and row.get('gap') not in (None, ''):
+            entry['gap'] = float(row['gap'])
+        if row.get('best_lap'):
+            entry['best'] = row['best_lap']
+        if not finished:
+            entry['status'] = row['pos']          # DNF / DNS / DSQ
+        race.append(entry)
         tid = TEAM_IDS[row['team']]
         team_pts[tid] = team_pts.get(tid, 0) + pts
         S['OFFICIAL_POINTS'][row['driver']] = S['OFFICIAL_POINTS'].get(row['driver'], 0) + pts

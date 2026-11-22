@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v27"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v28"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -187,6 +187,62 @@
     `<div class="sh"><span class="kicker">${esc(kicker)}</span><h2>${title}</h2>${extra}</div>`;
 
   /* ---------- views ---------- */
+  // home: the most recent completed session (race, sprint or qualifying), newest first
+  function latestSession() {
+    const toSec = (t) => { if (t == null || t === "") return null; if (typeof t === "number") return t; const [m, x] = String(t).split(":"); return x == null ? +m : +m * 60 + +x; };
+    const cands = [];
+    S.RESULTS.forEach((r) => {
+      const c = raceByRound[r.round]; const at = Date.parse(c.raceStart || c.date + "T14:00:00Z");
+      cands.push({ kind: "race", round: r.round, at, res: r });
+      ((S.SPRINTS || {})[r.round]) && cands.push({ kind: "sprint", round: r.round, at: at - 86400000, rows: S.SPRINTS[r.round] });
+    });
+    Object.keys(S.QUALI_DETAIL || {}).map(Number).filter((rd) => !S.RESULTS.some((x) => x.round === rd)).forEach((rd) => {
+      const c = raceByRound[rd]; cands.push({ kind: "quali", round: rd, at: Date.parse(c.raceStart || c.date + "T14:00:00Z") - 86400000 });
+    });
+    const L = cands.sort((a, b) => b.at - a.at)[0];
+    if (!L) return "";
+    const c = raceByRound[L.round], info = (S.RACE_INFO || {})[L.round] || {};
+    const label = { race: "Race", sprint: "Sprint", quali: "Qualifying" }[L.kind];
+    const nm = (id) => esc(lastName(id));
+    const row = (pos, id, right, sub, cls = "") => `<li class="ls-row ${cls}" style="--tc:${tc((driver[id] || {}).team) || "#5E6470"}">
+        <span class="ls-pos num">${pos}</span><span class="ls-who"><b>${nm(id)}</b><small>${esc((team[(driver[id] || {}).team] || {}).name || "")}</small></span>
+        <span class="ls-val"><b class="num">${right}</b>${sub ? `<small>${sub}</small>` : ""}</span></li>`;
+    let rows = "", facts = [], href = `#/race/${L.round}`;
+    if (L.kind === "race" || L.kind === "sprint") {
+      const list = L.kind === "race" ? L.res.race : L.rows;
+      const fin = list.filter((x) => x.pos).sort((a, b) => a.pos - b.pos);
+      rows = fin.slice(0, 3).map((x, k) => row(k + 1, x.id, k === 0 ? (x.points ? "+" + x.points : "WIN") : x.gap != null ? "+" + x.gap.toFixed(3) : "+" + x.points,
+        k === 0 ? `from P${x.grid || "–"}` : x.gap != null ? `${x.points} pts` : "pts", k === 0 ? "win" : "")).join("");
+      const rest = fin.slice(3, 10).map((x) => `<span><i class="num">${x.pos}</i>${nm(x.id)}</span>`).join("");
+      if (rest) rows += `<li class="ls-rest">${rest}</li>`;
+      if (L.kind === "race") {
+        const pole = L.res.quali[0]; if (pole) facts.push(["Pole", nm(pole.id)]);
+        const gain = fin.filter((x) => x.grid).map((x) => ({ x, g: x.grid - x.pos })).sort((a, b) => b.g - a.g)[0];
+        if (gain && gain.g > 0) facts.push(["Biggest climb", `${nm(gain.x.id)} <b class="num">+${gain.g}</b>`]);
+        const fl = list.filter((x) => x.best).sort((a, b) => toSec(a.best) - toSec(b.best))[0];
+        if (fl) facts.push(["Fastest lap", `${nm(fl.id)} <b class="num">${esc(fl.best)}</b>`]);
+        const out = list.filter((x) => !x.pos).map((x) => `${nm(x.id)}${x.status === "DNS" ? " (DNS)" : ""}`);
+        if (out.length) facts.push(["Out", out.join(", ")]);
+      }
+    } else {
+      const qd = S.QUALI_DETAIL[L.round].filter((x) => x.best != null).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
+      const lap = (x) => x.q3 ?? x.q2 ?? x.q1;
+      rows = qd.slice(0, 3).map((x, k) => row(k + 1, x.id, k === 0 ? lapTime(lap(x)) : "+" + (lap(x) - lap(qd[0])).toFixed(3), k === 0 ? "pole lap" : "", k === 0 ? "win" : "")).join("");
+      const g = (S.GRID || {})[L.round];
+      if (g && g[0] && g[0] !== qd[0].id) facts.push(["Starts on pole", `${nm(g[0])} (${nm(qd[0].id)} has a grid penalty)`]);
+      const out1 = qd.filter((x) => x.q2 == null).map((x) => nm(x.id));
+      if (out1.length) facts.push(["Out in Q1", out1.join(", ")]);
+    }
+    const ld = DS[0], gap2 = DS[1] ? ld.points - DS[1].points : 0;
+    return `<section class="latest reveal">
+        <a class="ls-head" href="${href}"><span class="kicker"><b class="pill">${label}</b> · Round ${L.round} · ${fmtDate(L.kind === "race" ? c.date : new Date(L.at).toISOString().slice(0, 10), { weekday: "short", day: "numeric", month: "short" })}</span>
+          <h1>${c.flag} ${esc(info.location || c.place)}</h1></a>
+        <ol class="ls-rows">${rows}</ol>
+        ${facts.length ? `<dl class="ls-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>` : ""}
+        <div class="ls-foot"><span>${(S.CALENDAR.length - S.RESULTS.length) * 25 < gap2 ? "Champion" : "Leader"}: <b>${esc(lastName(ld.id))}</b> <b class="num">${ld.points}</b> pts, <b class="num">+${gap2}</b></span><a href="${href}">Full ${label.toLowerCase()} →</a></div>
+      </section>`;
+  }
+
   function viewSeason() {
     const leader = DS[0], second = DS[1];
     const ld = driver[leader.id];
@@ -261,19 +317,7 @@
     }).join("");
 
     return `<div class="season">
-      <section class="hero t-night reveal" style="--tc:${tc(ld.team)}">
-        <span class="kicker">${remaining * 25 < leader.points - second.points ? `<b class="pill">Champion</b>` : "Championship leader"} · after R${S.RESULTS.length}</span>
-        <h1 style="--len:${[...ld.last].length}"><span>${esc(ld.first)}</span>${esc(ld.last)}</h1>
-        <div class="hero-row">
-          <div class="hero-stats">
-            <div><b class="mono">${leader.points}</b><span>pts</span></div>
-            <div><b class="mono">${leader.wins}</b><span>wins</span></div>
-            <div><b class="mono">+${leader.points - second.points}</b><span>gap to P2</span></div>
-            <div><b class="mono">${remaining * 25}</b><span>pts left</span></div>
-          </div>
-          ${helmet(ld.id, { size: 104, look: -4 })}
-        </div>
-      </section>
+      ${latestSession()}
 
       ${upcoming ? `<div class="next t-wet reveal">
         <a href="#/race/${upcoming.round}"><span class="kicker">Next · Round ${upcoming.round} · tap for preview</span>
