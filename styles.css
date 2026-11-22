@@ -640,3 +640,43 @@ h1, .sh h2 { text-transform: uppercase; }
 .podium { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .pod { padding: 12px 10px; }
 .pod b { font-size: clamp(13px, 4vw, 18px); font-stretch: 100%; }
+
+/* ==== v29: one uniform look across every page — no LED type, glows, city/team colour banners or stickers ==== */
+:root { --led: var(--num); --amber: #F2F2F0; --yellow: #F2F2F0; --ice: #F2F2F0; --glow: transparent; }
+body *, body *::before, body *::after { text-shadow: none !important; }
+/* labels */
+.kicker, .form-lbl, .top-meta { font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.form-lbl { margin-top: 12px; }
+.brand i { color: var(--red-text); }
+/* every banner card is the same plain card with a thin accent rule on top */
+.hero, .t-team, .t-wet, .t-night, .next { background: var(--card) !important; border: 0 !important; border-top: 4px solid var(--tc, var(--line)) !important; overflow: hidden; }
+.next.t-wet { --tc: var(--line); }
+.t-team .kicker, .t-wet .kicker, .hero .kicker { color: var(--muted); }
+.t-team h1, .hero h1 { color: var(--fg); }
+.t-team h1 span, .t-team .hero-stats span, .hero-stats span { color: var(--muted); }
+.t-team .star:not(.on), .t-team .ghost, .t-wet .cal { border-color: var(--line); background: transparent; }
+.hero-num, .sticker { display: none !important; }
+.hero .helmet { filter: none; }
+/* numbers: one face, one colour */
+.pts, .pos, .hero-stats b, .facts b.mono, .gapbig, .dstats b, .fav-card .mono, .countdown, .led, .num,
+.drow.king .mono.r.w, .drow.past .yr, .foot .ver, .pl-xprow span:first-child b, .pl-gbest, .pl-go, .pl-scored b, .pl-rivals span,
+.pl-ln, .pl-tries span, .pl-vsx, .pl-flash, .pl-gain span, .pl-bpos { font-family: var(--num); font-style: normal; font-stretch: 100%; letter-spacing: 0; }
+.pts { color: var(--fg); font-weight: 700; }
+.pos { font-weight: 600; color: var(--muted); }
+.hero-stats b { color: var(--fg); font-weight: 700; font-size: 32px; }
+.countdown, .t-wet .countdown { color: var(--fg); font-weight: 700; font-size: 30px; }
+.facts b.mono, .dstats b { font-weight: 700; }
+.foot .ver { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--muted); }
+.drow.past .yr { color: var(--fg); font-weight: 700; }
+.drow.king .mono.r.w { color: var(--fg); font-weight: 700; }
+/* form chips: quiet, readable */
+.form.pod { background: var(--fg); color: var(--bg); }
+.form.pts { background: #26332B; color: #CFF5DD; font-family: var(--mono); font-size: 12px; }
+/* play accents that were amber/yellow */
+.pl-gain span { background: var(--card-2); border-color: var(--line); color: var(--fg); }
+.tchip[aria-current="true"] { border-color: var(--fg); }
+.pl-hero, .pl-pad { background: var(--card) !important; border: 0 !important; border-top: 4px solid var(--red) !important; }
+.pl-pad { border-top: 0 !important; border: 2px dashed var(--line) !important; }
+.pl-badge.got { border-color: var(--line); }
+.pl-card { background: var(--card) !important; border: 0 !important; }
+.pl-how { border: 1px solid var(--line) !important; background: var(--card) !important; }

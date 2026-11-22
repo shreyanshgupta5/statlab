@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v28"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v29"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -487,7 +487,7 @@
     const ang = (Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
     return `<svg viewBox="-20 -20 ${W + 40} ${H + 40}" role="img" aria-label="Track layout">
       <polyline points="${pts}" fill="none" stroke="#2A2D33" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
-      <polyline points="${pts}" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" style="filter: drop-shadow(0 0 4px rgba(255,176,0,.6))"/>
+      <polyline points="${pts}" fill="none" stroke="var(--fg)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
       <g transform="translate(${x0} ${y0}) rotate(${ang.toFixed(0)})"><rect x="-3" y="-13" width="6" height="26" fill="#F2F2F0"/><path d="M14 0 l-9 -7 v14 z" fill="#F2F2F0"/></g></svg>`;
   }
 
