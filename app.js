@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v30"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v31"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -358,39 +358,13 @@
     const evFor = (id, type) => ev.find((e) => e.id === id && (!type || e.type === type));
     const W1 = fin[0], W2 = fin[1];
 
-    // 1. the race in 30 seconds
-    const lines = [];
-    if (W1) {
-      let led = null;
-      if (D) { const n = D.laps; led = Array.from({ length: n }, (_, k) => D.pos[W1.id] && D.pos[W1.id][k + 1] === 1).filter(Boolean).length; }
-      lines.push(`<b>${nm(W1.id)}</b> won from ${W1.grid === 1 ? "pole" : `<b class="num">P${W1.grid}</b>`}${W2 && W2.gap != null ? `, <b class="num">${W2.gap.toFixed(3)}s</b> ahead of ${nm(W2.id)}` : ""}${led != null ? (led === D.laps ? ", leading every lap" : `, leading <b class="num">${led}</b> of ${D.laps} laps`) : ""}.`);
-    }
-    if (up[0] && up[0].g >= 3) lines.push(`<b>${nm(up[0].x.id)}</b> climbed <b class="num">${up[0].g}</b> places, P${up[0].x.grid} → <b class="num">P${up[0].x.pos}</b>.`);
-    if (down[0] && down[0].g <= -3) { const dr = evFor(down[0].x.id, "drop");
-      lines.push(`<b>${nm(down[0].x.id)}</b> fell from P${down[0].x.grid} to <b class="num">P${down[0].x.pos}</b>${dr && dr.lap < D.laps ? ` (dropped ${dr.text} on lap ${dr.lap})` : D && (D.pits[down[0].x.id] || []).length > 1 ? ` after an extra stop on lap ${D.pits[down[0].x.id].slice(-1)[0]}` : ""}.`); }
-    if (D) {
-      const sc = ev.filter((e) => e.type === "sc" || e.type === "vsc"), pens = ev.filter((e) => e.type === "pen"), red = ev.filter((e) => e.type === "red");
-      const bits = [];
-      if (red.length) bits.push(`<b class="num">${red.length}</b> red flag${red.length > 1 ? "s" : ""}`);
-      bits.push(sc.length ? `<b class="num">${sc.length}</b> safety car${sc.length > 1 ? "s" : ""}` : "no safety car");
-      bits.push(`<b class="num">${pens.length}</b> penalt${pens.length === 1 ? "y" : "ies"}`);
-      const dnf = out.filter((x) => x.status !== "DNS").length, dns = out.length - dnf;
-      bits.push(`<b class="num">${dnf}</b> retirement${dnf === 1 ? "" : "s"}${dns ? ` + ${dns} non-starter` : ""}`);
-      lines.push(bits.join(" · ") + ".");
-      const stops = fin.map((x) => (D.pits[x.id] || []).length), one = stops.filter((n) => n === 1).length;
-      const two = fin.filter((x) => (D.pits[x.id] || []).length >= 2).map((x) => nm(x.id));
-      lines.push(`<b class="num">${one}</b> of ${fin.length} finishers stopped once${two.length ? `; ${two.join(", ")} stopped twice` : ""}.`);
-      if (D.weather && D.weather.air) lines.push(`${D.weather.rain ? "Rain during the race. " : "Dry. "}Air <b class="num">${D.weather.air[0]}°C</b>, track <b class="num">${D.weather.track[0]}°C</b> at the start.`);
-    }
-    const summary = `${sectionHead("At a glance", "Race in 30 seconds")}<div class="panel glance reveal">${lines.map((l) => `<p>${l}</p>`).join("")}</div>`;
-
     // 5. winners and losers
     const wl = (arr, cls) => arr.map((m) => `<li style="--tc:${col(m.x.id)}"><b>${nm(m.x.id)}</b><span class="mono dim">P${m.x.grid} → P${m.x.pos}</span><span class="num ${cls}">${m.g > 0 ? "+" : "−"}${Math.abs(m.g)}</span></li>`).join("");
     const winlose = `${sectionHead("Grid to flag", "Winners and losers")}<div class="wl reveal">
         <div><span class="kicker">Gained most</span><ul>${wl(up, "up") || `<li class="dim">–</li>`}</ul></div>
         <div><span class="kicker">Lost most</span><ul>${wl(down, "down") || `<li class="dim">–</li>`}</ul></div></div>
       ${out.length ? `<p class="note">Did not finish: ${out.map((x) => `${nm(x.id)}${x.status === "DNS" ? " (did not start)" : ""}`).join(", ")}.</p>` : ""}`;
-    if (!D) return summary + winlose;
+    if (!D) return winlose;
 
     const N = D.laps, W = 340, L = 30, R = 44;
     const xs = (lap) => L + ((lap) / N) * (W - L - R);
@@ -433,7 +407,53 @@
     const strategy = `${sectionHead("Tyres", "Strategy")}<div class="panel reveal"><ul class="strat"><li class="head"><span></span><span></span><span class="mono dim">Lap 1 → ${N}</span><span class="mono dim">Stops</span></li>${strat}</ul>
         <div class="legend">${[...used3].map((c) => `<span style="--tc:${(TYRE[c] || TYRE.U)[1]}">${(TYRE[c] || TYRE.U)[0]}</span>`).join("")}</div></div>`;
 
-    return summary + winlose + moments + chart + strategy;
+    // race in numbers: how close was it, how much passing
+    const O = D.overtakes || {}, G = (D.gap12 || []).filter((g) => g != null);
+    const within1 = G.filter((g) => g < 1).length;
+    const atLine = D.pos ? (() => { let ch = 0, prev = null, who = new Set();
+      for (let k = 1; k <= N; k++) { const ldr = Object.keys(D.pos).find((id) => D.pos[id][k] === 1); if (!ldr) continue; who.add(ldr); if (prev && ldr !== prev) ch++; prev = ldr; }
+      return { ch, who: [...who] }; })() : { ch: 0, who: [] };
+    const margin = W2 && W2.gap != null ? W2.gap : null;
+    const tests = [
+      [margin != null && margin < 1, "Winning margin under 1s", margin != null ? margin.toFixed(3) + "s" : "–"],
+      [G.length && within1 / G.length >= 0.5, "Top two within 1s for half the laps or more", `${within1} of ${G.length} laps`],
+      [(O.lead || 0) >= 5, "5+ lead changes on track", `${O.lead || 0}`],
+      [(O.leaders || []).length >= 3, "3+ different leaders", `${(O.leaders || []).length}`],
+    ];
+    const score = tests.filter((t) => t[0]).length;
+    const verdict = score >= 3 ? ["Very close race", "hot"] : score === 2 ? ["Close race", "warm"] : ["Clear win", "cool"];
+    const tile = (v, k, sub) => `<div class="tile"><b class="num">${v}</b><span class="kicker">${k}</span>${sub ? `<small>${sub}</small>` : ""}</div>`;
+    const gx = (k) => L + ((k - 0.5) / N) * (W - L - R), bw = Math.max(1.5, (W - L - R) / N - 1.2), GH = 90, GMAX = 3;
+    const gy = (g) => 8 + GH - (Math.min(g, GMAX) / GMAX) * GH;
+    const gapBars = (D.gap12 || []).map((g, k) => g == null ? "" : `<rect x="${(gx(k + 1) - bw / 2).toFixed(1)}" y="${gy(g).toFixed(1)}" width="${bw.toFixed(1)}" height="${(8 + GH - gy(g)).toFixed(1)}" class="${g < 1 ? "close" : "far"}"/>`).join("");
+    const gapSvg = `<svg viewBox="0 0 ${W} ${GH + 30}" class="mini" role="img" aria-label="Gap between first and second at the end of each lap">
+        ${scBands(8, GH)}<line x1="${L}" x2="${W - R}" y1="${gy(1).toFixed(1)}" y2="${gy(1).toFixed(1)}" class="ref"/><text x="${L - 4}" y="${(gy(1) + 3).toFixed(1)}" text-anchor="end">1s</text>
+        <text x="${L - 4}" y="${(gy(3) + 3).toFixed(1)}" text-anchor="end">3s+</text>${gapBars}${lapTicks(GH + 26)}</svg>`;
+    const pl = O.perLap || [], pmax = Math.max(1, ...pl), OH = 60;
+    const ovSvg = pl.length ? `<svg viewBox="0 0 ${W} ${OH + 30}" class="mini" role="img" aria-label="On-track overtakes per lap">
+        ${scBands(8, OH)}${pl.map((c, k) => c ? `<rect x="${(gx(k + 1) - bw / 2).toFixed(1)}" y="${(8 + OH - (c / pmax) * OH).toFixed(1)}" width="${bw.toFixed(1)}" height="${((c / pmax) * OH).toFixed(1)}" class="ov"/>` : "").join("")}
+        <text x="${L - 4}" y="12" text-anchor="end">${pmax}</text>${lapTicks(OH + 26)}</svg>` : "";
+    // teammates share a colour: the second one of a team gets a lighter shade
+    const shade = {}; atLine.who.forEach((id) => { const t = (driver[id] || {}).team; shade[id] = Object.keys(shade).some((o) => (driver[o] || {}).team === t) ? `color-mix(in srgb, ${col(id)} 45%, #F2F2F0)` : col(id); });
+    const ledLaps = (id) => Array.from({ length: N }, (_, k) => D.pos[id][k + 1] === 1).filter(Boolean).length;
+    const ldrStrip = `<div class="ldr">${Array.from({ length: N }, (_, k) => { const id = Object.keys(D.pos).find((x) => D.pos[x][k + 1] === 1); return `<i style="background:${id ? shade[id] : "var(--line)"}" title="L${k + 1} ${id || ""}"></i>`; }).join("")}</div>
+        <div class="legend">${atLine.who.map((id) => `<span style="--tc:${shade[id]}">${id} · ${ledLaps(id)} lap${ledLaps(id) === 1 ? "" : "s"}</span>`).join("")}</div>`;
+    const numbers = `${sectionHead("Race in numbers", "How close was it?")}
+      <div class="panel verdict reveal"><div class="vhead"><span class="vbadge ${verdict[1]}">${verdict[0]}</span><span class="mono dim">${score} of 4 signs</span></div>
+        <ul class="checks">${tests.map(([ok, label, val]) => `<li class="${ok ? "ok" : ""}"><i>${ok ? "✓" : "–"}</i><span>${label}</span><b class="num">${val}</b></li>`).join("")}</ul></div>
+      <div class="tiles reveal">
+        ${tile(margin != null ? margin.toFixed(3) + "s" : "–", "Winning margin", W2 ? "to " + nm(W2.id) : "")}
+        ${tile(`${within1}<i>/${G.length}</i>`, "Laps top two within 1s")}
+        ${tile(O.lead ?? "–", "Lead changes on track", `${(O.leaders || []).length} different leaders`)}
+        ${tile(atLine.ch, "Leader changes at the line", `${atLine.who.length} led a lap`)}
+        ${tile(O.total ?? "–", "On-track overtakes", O.lap1 != null ? `${O.lap1} on lap 1` : "")}
+        ${tile(O.top && O.top[0] ? O.top[0][1] : "–", "Most overtakes", O.top && O.top[0] ? nm(O.top[0][0]) : "")}
+      </div>
+      ${sectionHead("P1 to P2 at the line", "Gap to the leader")}<figure class="chart reveal">${gapSvg}<p class="note">Seconds between first and second at the end of each lap. Bright = within 1s.</p></figure>
+      ${sectionHead("Leader by lap", "Who led")}<div class="panel reveal">${ldrStrip}</div>
+      ${ovSvg ? `${sectionHead("Passing", "Overtakes per lap")}<figure class="chart reveal">${ovSvg}<p class="note">On-track passes only: pit-stop swaps, safety-car laps and cars about to retire are left out (OpenF1 overtakes, ${O.raw} raw position changes).${O.top && O.top.length ? ` Most: ${O.top.slice(0, 3).map(([id, c]) => `${nm(id)} ${c}`).join(", ")}.` : ""}</p></figure>` : ""}`;
+
+    return numbers + winlose + moments + chart + strategy;
   }
 
   function viewRace(round) {

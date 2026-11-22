@@ -719,3 +719,23 @@ body *, body *::before, body *::after { text-shadow: none !important; }
 .strat .bar { position: relative; height: 12px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .strat .bar i { position: absolute; top: 0; bottom: 0; border-right: 2px solid var(--card); }
 .strat .n { font-family: var(--num); font-weight: 700; font-size: 14px; text-align: right; }
+
+/* ---- race in numbers (v31) ---- */
+.verdict .vhead { display: flex; justify-content: space-between; align-items: center; }
+.vbadge { padding: 5px 12px; border-radius: 999px; font: 800 14px var(--display); letter-spacing: .02em; }
+.vbadge.hot { background: var(--red); color: #fff; } .vbadge.warm { background: #FFD12E; color: #111; } .vbadge.cool { background: var(--card-2); color: var(--soft); }
+.checks { list-style: none; padding: 0; margin: 10px 0 0; }
+.checks li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 34px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.checks li.ok { color: var(--fg); } .checks i { font-style: normal; font-weight: 700; color: var(--muted); } .checks li.ok i { color: var(--up); }
+.checks b { font-family: var(--num); font-weight: 700; font-size: 15px; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.tile { display: flex; flex-direction: column; gap: 4px; padding: 14px; background: var(--card); border-radius: var(--radius); }
+.tile b { font-family: var(--num); font-weight: 700; font-size: 32px; line-height: 1; color: var(--fg); }
+.tile b i { font-style: normal; font-size: .5em; color: var(--muted); }
+.tile small { font-size: 12px; color: var(--soft); }
+.mini { display: block; width: 100%; height: auto; }
+.mini text { font: 500 9px var(--mono); fill: var(--muted); }
+.mini .close { fill: var(--fg); } .mini .far { fill: #4A4F58; } .mini .ref { stroke: var(--muted); stroke-dasharray: 3 3; stroke-width: .8; }
+.mini .ov { fill: var(--soft); }
+.ldr { display: flex; gap: 1px; height: 22px; border-radius: 4px; overflow: hidden; }
+.ldr i { flex: 1; }
