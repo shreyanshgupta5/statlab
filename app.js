@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v36"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v37"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -455,10 +455,10 @@
       const d = driver[x.id];
       const delta = x.grid - (x.pos || x.grid);
       return `<li class="reveal${i >= 10 ? " more" : ""}" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}"><a class="rrow" href="#/driver/${d.id}">
-        <span class="pos mono">${x.pos || "DNF"}</span>
+        <span class="pos mono">${x.pos || esc(x.status || "DNF")}</span>
         <span class="who">${dName(d)}<small>${esc(team[d.team].name)}</small></span>
         <span class="mono gain ${x.dnf ? "" : delta > 0 ? "up" : delta < 0 ? "down" : ""}">${x.dnf ? "—" : delta > 0 ? "▲" + delta : delta < 0 ? "▼" + -delta : "·"}</span>
-        <span class="pts mono">${x.points ? "+" + x.points : ""}</span>
+        <span class="gap num">${!x.pos ? "" : x.pos === 1 ? "WIN" : x.gap != null ? "+" + x.gap.toFixed(3) + "s" : x.gapText ? esc(x.gapText.replace("LAPS", "laps").replace("LAP", "lap")) : ""}</span>
       </a></li>`;
     }).join("");
 

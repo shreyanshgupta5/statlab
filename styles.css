@@ -759,3 +759,11 @@ body *, body *::before, body *::after { text-shadow: none !important; }
 .ls-val b, .ls-row.win .ls-val b { font-size: 18px; color: var(--fg); }
 .ls-row.win .ls-val b { color: var(--tc); }
 .ls-val small { display: none; }
+
+/* race result: gap to the winner instead of points (v37) */
+.result .rrow { grid-template-columns: 28px minmax(0, 1fr) 44px 92px; }
+.rrow .gap { text-align: right; font-size: 16px; font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.result li:first-child .rrow .gap { color: var(--tc); }
+.result li.more .rrow .gap, .rrow .gap:empty { color: var(--soft); }
+.result .dn-f { display: none; }
+.result .rrow { grid-template-columns: 26px minmax(0, 1fr) 40px 86px; gap: 8px; }
