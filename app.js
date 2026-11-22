@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v34"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v35"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -459,7 +459,7 @@
     const rows = res.race.map((x, i) => {
       const d = driver[x.id];
       const delta = x.grid - (x.pos || x.grid);
-      return `<li class="reveal" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}"><a class="rrow" href="#/driver/${d.id}">
+      return `<li class="reveal${i >= 10 ? " more" : ""}" style="--i:${Math.min(i, 12)};--tc:${tc(d.team)}"><a class="rrow" href="#/driver/${d.id}">
         <span class="pos mono">${x.pos || "DNF"}</span>
         <span class="who">${dName(d)}<small>${esc(team[d.team].name)}</small></span>
         <span class="mono gain ${x.dnf ? "" : delta > 0 ? "up" : delta < 0 ? "down" : ""}">${x.dnf ? "—" : delta > 0 ? "▲" + delta : delta < 0 ? "▼" + -delta : "·"}</span>
@@ -478,16 +478,14 @@
     return `
       <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Season</a>
       <div class="page-title reveal"><span class="kicker">Round ${r.round} · ${fmtDate(r.date, { day: "numeric", month: "long" })}</span><h1>${r.flag} ${esc(r.name)}</h1><p class="dim">${esc(r.place)} · ${r.laps} laps</p></div>
-      <div class="podium reveal">
-        ${[1, 0, 2].map((k) => `<div class="pod p${k + 1}" style="--tc:${tc(podium[k].team)}"><span class="mono">P${k + 1}</span><b>${esc(podium[k].last)}</b><i></i></div>`).join("")}
-      </div>
       <div class="facts reveal">
         <div><span class="kicker">Pole</span><b>${esc(driver[pole.id].last)}</b><span class="mono dim">${lapTime(pole.time)}</span></div>
         ${hasPace ? `<div><span class="kicker">Best race pace</span><b>${esc(driver[res.fastestPace].last)}</b><span class="mono dim">${lapTime(best)}</span></div>`
           : `<div><span class="kicker">Winner from</span><b>P${res.race[0].grid || "–"}</b><span class="mono dim">on the grid</span></div>`}
       </div>
       ${sectionHead("Classification", "Result")}
-      <ol class="result">${rows}</ol>
+      <ol class="result collapsed">${rows}</ol>
+      ${res.race.length > 10 ? `<button class="expand" type="button" data-expand="result">Show all ${res.race.length} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>` : ""}
       ${raceInsights(round, res).post}
       ${hasPace ? `${sectionHead("Average lap", "Race pace", `<p class="note">Gap to the fastest average lap.</p>`)}
       <ol class="pace">${paceRows}</ol>` : ""}`;
@@ -937,6 +935,10 @@
     const pl = PLAY && PLAY.onClick(e);
     if (pl === "rerender") { const y = window.scrollY; route(); window.scrollTo(0, y); return; }
     if (pl) return;
+    const ex = e.target.closest("[data-expand]");
+    if (ex) { const ol = ex.previousElementSibling, open = ol.classList.toggle("collapsed") === false;
+      ex.innerHTML = open ? `Show top 10 <svg viewBox="0 0 24 24" aria-hidden="true" style="transform:rotate(180deg)"><path d="M6 9l6 6 6-6"/></svg>` : `Show all ${ol.children.length} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+      if (!open) ol.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
     const f = e.target.closest("[data-follow]");
     if (f) {
       const [kind, id] = f.dataset.follow.split(":");

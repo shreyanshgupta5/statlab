@@ -739,3 +739,8 @@ body *, body *::before, body *::after { text-shadow: none !important; }
 .mini .ov { fill: var(--soft); }
 .ldr { display: flex; gap: 1px; height: 22px; border-radius: 4px; overflow: hidden; }
 .ldr i { flex: 1; }
+
+/* result: top 10, expand for the rest (v35) */
+.result.collapsed li.more { display: none; }
+.expand { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 8px; min-height: 44px; border: 1px solid var(--line); border-radius: var(--radius); background: transparent; color: var(--fg); font: 700 13px var(--mono); letter-spacing: .04em; cursor: pointer; }
+.expand svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
