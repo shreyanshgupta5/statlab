@@ -1,0 +1,211 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Las Vegas GP: the story</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100,500;0,100,700;0,100,800;1,125,800;1,125,900&family=JetBrains+Mono:wght@500;700&family=Chakra+Petch:wght@600;700&display=swap">
+<style>
+/* Story frames (1080x1920): photo-led, graphics explain, few numbers. ?f=1..8 */
+:root { --bg:#0E0F12; --card:#17191E; --line:#2A2D33; --fg:#F2F2F0; --soft:#C9CDD2; --muted:#9AA0A6; --red:#E10600; --merc:#27F4D2; --fer:#E8102E; --rb:#3B6FD8; --mcl:#FF8000; --amber:#FFD12E;
+  --display:'Archivo',system-ui,sans-serif; --mono:'JetBrains Mono',monospace; --num:'Chakra Petch',sans-serif; }
+* { box-sizing:border-box; margin:0; }
+html,body { width:1080px; height:1920px; overflow:hidden; background:var(--bg); color:var(--fg); font-family:var(--display); }
+.f { position:absolute; inset:0; display:none; overflow:hidden; background:var(--bg); }
+.photo { position:absolute; left:0; right:0; top:0; background-size:cover; background-position:center; filter:saturate(.9) contrast(1.05); }
+.fade { position:absolute; left:0; right:0; background:linear-gradient(180deg, rgba(14,15,18,0) 0%, rgba(14,15,18,.55) 45%, var(--bg) 100%); }
+.top { position:absolute; left:0; right:0; top:0; height:260px; background:linear-gradient(180deg, rgba(14,15,18,.85), rgba(14,15,18,0)); }
+.hdr { position:absolute; left:64px; right:64px; top:70px; display:flex; align-items:center; gap:18px; z-index:5; }
+.brand { padding:8px 18px 6px; background:var(--red); color:#fff; font:italic 900 30px var(--display); font-stretch:125%; transform:skewX(-10deg); }
+.hdr .tag { font:500 24px var(--mono); letter-spacing:.14em; color:var(--soft); }
+.hdr .tag b { color:var(--fg); }
+.ch { position:absolute; right:64px; top:76px; font:700 24px var(--mono); letter-spacing:.12em; color:var(--fg); z-index:5; }
+.kick { font:700 26px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--soft); }
+.ttl { font-weight:900; font-style:italic; font-stretch:125%; text-transform:uppercase; line-height:.9; letter-spacing:-.01em; }
+.body { font-size:40px; line-height:1.38; color:var(--soft); } .body b { color:var(--fg); }
+.abs { position:absolute; }
+.num { font-family:var(--num); font-weight:700; }
+.card { background:var(--card); border-radius:26px; }
+.credit { position:absolute; left:64px; right:64px; bottom:52px; display:flex; justify-content:space-between; font:500 18px var(--mono); letter-spacing:.08em; color:#6B7079; }
+.pill { display:inline-block; padding:10px 20px; border-radius:999px; font:800 24px var(--mono); letter-spacing:.08em; }
+/* steps */
+.steps { position:absolute; left:64px; right:64px; display:flex; flex-direction:column; gap:18px; }
+.step { display:grid; grid-template-columns:78px 1fr; gap:22px; align-items:center; padding:24px 28px; background:var(--card); border-radius:22px; }
+.step i { width:78px; height:78px; border-radius:50%; display:grid; place-items:center; font:700 40px var(--num); font-style:normal; background:var(--tc,#2A2D33); color:#111; }
+.step span { font-size:34px; line-height:1.3; color:var(--soft); } .step b { color:var(--fg); }
+/* quote */
+.q { font:italic 900 112px var(--display); font-stretch:115%; line-height:.95; }
+.qm { font:900 260px/0.6 Georgia, serif; color:var(--tc, var(--red)); }
+.who { font:700 26px var(--mono); letter-spacing:.1em; color:var(--soft); text-transform:uppercase; }
+.who small { display:block; margin-top:8px; font-weight:500; color:#6B7079; letter-spacing:.06em; }
+/* radio */
+.radio { position:absolute; padding:26px 30px; border-radius:22px; background:#fff; color:#111; font:800 34px var(--display); max-width:600px; }
+.radio:after { content:""; position:absolute; left:46px; bottom:-22px; border:12px solid transparent; border-top:14px solid #fff; border-left:18px solid #fff; }
+.radio small { display:block; font:700 20px var(--mono); letter-spacing:.12em; color:#555; margin-bottom:8px; }
+.split { position:absolute; left:0; right:0; top:0; height:1080px; }
+.split .a, .split .b { position:absolute; top:0; bottom:0; background-size:cover; background-position:center; }
+.split .a { left:0; width:62%; clip-path:polygon(0 0,100% 0,72% 100%,0 100%); }
+.split .b { right:0; width:62%; clip-path:polygon(28% 0,100% 0,100% 100%,0 100%); }
+.split .bar { position:absolute; left:50%; top:-40px; bottom:-40px; width:14px; background:var(--fer); transform:translateX(-50%) skewX(-12.7deg); box-shadow:0 0 0 6px var(--bg); }
+.nm { position:absolute; font:italic 900 70px var(--display); font-stretch:115%; text-transform:uppercase; text-shadow:0 4px 24px rgba(0,0,0,.6); }
+</style></head>
+<body>
+
+<!-- 1 HOOK -->
+<section class="f" id="f1">
+  <div class="photo" style="height:1300px;background-image:url(img/antonelli.jpg);background-position:58% 50%"></div>
+  <div class="fade" style="top:700px;height:620px"></div><div class="top"></div>
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div>
+  <div class="abs" style="left:64px;right:64px;top:1080px">
+    <div class="kick" style="color:var(--merc)">The championship leader</div>
+    <div class="ttl" style="font-size:132px;margin-top:20px">P2 on the<br>last lap.</div>
+    <div class="ttl" style="font-size:132px;margin-top:10px;color:var(--merc)">P4 at<br>the flag.</div>
+    <div class="body" style="margin-top:34px">What happened to <b>Kimi Antonelli</b>? And why is Ferrari furious <b>again</b>?</div>
+  </div>
+  <div class="credit"><span>@F1STATLAB</span><span>PHOTO: LIAUZH · CC BY 4.0</span></div>
+</section>
+
+<!-- 2 SETUP -->
+<section class="f" id="f2">
+  <div class="photo" style="height:1150px;background-image:url(img/vegas-sphere.jpg)"></div>
+  <div class="fade" style="top:600px;height:560px"></div><div class="top"></div>
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">01 / THE FIGHT</div>
+  <div class="abs" style="left:64px;right:64px;top:980px">
+    <div class="kick">Saturday night on the Strip</div>
+    <div class="ttl" style="font-size:118px;margin-top:20px">Max vs the<br><span style="color:var(--merc)">Silver Arrows</span></div>
+    <div class="body" style="margin-top:34px">Verstappen started on pole. For 50 laps both Mercedes threw everything at him: slipstream past on the Strip, Max straight back at the next braking zone.</div>
+    <div style="margin-top:34px;display:flex;gap:14px;flex-wrap:wrap"><span class="pill" style="background:var(--fg);color:#111">THE LEAD SWAPPED 31 TIMES</span><span class="pill" style="background:var(--card);color:var(--soft)">5 DIFFERENT LEADERS</span></div>
+  </div>
+  <div class="credit"><span>@F1STATLAB</span><span>PHOTO: NASCAR9919 · CC BY 4.0</span></div>
+</section>
+
+<!-- 3 FERRARI: what happened -->
+<section class="f" id="f3">
+  <div class="split"><div class="a" style="background-image:url(img/leclerc.jpg);background-position:40% 50%"></div><div class="b" style="background-image:url(img/hamilton.jpg);background-position:60% 50%"></div><div class="bar"></div></div>
+  <div class="fade" style="top:640px;height:450px"></div><div class="top"></div>
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">02 / FERRARI</div>
+  <div class="nm" style="left:64px;top:880px">Leclerc</div><div class="nm" style="right:64px;top:880px">Hamilton</div>
+  <div class="abs" style="left:64px;right:64px;top:1010px"><div class="kick" style="color:var(--fer)">Lap 38 · Turn 7 · fighting for 6th</div><div class="ttl" style="font-size:100px;margin-top:16px">Ferrari vs<br>Ferrari. Again.</div></div>
+  <div class="steps" style="top:1370px">
+    <div class="step" style="--tc:var(--fg)"><i>1</i><span>Ferrari says it told Leclerc to <b>hold position</b> behind Hamilton.</span></div>
+    <div class="step" style="--tc:var(--fer)"><i>2</i><span>Leclerc attacks anyway at <b>Turn 7</b>. Contact.</span></div>
+    <div class="step" style="--tc:var(--amber)"><i>3</i><span>Hamilton <b>spins</b>. Leclerc gets a <b>10-second penalty</b>.</span></div>
+  </div>
+  <svg class="abs" id="map3" style="right:64px;top:250px" width="260" height="420"></svg>
+  <div class="credit"><span>@F1STATLAB</span><span>PHOTOS: LIAUZH · CC BY 4.0</span></div>
+</section>
+
+<!-- 4 FERRARI: the fallout -->
+<section class="f" id="f4">
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">02 / FERRARI</div>
+  <div class="abs" style="left:64px;right:64px;top:300px;--tc:var(--fer)">
+    <div class="kick">The team boss, after the race</div>
+    <div class="qm" style="margin-top:70px">“</div>
+    <div class="q" style="margin-top:-40px;font-size:96px">Clearly it's<br><span style="color:var(--fer)">unacceptable.</span></div>
+    <div class="who" style="margin-top:34px">Fred Vasseur · Ferrari team principal<small>via Sky Sports Italia</small></div>
+    <div class="body" style="margin-top:40px">Same message as Mexico, he said: think about the team, the people in Maranello, the sponsors.</div>
+  </div>
+  <div class="abs card" style="left:64px;width:466px;top:1300px;height:360px;padding:34px;border-top:8px solid var(--fer)">
+    <div class="who">Leclerc</div><div class="num" style="font-size:70px;margin-top:14px">6th → 10th</div>
+    <div class="body" style="font-size:30px;margin-top:14px">After the penalty. Said he felt <b>“embarrassed”</b> for the team.</div></div>
+  <div class="abs card" style="left:550px;width:466px;top:1300px;height:360px;padding:34px;border-top:8px solid var(--fer)">
+    <div class="who">Hamilton</div><div class="num" style="font-size:84px;margin-top:14px">7th</div>
+    <div class="body" style="font-size:30px;margin-top:14px">Recovered from the spin. Wouldn't comment: <b>“for the team to decide.”</b></div></div>
+  <div class="credit"><span>@F1STATLAB</span><span>QUOTES: SKY SPORTS, SPEEDCAFE</span></div>
+</section>
+
+<!-- 5 MERCEDES: Russell -->
+<section class="f" id="f5">
+  <div class="photo" style="height:1150px;background-image:url(img/russell.jpg);background-position:50% 50%"></div>
+  <div class="fade" style="top:600px;height:560px"></div><div class="top"></div>
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">03 / MERCEDES</div>
+  <div class="abs" style="left:64px;right:64px;top:900px"><div class="kick" style="color:var(--merc)">George Russell</div><div class="ttl" style="font-size:104px;margin-top:16px">A podium<br>into the wall</div></div>
+  <div class="steps" style="top:1300px">
+    <div class="step" style="--tc:var(--merc)"><i>38</i><span>Team-mate <b>Antonelli passes him</b> for 2nd.</span></div>
+    <div class="step" style="--tc:var(--fer)"><i>48</i><span>Still 3rd with two laps to go, then <b>he hits the wall</b>.</span></div>
+    <div class="step" style="--tc:var(--fg)"><i>9</i><span>He limps home <b>9th</b>. Mercedes' bad night is only half done.</span></div>
+  </div>
+  <div class="credit"><span>@F1STATLAB</span><span>PHOTO: LIAUZH · CC BY 4.0</span></div>
+</section>
+
+<!-- 6 ANTONELLI: the explainer -->
+<section class="f" id="f6">
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">04 / THE LAST LAP</div>
+  <div class="abs" style="left:64px;right:64px;top:240px"><div class="kick" style="color:var(--merc)">Antonelli · final lap</div><div class="ttl" style="font-size:112px;margin-top:16px">How the battery<br>ran dry</div>
+    <div class="body" style="font-size:34px;margin-top:26px">2026 rule: within a second of the car ahead you get <b>Overtake Mode</b>, extra electric power to attack.</div></div>
+  <svg class="abs" id="lap6" style="left:64px;top:780px" width="952" height="500"></svg>
+  <div class="steps" style="top:1300px">
+    <div class="step" style="--tc:var(--merc)"><i>1</i><span>He <b>lifts early</b> on the straight to stay close and keep Overtake Mode.</span></div>
+    <div class="step" style="--tc:var(--amber)"><i>2</i><span>Battery spent: <b>no electric power</b> out of the chicane.</span></div>
+    <div class="step" style="--tc:var(--mcl)"><i>3</i><span><b>Norris and Piastri</b> sweep past into Turn 1.</span></div>
+  </div>
+  <div class="credit"><span>@F1STATLAB</span><span>AS EXPLAINED BY ANTONELLI · ILLUSTRATION</span></div>
+</section>
+
+<!-- 7 ANTONELLI: in his words -->
+<section class="f" id="f7">
+  <div class="photo" style="height:900px;background-image:url(img/antonelli.jpg);background-position:30% 50%"></div>
+  <div class="fade" style="top:450px;height:460px"></div><div class="top"></div>
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div><div class="ch">04 / THE LAST LAP</div>
+  <div class="abs" style="left:64px;right:64px;top:780px;--tc:var(--merc)">
+    <div class="qm">“</div>
+    <div class="q" style="font-size:84px;margin-top:-30px">Probably it was a <span style="color:var(--merc)">mistake on my side</span>… I thought I was doing something right.</div>
+    <div class="who" style="margin-top:34px">Kimi Antonelli<small>via Formula1.com, Crash.net</small></div>
+  </div>
+  <div class="abs card" style="left:64px;right:64px;top:1450px;padding:34px 40px;display:flex;justify-content:space-between;align-items:center">
+    <div><div class="who">The cost</div><div class="num" style="font-size:90px;margin-top:8px">P2 → P4</div></div>
+    <div style="text-align:right"><div class="who">Still leads the title by</div><div class="num" style="font-size:90px;margin-top:8px;color:var(--merc)">98 pts</div></div></div>
+  <div class="credit"><span>@F1STATLAB</span><span>PHOTO: LIAUZH · CC BY 4.0</span></div>
+</section>
+
+<!-- 8 RESULT -->
+<section class="f" id="f8">
+  <div class="photo" style="height:1100px;background-image:url(img/verstappen.jpg);background-position:50% 50%"></div>
+  <div class="fade" style="top:560px;height:560px"></div><div class="top"></div>
+  <div class="hdr"><span class="brand">ONE F1</span><span class="tag">LAS VEGAS GP · <b>THE STORY</b></span></div>
+  <div class="abs" style="left:64px;right:64px;top:880px"><div class="kick" style="color:var(--rb)">Who won it</div>
+    <div class="ttl" style="font-size:128px;margin-top:16px">Max survives<br>it all</div>
+    <div class="body" style="margin-top:26px">Pole, 31 lead swaps, and a win by <b class="num">0.639s</b>. McLaren picked up the pieces.</div></div>
+  <div class="abs" style="left:64px;right:64px;top:1510px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <div class="card" style="padding:24px;border-top:8px solid var(--rb)"><div class="num" style="font-size:56px">1</div><div class="ttl" style="font-size:40px;margin-top:8px">Verstappen</div></div>
+    <div class="card" style="padding:24px;border-top:8px solid var(--mcl)"><div class="num" style="font-size:56px">2</div><div class="ttl" style="font-size:40px;margin-top:8px">Norris</div></div>
+    <div class="card" style="padding:24px;border-top:8px solid var(--mcl)"><div class="num" style="font-size:56px">3</div><div class="ttl" style="font-size:40px;margin-top:8px">Piastri</div><div class="who" style="font-size:18px;margin-top:6px">from 17th</div></div>
+  </div>
+  <div class="abs" style="left:64px;right:64px;top:1720px;height:96px;border-radius:999px;background:var(--red);display:flex;align-items:center;justify-content:center;font:italic 900 40px var(--display);font-stretch:115%">+ FOLLOW FOR MORE F1</div>
+  <div class="credit"><span>@F1STATLAB</span><span>PHOTOS: LIAUZH, NASCAR9919 · CC BY 4.0</span></div>
+</section>
+
+<script>
+const T = {"outline": [[2239, -417], [2489, -138], [2749, 151], [3050, 489], [3277, 742], [3535, 1026], [3665, 1175], [3765, 1351], [3792, 1518], [3779, 1605], [3713, 1749], [3632, 1844], [3527, 1918], [3396, 1969], [3160, 1993], [2959, 1956], [2674, 1811], [2561, 1729], [2366, 1553], [2226, 1414], [2007, 1243], [1789, 1169], [1605, 1163], [1227, 1273], [1021, 1396], [835, 1572], [650, 1884], [556, 2365], [530, 2663], [512, 2927], [490, 3284], [471, 3662], [454, 4071], [433, 4591], [418, 4992], [404, 5384], [380, 6061], [365, 6480], [356, 6744], [331, 7452], [315, 7930], [299, 8385], [285, 8769], [275, 9076], [269, 9249], [261, 9464], [252, 9723], [246, 9903], [242, 10083], [261, 10259], [305, 10419], [363, 10545], [515, 10680], [614, 10703], [851, 10709], [1182, 10710], [1315, 10711], [1603, 10713], [1790, 10715], [2128, 10717], [2402, 10747], [2769, 10869], [2959, 10969], [3321, 11232], [3471, 11394], [3664, 11671], [3747, 11832], [3871, 12250], [3877, 12369], [3841, 12553], [3821, 12595], [3689, 12745], [3608, 12778], [3500, 12813], [3378, 12898], [3312, 13014], [3297, 13105], [3313, 13222], [3363, 13344], [3400, 13413], [3539, 13659], [3609, 13865], [3613, 13990], [3594, 14089], [3549, 14183], [3458, 14261], [3347, 14289], [3206, 14291], [2892, 14283], [2667, 14278], [2360, 14272], [2088, 14266], [1634, 14257], [1279, 14257], [977, 14259], [657, 14260], [323, 14265], [-15, 14300], [-532, 14420], [-1062, 14668], [-1350, 14902], [-1543, 15128], [-1750, 15458], [-1896, 15767], [-2103, 16220], [-2391, 16741], [-2720, 17101], [-3046, 17347], [-3369, 17512], [-3876, 17662], [-4169, 17720], [-4151, 17719], [-4317, 17748], [-4425, 17766], [-4584, 17767], [-4725, 17680], [-4807, 17553], [-4982, 17021], [-5073, 16833], [-5194, 16572], [-5328, 16296], [-5515, 15954], [-5639, 15738], [-5768, 15513], [-5912, 15250], [-6116, 14862], [-6334, 14459], [-6510, 14112], [-6756, 13552], [-6883, 13218], [-6983, 12907], [-7105, 12483], [-7232, 12035], [-7371, 11486], [-7473, 11003], [-7569, 10418], [-7657, 9615], [-7690, 9001], [-7696, 8273], [-7694, 7854], [-7689, 7244], [-7685, 6750], [-7681, 6274], [-7680, 5799], [-7682, 5420], [-7685, 4889], [-7688, 4328], [-7691, 3818], [-7695, 3252], [-7696, 2970], [-7700, 2442], [-7705, 1952], [-7712, 1425], [-7717, 995], [-7721, 600], [-7724, 400], [-7727, 64], [-7731, -201], [-7732, -345], [-7733, -622], [-7712, -842], [-7672, -976], [-7635, -1051], [-7554, -1162], [-7478, -1221], [-7352, -1264], [-7186, -1291], [-7006, -1389], [-6822, -1536], [-6628, -1655], [-6323, -1709], [-6096, -1714], [-5739, -1719], [-5492, -1712], [-5105, -1702], [-4785, -1695], [-4360, -1683], [-3965, -1672], [-3561, -1659], [-3119, -1648], [-2709, -1645], [-2398, -1647], [-1854, -1655], [-1481, -1655], [-1106, -1652], [-691, -1645], [-176, -1633], [386, -1603], [832, -1532], [1321, -1317], [1727, -1005], [2059, -629]], "contact": [3746, 12699]};   // Las Vegas outline from OpenF1 (Verstappen lap 10) and the Ferrari contact point
+const f = +(new URLSearchParams(location.search).get("f") || 1);
+document.getElementById("f" + f).style.display = "block";
+// mini map with the contact point (frame 3)
+(() => {
+  const s = document.getElementById("map3"), W = 260, H = 420, xs = T.outline.map((p) => p[0]), ys = T.outline.map((p) => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), k = Math.min((W - 40) / (x1 - x0), (H - 40) / (y1 - y0));
+  const X = (x) => 20 + (x - x0) * k, Y = (y) => H - 20 - (y - y0) * k;
+  const d = T.outline.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join("") + "Z";
+  const [cx, cy] = [X(T.contact[0]), Y(T.contact[1])];
+  s.innerHTML = `<rect width="${W}" height="${H}" rx="22" fill="rgba(14,15,18,.82)"/>
+    <path d="${d}" fill="none" stroke="#F2F2F0" stroke-width="6" stroke-linejoin="round"/>
+    <circle cx="${cx}" cy="${cy}" r="26" fill="none" stroke="#E8102E" stroke-width="5"/><circle cx="${cx}" cy="${cy}" r="10" fill="#E8102E"/>
+    <text x="${Math.min(W - 16, cx + 34)}" y="${cy + 8}" text-anchor="${cx + 34 > W - 90 ? "end" : "start"}" style="font:700 22px var(--mono);fill:#F2F2F0" ${cx + 34 > W - 90 ? `dx="-60"` : ""}>T7</text>`;
+})();
+// last-lap schematic (frame 6): straight -> chicane -> pit straight -> Turn 1, battery strip underneath
+(() => {
+  const s = document.getElementById("lap6"); if (!s) return;
+  const road = "M40 120 H560 C610 120 620 170 660 190 C700 210 700 260 740 270 C780 280 800 230 840 230 H900";
+  s.innerHTML = `<rect width="952" height="500" rx="26" fill="#17191E"/>
+    <path d="${road}" fill="none" stroke="#2A2D33" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${road}" fill="none" stroke="#3A3E46" stroke-width="3" stroke-dasharray="18 14"/>
+    <text x="40" y="70" style="font:700 22px var(--mono);fill:#9AA0A6;letter-spacing:2px">THE STRAIGHT</text>
+    <text x="640" y="330" style="font:700 22px var(--mono);fill:#9AA0A6;letter-spacing:2px">CHICANE</text>
+    <text x="900" y="190" text-anchor="end" style="font:700 22px var(--mono);fill:#9AA0A6;letter-spacing:2px">TURN 1 →</text>
+    <circle cx="300" cy="120" r="30" fill="#27F4D2"/><text x="300" y="131" text-anchor="middle" style="font:700 30px var(--num);fill:#111">1</text>
+    <circle cx="700" cy="232" r="30" fill="#FFD12E"/><text x="700" y="243" text-anchor="middle" style="font:700 30px var(--num);fill:#111">2</text>
+    <circle cx="860" cy="230" r="30" fill="#FF8000"/><text x="860" y="241" text-anchor="middle" style="font:700 30px var(--num);fill:#111">3</text>
+    <text x="40" y="390" style="font:700 22px var(--mono);fill:#9AA0A6;letter-spacing:2px">BATTERY</text>
+    <rect x="40" y="410" width="872" height="44" rx="10" fill="#0E0F12" stroke="#2A2D33" stroke-width="3"/>
+    <defs><linearGradient id="bat" x1="0" x2="1"><stop offset="0" stop-color="#27F4D2"/><stop offset=".55" stop-color="#27F4D2"/><stop offset=".72" stop-color="#FFD12E"/><stop offset=".8" stop-color="#E10600"/><stop offset=".81" stop-color="#E10600" stop-opacity="0"/></linearGradient></defs>
+    <rect x="46" y="416" width="860" height="32" rx="6" fill="url(#bat)"/>
+    <text x="770" y="440" style="font:800 22px var(--mono);fill:#FF8A80">EMPTY</text>`;
+})();
+</script>
+</body></html>
