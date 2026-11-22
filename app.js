@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v31"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v32"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -414,14 +414,6 @@
       for (let k = 1; k <= N; k++) { const ldr = Object.keys(D.pos).find((id) => D.pos[id][k] === 1); if (!ldr) continue; who.add(ldr); if (prev && ldr !== prev) ch++; prev = ldr; }
       return { ch, who: [...who] }; })() : { ch: 0, who: [] };
     const margin = W2 && W2.gap != null ? W2.gap : null;
-    const tests = [
-      [margin != null && margin < 1, "Winning margin under 1s", margin != null ? margin.toFixed(3) + "s" : "–"],
-      [G.length && within1 / G.length >= 0.5, "Top two within 1s for half the laps or more", `${within1} of ${G.length} laps`],
-      [(O.lead || 0) >= 5, "5+ lead changes on track", `${O.lead || 0}`],
-      [(O.leaders || []).length >= 3, "3+ different leaders", `${(O.leaders || []).length}`],
-    ];
-    const score = tests.filter((t) => t[0]).length;
-    const verdict = score >= 3 ? ["Very close race", "hot"] : score === 2 ? ["Close race", "warm"] : ["Clear win", "cool"];
     const tile = (v, k, sub) => `<div class="tile"><b class="num">${v}</b><span class="kicker">${k}</span>${sub ? `<small>${sub}</small>` : ""}</div>`;
     const gx = (k) => L + ((k - 0.5) / N) * (W - L - R), bw = Math.max(1.5, (W - L - R) / N - 1.2), GH = 90, GMAX = 3;
     const gy = (g) => 8 + GH - (Math.min(g, GMAX) / GMAX) * GH;
@@ -438,9 +430,7 @@
     const ledLaps = (id) => Array.from({ length: N }, (_, k) => D.pos[id][k + 1] === 1).filter(Boolean).length;
     const ldrStrip = `<div class="ldr">${Array.from({ length: N }, (_, k) => { const id = Object.keys(D.pos).find((x) => D.pos[x][k + 1] === 1); return `<i style="background:${id ? shade[id] : "var(--line)"}" title="L${k + 1} ${id || ""}"></i>`; }).join("")}</div>
         <div class="legend">${atLine.who.map((id) => `<span style="--tc:${shade[id]}">${id} · ${ledLaps(id)} lap${ledLaps(id) === 1 ? "" : "s"}</span>`).join("")}</div>`;
-    const numbers = `${sectionHead("Race in numbers", "How close was it?")}
-      <div class="panel verdict reveal"><div class="vhead"><span class="vbadge ${verdict[1]}">${verdict[0]}</span><span class="mono dim">${score} of 4 signs</span></div>
-        <ul class="checks">${tests.map(([ok, label, val]) => `<li class="${ok ? "ok" : ""}"><i>${ok ? "✓" : "–"}</i><span>${label}</span><b class="num">${val}</b></li>`).join("")}</ul></div>
+    const numbers = `${sectionHead("At a glance", "Race in numbers")}
       <div class="tiles reveal">
         ${tile(margin != null ? margin.toFixed(3) + "s" : "–", "Winning margin", W2 ? "to " + nm(W2.id) : "")}
         ${tile(`${within1}<i>/${G.length}</i>`, "Laps top two within 1s")}
