@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v32"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v33"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -443,7 +443,7 @@
       ${sectionHead("Leader by lap", "Who led")}<div class="panel reveal">${ldrStrip}</div>
       ${ovSvg ? `${sectionHead("Passing", "Overtakes per lap")}<figure class="chart reveal">${ovSvg}<p class="note">On-track passes only: pit-stop swaps, safety-car laps and cars about to retire are left out (OpenF1 overtakes, ${O.raw} raw position changes).${O.top && O.top.length ? ` Most: ${O.top.slice(0, 3).map(([id, c]) => `${nm(id)} ${c}`).join(", ")}.` : ""}</p></figure>` : ""}`;
 
-    return numbers + winlose + moments + chart + strategy;
+    return moments + numbers + winlose + chart + strategy;
   }
 
   function viewRace(round) {
