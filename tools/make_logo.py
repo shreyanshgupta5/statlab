@@ -1,9 +1,9 @@
-"""Clean vector ONE F1 "O1" mark and app icons, drawn from geometry (no traced pixels, no textures), so every size is crisp.
+"""Clean vector ONE F1 "O1" mark and app icons (diagonal red-to-black background), drawn from geometry (no traced pixels, no textures), so every size is crisp.
 
     python3 tools/make_logo.py            # writes brand/onef1-mark.svg, brand/onef1-icon.svg and the app icons (via Playwright)
 
-The mark: an italic open "O" (rounded left corners) and a "1" whose stem runs parallel to the O's outer left edge,
-with a short flag; the O's bars end one even gap from the 1. Everything on one 37-degree slant.
+The mark: an italic open "O" (rounded left corners, top bar cut on the same diagonal as the 1's flag) and a "1"
+(stem with a sharp flag), both on one 37-degree slant, with an even gap between them.
 """
 import os, subprocess, textwrap
 
@@ -13,19 +13,10 @@ SLANT = 0.754               # tan(37 deg)
 GAP = 14
 
 # unslanted geometry
-# the 1 is a stem whose two long edges run parallel to the O's outer left edge, with a short flag at the top;
-# the O's top bar ends on the flag's diagonal and its bottom bar on the stem's edge, each one GAP away
-STEM_L, STEM_R = 200, 256
-# the 1's flag is stretched into a speedometer needle: from the top of the stem it tapers to a point inside the O
-# (the dial). The O's top bar ends parallel to the needle, one GAP away.
-TIP, NEEDLE_BOT = (72, 104), 46
-_k = (STEM_L - TIP[0]) / TIP[1]                       # needle top edge: x = STEM_L - _k * y
-_off = GAP * (1 + _k * _k) ** 0.5                     # horizontal offset for a perpendicular gap of GAP
-O = (f"M34 0 L{STEM_L - _off:.1f} 0 L{STEM_L - _off - _k * 42:.1f} 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 "
-     f"L{STEM_L - GAP} 124 L{STEM_L - GAP} {H} L34 {H} Q0 {H} 0 {H - 34} L0 34 Q0 0 34 0 Z")
-ONE = (f"M{STEM_L} 0 L{STEM_R} 0 L{STEM_R} {H} L{STEM_L} {H} L{STEM_L} {NEEDLE_BOT} "
-       f"L{TIP[0]} {TIP[1]} Z")
-W = STEM_R + SLANT * H          # slanted width
+O = (f"M34 0 L244 0 L195 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L188 124 L188 {H} L34 {H} "
+     f"Q0 {H} 0 {H - 34} L0 34 Q0 0 34 0 Z")
+ONE = f"M258 0 L258 {H} L202 {H} L202 92 L150 92 Z"
+W = 258 + SLANT * H          # slanted width
 
 
 def mark(scale, ox, oy, shadow=True):
@@ -52,7 +43,7 @@ DEFS = f'''
   <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/></linearGradient>
   <linearGradient id="edgeR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB3AC" stop-opacity=".9"/><stop offset=".3" stop-color="#FFB3AC" stop-opacity="0"/></linearGradient>
   <clipPath id="clipO"><path d="{O}"/></clipPath><clipPath id="clip1"><path d="{ONE}"/></clipPath>
-  <radialGradient id="bg" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#22252C"/><stop offset=".55" stop-color="#121418"/><stop offset="1" stop-color="#07080A"/></radialGradient>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A110C"/><stop offset=".55" stop-color="#22090A"/><stop offset="1" stop-color="#08080A"/></linearGradient>
   <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feOffset dy="10"/><feGaussianBlur stdDeviation="9"/></filter>
 </defs>'''
 
