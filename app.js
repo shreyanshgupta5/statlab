@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v46"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v47"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -922,18 +922,6 @@
       const shade = Math.round(235 - ((rk - 1) / 10) * 190);
       return rk ? `<rect x="${(64 + k * cw).toFixed(1)}" y="1" width="${(cw - 1.5).toFixed(1)}" height="15" rx="2" fill="rgb(${shade},${shade},${Math.min(255, shade + 4)})"${t === cur ? ` class="sel" style="stroke:${col(t)}"` : ""}/>${t === cur && cw > 11 ? `<text x="${(64 + k * cw + cw / 2 - 0.7).toFixed(1)}" y="12.5" text-anchor="middle" class="rk" style="fill:${shade < 140 ? "#F2F2F0" : "#0E0F12"}">${rk}</text>` : ""}` : ""; }).join("")}</g>`).join("");
 
-    // 3. car DNA: straight-line vs cornering, early -> late
-    const dna = (t, ph) => { const p = T[t].phase[ph]; return { x: p.trap, y: avg([p.slow, p.fast].filter((v) => v != null)) }; };
-    const pts = ids.flatMap((t) => ["early", "late"].map((ph) => dna(t, ph))).filter((p) => p.x != null && p.y != null);
-    const xMin = Math.min(...pts.map((p) => p.x)) - 1, xMax = Math.max(...pts.map((p) => p.x)) + 1, yMin = Math.min(...pts.map((p) => p.y)) - 1, yMax = Math.max(...pts.map((p) => p.y)) + 1;
-    const H3 = 280, xs3 = (v) => 34 + ((v - xMin) / (xMax - xMin)) * (W - 50), ys3 = (v) => 14 + ((yMax - v) / (yMax - yMin)) * (H3 - 44);
-    const placed = [];   // skip a label that would overlap one already drawn (the selected team is placed first)
-    const labelOk = (t, x, y) => { if (t !== cur && placed.some(([px, py]) => Math.abs(px - x) < 46 && Math.abs(py - y) < 11)) return false; placed.push([x, y]); return true; };
-    const dnaSvg = [cur, ...ids.filter((t) => t !== cur)].map((t) => { const a = dna(t, "early"), b = dna(t, "late"); if (a.x == null || b.x == null || a.y == null || b.y == null) return "";
-      const on = t === cur; return `<g class="${on ? "on" : "off"}"><line x1="${xs3(a.x)}" y1="${ys3(a.y)}" x2="${xs3(b.x)}" y2="${ys3(b.y)}" stroke="${col(t)}" stroke-width="${on ? 2.5 : 1.4}" marker-end="url(#arr)" style="color:${col(t)}"/>
-        <circle cx="${xs3(a.x)}" cy="${ys3(a.y)}" r="${on ? 3.5 : 2.5}" fill="none" stroke="${col(t)}" stroke-width="1.5"/><circle cx="${xs3(b.x)}" cy="${ys3(b.y)}" r="${on ? 5 : 3.5}" fill="${col(t)}"/>
-        ${labelOk(t, xs3(b.x), ys3(b.y)) ? `<text x="${xs3(b.x) + 7}" y="${ys3(b.y) + 3}" style="fill:${col(t)}">${shortT(t)}</text>` : ""}</g>`; }).join("");
-
     // 4. where the selected car found time
     const E = T[cur].phase.early, Lp = T[cur].phase.late;
     const found = [["Overall pace", E.pace, Lp.pace, "%", true], ["Top speed", E.trap, Lp.trap, " km/h", false], ["Slow corners", E.slow, Lp.slow, " km/h", false], ["Quick corners", E.fast, Lp.fast, " km/h", false]]
@@ -971,12 +959,6 @@
       ${sectionHead("Every Saturday", "Pecking order", `<p class="note">Each team's rank in qualifying pace, round by round. Brighter = higher.</p>`)}
       <figure class="chart lchart heat reveal"><svg viewBox="0 0 ${W} ${order.length * 18 + 16}" role="img" aria-label="Rank by round">${heat}
         <g transform="translate(0 ${order.length * 18 + 12})">${[R[0], 6, 11, 16, R[R.length - 1]].map((r) => `<text x="${(64 + (r - R[0]) * cw + cw / 2).toFixed(1)}" y="0" text-anchor="middle">R${r}</text>`).join("")}</g></svg></figure>
-
-      ${sectionHead("Car DNA", "Straights vs corners", `<p class="note">Right = faster on the straights (speed trap), up = faster through corners, both vs the best car. Arrow: ${early} → ${late}.</p>`)}
-      <figure class="chart lchart dna reveal"><svg viewBox="0 0 ${W} ${H3}" role="img" aria-label="Straight-line speed against cornering speed per team">
-        <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
-        <line x1="34" x2="${W - 16}" y1="${H3 - 30}" y2="${H3 - 30}" class="gl"/><line x1="34" x2="34" y1="10" y2="${H3 - 30}" class="gl"/>
-        <text x="${W - 16}" y="${H3 - 14}" text-anchor="end">faster on straights →</text><text x="40" y="20">↑ faster in corners</text>${dnaSvg}</svg></figure>
 
       ${sectionHead(team[cur].name, "Where they found time", `<p class="note">${early} vs ${late}, against the best car each weekend.</p>`)}
       <div class="panel reveal" style="--tc:${col(cur)}"><ul class="found">${found}</ul></div>
