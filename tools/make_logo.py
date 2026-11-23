@@ -1,4 +1,4 @@
-"""Clean vector ONE F1 "O1" mark and app icons (diagonal charcoal-to-black background), drawn from geometry (no traced pixels, no textures), so every size is crisp.
+"""Clean vector ONE F1 "O1" mark and app icons in the app's own palette (card grey #2A2D34 -> page black #0E0F12, brand red #E10600), drawn from geometry (no traced pixels, no textures), so every size is crisp.
 
     python3 tools/make_logo.py            # writes brand/onef1-mark.svg, brand/onef1-icon.svg and the app icons (via Playwright)
 
@@ -39,11 +39,11 @@ DEFS = f'''
   <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#FFFFFF"/><stop offset=".48" stop-color="#E4E7EC"/><stop offset=".52" stop-color="#C9CED6"/><stop offset="1" stop-color="#9DA3AC"/></linearGradient>
   <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#FF4A3D"/><stop offset=".5" stop-color="#F01E12"/><stop offset="1" stop-color="#B80A02"/></linearGradient>
+    <stop offset="0" stop-color="#FF3A2E"/><stop offset=".5" stop-color="#E10600"/><stop offset="1" stop-color="#A30500"/></linearGradient>
   <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/></linearGradient>
   <linearGradient id="edgeR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB3AC" stop-opacity=".9"/><stop offset=".3" stop-color="#FFB3AC" stop-opacity="0"/></linearGradient>
   <clipPath id="clipO"><path d="{O}"/></clipPath><clipPath id="clip1"><path d="{ONE}"/></clipPath>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A3D44"/><stop offset=".55" stop-color="#16181C"/><stop offset="1" stop-color="#050506"/></linearGradient>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2A2D34"/><stop offset=".5" stop-color="#17191E"/><stop offset="1" stop-color="#0E0F12"/></linearGradient>
   <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feOffset dy="10"/><feGaussianBlur stdDeviation="9"/></filter>
 </defs>'''
 

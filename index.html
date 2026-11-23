@@ -52,7 +52,23 @@
   for (var k = 0; k < 5; k++) beep(0.2 + k * LIGHT, 880, 0.14, 0.08);
   roar(OUT);
   var done = false;
-  function finish() { if (done) return; done = true; sp.classList.add("gone"); document.documentElement.classList.remove("splashing"); setTimeout(function () { sp.remove(); }, 750); }
+  function finish() {
+    if (done) return; done = true;
+    // hand-off: the gradient melts into the app background and the wordmark glides into the header logo's place
+    var lg = sp.querySelector(".sp-logo"), hd = document.querySelector(".top .wm");
+    sp.classList.add("out", "land");
+    if (lg && hd && hd.getBoundingClientRect().width) {
+      lg.style.animation = "none"; lg.style.opacity = 1; lg.style.transform = "none";
+      lg.querySelectorAll("*").forEach(function (e) { e.style.animation = "none"; e.style.opacity = 1; e.style.transform = "none"; });
+      var a = lg.getBoundingClientRect(), b = hd.getBoundingClientRect();
+      var s = b.width / a.width, dx = (b.left + b.width / 2) - (a.left + a.width / 2), dy = (b.top + b.height / 2) - (a.top + a.height / 2);
+      void lg.offsetWidth;
+      lg.style.transition = "transform .7s cubic-bezier(.6,0,.2,1)";
+      lg.style.transform = "translate(" + dx + "px," + dy + "px) scale(" + s + ")";
+    }
+    setTimeout(function () { document.documentElement.classList.remove("splashing"); sp.classList.add("gone"); }, 720);
+    setTimeout(function () { sp.remove(); }, 1000);
+  }
   sp.addEventListener("pointerdown", function () { if (sp.classList.contains("out")) { finish(); return; } audio(); roar(0); sp.classList.add("out"); setTimeout(finish, 700); });
   setTimeout(function () { sp.classList.add("out"); }, OUT * 1000);
   setTimeout(finish, END * 1000);

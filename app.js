@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v58"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v59"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -1043,7 +1043,11 @@
       timer = setInterval(tick, 30000);
     }
   }
-  window.addEventListener("hashchange", route);
+  // navigating between pages: a short cross-fade (View Transitions where supported, a fade-in otherwise)
+  window.addEventListener("hashchange", () => {
+    if (document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches) { document.startViewTransition(route); return; }
+    route(); app.classList.remove("enter"); void app.offsetWidth; app.classList.add("enter");
+  });
 
   // tap the tab you're already on to jump back to the top (the hash doesn't change, so route() won't run)
   tabs.forEach((t) => t.addEventListener("click", (e) => {
