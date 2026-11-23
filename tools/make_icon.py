@@ -1,5 +1,6 @@
 """Builds the realistic app icon from the flat speed-cut monogram (icons/*-speed-cut.png):
-brushed-metal "O", candy-red "1", bevelled edges, contact shadow, carbon-fibre background with studio light.
+mirror-chrome "O" with a horizon reflection, metallic candy-red "1", bright chamfers, contact shadow, glossy-floor
+reflection, fine carbon twill on satin black under one spotlight.
 
     python3 tools/make_icon.py        # writes icons/icon-512.png, icon-192.png, maskable-512.png, apple-touch-icon.png
 """
@@ -29,47 +30,59 @@ def blur(a, rad):
     return np.array(Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(rad))).astype(float) / 255
 
 
-# ---- background: carbon-fibre twill under a soft key light from the top left
-cell = 22
-u, v = (np.mgrid[0:S, 0:S] // cell)
-tw = ((u + v) // 2 % 2).astype(float)                                  # 2x2 twill
-fine = (np.mgrid[0:S, 0:S][0 if True else 1] % cell) / cell
-weave = np.where(tw > 0, 0.55 + 0.45 * np.sin(np.pi * ((np.mgrid[0:S, 0:S][1] % cell) / cell)),
-                 0.55 + 0.45 * np.sin(np.pi * fine))
-base = 0.045 + 0.035 * weave
-light = np.exp(-(((xx - 0.3) ** 2) / 0.18 + ((yy - 0.22) ** 2) / 0.14))           # studio key light
-vign = 1 - 0.55 * np.clip(((xx - 0.5) ** 2 + (yy - 0.5) ** 2) / 0.5, 0, 1)
-bg_l = (base * (0.55 + 0.9 * light)) * vign
-bg = np.stack([bg_l * 1.0, bg_l * 1.03, bg_l * 1.12], -1)
-glow = blur(red, 120) * 0.35                                           # red bounce light behind the 1
-bg[..., 0] += glow * 0.55; bg[..., 1] += glow * 0.05; bg[..., 2] += glow * 0.03
+# ---- background: satin black, fine carbon twill, one overhead spotlight
+cell = 12
+I, J = np.mgrid[0:S, 0:S]
+tw = (((I // cell) + (J // cell)) // 2 % 2).astype(float)
+weave = np.where(tw > 0, np.sin(np.pi * (J % cell) / cell), np.sin(np.pi * (I % cell) / cell))
+base = 0.028 + 0.016 * weave
+spot = np.exp(-(((xx - 0.5) ** 2) / 0.22 + ((yy - 0.18) ** 2) / 0.10))
+vign = 1 - 0.75 * np.clip(((xx - 0.5) ** 2 + (yy - 0.52) ** 2) / 0.42, 0, 1)
+bg_l = base * (0.6 + 1.5 * spot) * vign
+bg = np.stack([bg_l, bg_l * 1.02, bg_l * 1.08], -1)
+glow = blur(red, 140) * 0.22
+bg[..., 0] += glow * 0.6; bg[..., 1] += glow * 0.04
+
+# ---- glossy floor: faint mirrored reflection under the mark
+ys = np.where(ink.max(1) > 0.5)[0]; y0, y1 = ys.min(), ys.max()
+refl = np.zeros_like(ink); fade = np.zeros_like(ink)
+span = y1 - y0
+for k in range(min(span, S - y1 - 1)):
+    refl[y1 + k] = ink[y1 - k]; fade[y1 + k] = (1 - k / (span * 0.75)) if k < span * 0.75 else 0
+refl_col = blur(refl * fade * 0.16, 4)
+redr = np.zeros_like(red)
+for k in range(min(span, S - y1 - 1)): redr[y1 + k] = red[y1 - k]
+bg += refl_col[..., None] * np.stack([0.85 + 0.15 * (1 - blur(redr, 4)), 0.85 - 0.7 * blur(redr, 4), 0.9 - 0.75 * blur(redr, 4)], -1)
 
 # ---- contact shadow
-sh = blur(np.roll(np.roll(ink, 34, 0), 22, 1), 34) * 0.85
-bg *= (1 - sh[..., None] * 0.9)
+sh = blur(np.roll(np.roll(ink, 26, 0), 10, 1), 30) * 0.9
+bg *= (1 - sh[..., None] * 0.92)
 
-# ---- bevel: height from a blurred mask, lit from the top left
-h = blur(ink, 18)
+# ---- bevel lighting
+h = blur(ink, 14)
 gy, gx = np.gradient(h)
-lx, ly, lz = -0.55, -0.7, 0.45
-nz = 0.02
-shade = (-(gx * lx + gy * ly) / (np.sqrt(gx ** 2 + gy ** 2 + nz ** 2)) * 0.5)   # -0.5..0.5
-edge = np.clip(1 - blur(ink, 6) * 1.0, 0, 1) * ink                    # rim zone near the outline
-rim = blur(edge, 3)
+lx, ly = -0.45, -0.85
+shade = -(gx * lx + gy * ly) / np.sqrt(gx ** 2 + gy ** 2 + 0.0004) * 0.5
+rim = blur(np.clip(1 - blur(ink, 5), 0, 1) * ink, 2)
+spec = np.clip(shade, 0, None) ** 3 * rim                                # bright chamfer on the lit edges
 
-# ---- materials
-brushed = (np.random.default_rng(7).random((S, 1)) * 0.06).repeat(S, 1)       # horizontal brushing
-metal_l = 0.93 - 0.42 * yy + brushed + 0.18 * np.exp(-((yy - 0.38) ** 2) / 0.004)  # sky band reflection
-metal = np.stack([metal_l, metal_l * 1.01, metal_l * 1.05], -1)
-candy_t = np.clip(1.05 - 0.75 * yy, 0, 1)
-candy = np.stack([0.55 + 0.45 * candy_t, 0.02 + 0.08 * candy_t, 0.0 + 0.05 * candy_t], -1)
-gloss = np.exp(-((yy - 0.36) ** 2) / 0.0025) * 0.35                    # clear-coat highlight
+# ---- materials, mapped over the mark's own height
+t = np.clip((yy * S - y0) / max(1, span), 0, 1)
+brushed = (np.random.default_rng(3).random((S, 1)) * 0.035).repeat(S, 1)
+sky = 1.0 - 0.38 * t ** 1.4                                                 # bright sky fading down
+horizon = 0.42 * np.exp(-((t - 0.56) ** 2) / 0.0035)                       # soft dark horizon band
+chrome_l = sky - horizon + 0.22 * np.clip((t - 0.62) / 0.38, 0, 1) + brushed  # ground bounce at the bottom
+chrome = np.stack([chrome_l * 0.97, chrome_l * 0.99, chrome_l * 1.04], -1)
+flake = np.random.default_rng(11).random((S, S)) * 0.06
+candy_t = np.clip(1 - t, 0, 1)
+candy = np.stack([0.42 + 0.5 * candy_t + flake, 0.0 + 0.05 * candy_t + flake * 0.2, 0.01 + 0.04 * candy_t + flake * 0.15], -1)
+gloss = np.exp(-((t - 0.22) ** 2) / 0.004) * 0.45
 
 out = bg.copy()
-for mask, mat in ((white, metal), (red, candy)):
-    lit = mat * (1 + shade[..., None] * 1.6) + rim[..., None] * shade[..., None] * 0.9
-    if mat is candy:
-        lit = lit + gloss[..., None] * np.array([1, 0.55, 0.5])
+for mask, mat, isred in ((white, chrome, False), (red, candy, True)):
+    lit = mat * (1 + shade[..., None] * 1.2) + spec[..., None] * 1.4
+    if isred:
+        lit = lit + gloss[..., None] * np.array([1, 0.6, 0.55])
     out = out * (1 - mask[..., None]) + np.clip(lit, 0, 1) * mask[..., None]
 
 img = Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8))
