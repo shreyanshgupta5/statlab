@@ -951,3 +951,8 @@ html.welcoming body { overflow: hidden; }
 @keyframes spm-dim { to { opacity: .35; } }
 #splash.mk .sp-tag2 { animation: sp-pop .6s 4s forwards; }
 .sp-tag2 { position: absolute; left: 0; right: 0; top: calc(50% + min(26vw, 120px)); text-align: center; font: 500 12px var(--mono, monospace); letter-spacing: .3em; color: #9AA0A6; opacity: 0; }
+/* splash: same diagonal red-to-black gradient as the app icon, bigger mark (v55) */
+#splash { background: linear-gradient(135deg, #7A110C 0%, #22090A 55%, #08080A 100%); }
+.sp-lights { background: rgba(0,0,0,.55); }
+.sp-mark { width: min(92vw, 440px); transform: translate(-50%, -56%); }
+.sp-tag2 { top: calc(50% + min(31vw, 146px)); }
