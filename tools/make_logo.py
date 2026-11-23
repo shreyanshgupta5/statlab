@@ -1,4 +1,4 @@
-"""Clean vector ONE F1 "O1" mark and app icons (diagonal red-to-black background), drawn from geometry (no traced pixels, no textures), so every size is crisp.
+"""Clean vector ONE F1 "O1" mark and app icons (diagonal charcoal-to-black background), drawn from geometry (no traced pixels, no textures), so every size is crisp.
 
     python3 tools/make_logo.py            # writes brand/onef1-mark.svg, brand/onef1-icon.svg and the app icons (via Playwright)
 
@@ -43,7 +43,7 @@ DEFS = f'''
   <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/></linearGradient>
   <linearGradient id="edgeR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB3AC" stop-opacity=".9"/><stop offset=".3" stop-color="#FFB3AC" stop-opacity="0"/></linearGradient>
   <clipPath id="clipO"><path d="{O}"/></clipPath><clipPath id="clip1"><path d="{ONE}"/></clipPath>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A110C"/><stop offset=".55" stop-color="#22090A"/><stop offset="1" stop-color="#08080A"/></linearGradient>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A3D44"/><stop offset=".55" stop-color="#16181C"/><stop offset="1" stop-color="#050506"/></linearGradient>
   <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feOffset dy="10"/><feGaussianBlur stdDeviation="9"/></filter>
 </defs>'''
 
