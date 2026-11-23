@@ -923,3 +923,31 @@ html.welcoming body { overflow: hidden; }
 
 .ls-latest { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font: 700 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--fg); }
 .ls-latest::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 3px rgba(225,6,0,.25); }
+
+/* splash, part 2: the O1 mark drops in, a speedometer appears and its needle sweeps, then settles as the 1 (v54) */
+#splash { overflow: hidden; }
+.sp-mark { position: absolute; left: 50%; top: 50%; width: min(78vw, 360px); height: auto; transform: translate(-50%, -54%); pointer-events: none; overflow: visible; }
+.sp-mark .spm-logo { opacity: 0; transform: translateY(-260px); }
+.sp-mark .spm-gauge, .sp-mark .spm-hub { opacity: 0; }
+.sp-mark .spm-needle { opacity: 0; transform-box: view-box; transform-origin: 192px 118px; transform: rotate(-90deg); }
+.sp-mark .spm-arc, .sp-mark .spm-redline { stroke-dasharray: 100; stroke-dashoffset: 100; }
+#splash.mk .sp-logo, #splash.mk .sp-tag { animation: sp-away .45s ease forwards; }
+@keyframes sp-away { to { opacity: 0; transform: translateY(-24px); } }
+#splash.mk .spm-logo { animation: spm-drop .75s cubic-bezier(.3,1.4,.5,1) .15s forwards; }
+@keyframes spm-drop { 0% { opacity: 0; transform: translateY(-260px); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+#splash.mk .spm-gauge { animation: sp-pop .3s .7s forwards; }
+#splash.mk .spm-arc { animation: spm-draw .6s .75s ease-out forwards; }
+#splash.mk .spm-redline { animation: spm-draw .4s 1.2s ease-out forwards; }
+@keyframes spm-draw { to { stroke-dashoffset: 0; } }
+#splash.mk .spm-hub { animation: sp-pop .2s 1.1s forwards; }
+#splash.mk .spm-needle { animation: spm-in .15s 1.15s forwards, spm-sweep 2.4s 1.2s cubic-bezier(.45,0,.4,1) forwards, spm-fade .5s 3.7s forwards; }
+@keyframes spm-in { to { opacity: 1; } }
+@keyframes spm-sweep { 0% { transform: rotate(-90deg); } 25% { transform: rotate(90deg); } 45% { transform: rotate(-55deg); } 70% { transform: rotate(78deg); } 85% { transform: rotate(52deg); } 100% { transform: rotate(62.5deg); } }
+@keyframes spm-fade { to { opacity: 0; } }
+#splash.mk .spm-one { animation: spm-glow 1s 3.6s ease forwards; }
+@keyframes spm-glow { 0% { filter: none; } 40% { filter: url(#spm-glow) brightness(1.6); } 100% { filter: url(#spm-glow); } }
+#splash.mk .spm-hub { animation: sp-pop .2s 1.1s forwards, spm-fade .5s 3.7s forwards; }
+#splash.mk .spm-gauge { animation: sp-pop .3s .7s forwards, spm-dim .6s 3.8s forwards; }
+@keyframes spm-dim { to { opacity: .35; } }
+#splash.mk .sp-tag2 { animation: sp-pop .6s 4s forwards; }
+.sp-tag2 { position: absolute; left: 0; right: 0; top: calc(50% + min(26vw, 120px)); text-align: center; font: 500 12px var(--mono, monospace); letter-spacing: .3em; color: #9AA0A6; opacity: 0; }
