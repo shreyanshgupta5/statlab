@@ -48,7 +48,7 @@ DEFS = f'''
 </defs>'''
 
 
-def icon_svg(size=1024, fill=0.66, maskable=False):
+def icon_svg(size=1024, fill=0.80, maskable=False):
     """Square icon: mark centred, `fill` = share of the width it takes."""
     if maskable: fill *= 0.82                                 # keep inside Android's 80% safe zone
     sc = size * fill / W
