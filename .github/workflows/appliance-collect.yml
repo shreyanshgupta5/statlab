@@ -1,0 +1,38 @@
+name: appliance-collect
+on:
+  push:
+    branches: [claude/busy-bardeen-4x4249]
+    paths: ['research/appliance_*.py', '.github/workflows/appliance-collect.yml']
+permissions:
+  contents: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [a, b]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet requests
+      - name: Collect
+        working-directory: research
+        run: python appliance_flipkart_more.py ${{ matrix.group }}
+      - name: Encrypt and commit results
+        working-directory: research
+        run: |
+          G=${{ matrix.group }}
+          tar czf bundle.tgz out
+          openssl rand -hex 32 > pass.txt
+          openssl enc -aes-256-cbc -pbkdf2 -salt -in bundle.tgz -out appl_$G.enc -pass file:pass.txt
+          openssl pkeyutl -encrypt -pubin -inkey pub.pem -in pass.txt -out appl_pass_$G.enc
+          rm -rf out bundle.tgz pass.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add appl_$G.enc appl_pass_$G.enc
+          git commit -m "Add encrypted appliance results ($G)"
+          for i in 1 2 3 4 5; do git pull --rebase origin claude/busy-bardeen-4x4249 && git push && break; sleep $((i*7)); done
