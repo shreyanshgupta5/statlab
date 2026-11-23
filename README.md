@@ -63,6 +63,10 @@ python3 tools/build_previews.py                                                 
 `add_round.py` takes the race order from a curated results CSV and Q1–Q3 times from OpenF1. `build_previews.py` writes the race preview pages (track layout from OpenF1, past winners and each current driver's record at the venue from Jolpica). When you change `app.js` or `styles.css`, bump `VERSION` in `sw.js` and `APP_VERSION` in `app.js` so installed apps update.
 python3 tools/build_duels.py                                                                # adds Duel telemetry (track map, speed trace, corners) for new rounds to duels.js
 
+## Welcome flow
+
+First launch shows a 3-step welcome (what's in the app, pick drivers and teams, add to your phone with iPhone / Android / computer guides and a one-tap Install button where Chrome offers it). Stored in `localStorage` (`onef1.welcomed.v1`); reopen any time at `#/welcome` or `#/welcome/install` (linked from the Season footer).
+
 ## Play tab
 
 No server is needed. Each game is built from a random seed; a challenge link carries the seed and the sender's score, so the friend gets identical lights, questions or circuits. Podium Predictor picks lock at `raceStart` and are scored the next time the player opens Play after that round's results are in `data.js`. Real-time head-to-head or leaderboards across phones would need a backend (e.g. Firebase or Supabase).

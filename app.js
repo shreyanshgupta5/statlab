@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v43"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v44"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -334,7 +334,7 @@
 
       ${sectionHead("Qualifying head-to-head", "Teammate battles", `<p class="note">Median gap shown. Tap a pair to open the duel.</p>`)}
       <div class="battles">${battles}</div>
-      <p class="foot">${esc(S.NOTE || "")}<br><span class="ver">App ${APP_VERSION} · data after R${S.RESULTS.length ? S.RESULTS[S.RESULTS.length - 1].round : 0}</span></p>
+      <p class="foot">${esc(S.NOTE || "")}<br><span class="ver">App ${APP_VERSION} · data after R${S.RESULTS.length ? S.RESULTS[S.RESULTS.length - 1].round : 0}</span><br><a class="w-link" href="#/welcome/install">Add ONE F1 to your phone →</a></p>
     </div>`;
   }
 
@@ -1013,6 +1013,7 @@
     else if (p0 === "team") { html = viewTeam(p1); tab = "season"; }
     else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = "news"; }
     else if (p0 === "play" && PLAY) { html = PLAY.view(parts); tab = "play"; }
+    else if (p0 === "welcome") { html = viewSeason(); tab = "season"; setTimeout(() => openWelcome(p1 === "install" ? 2 : 0)); }
     else if (p0 === "lab") { html = viewLab(p1); tab = "lab"; }
     else if (p0 === "duel") { html = viewDuelRace(p1, p2, p3 === "race" ? Number(p4) : undefined); tab = "lab"; }
     else { html = viewMissing("That page doesn't exist."); tab = ""; }
@@ -1109,6 +1110,89 @@
     const pl = PLAY && PLAY.onSubmit(e);
     if (pl === "rerender") route();
   });
+
+  /* ---------- first-run welcome: what's here, pick who you follow, add to your phone ---------- */
+  const WKEY = "onef1.welcomed.v1";
+  let installEvt = null;
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e; if (document.getElementById("welcome")) drawWelcome(); });
+  window.addEventListener("appinstalled", () => { installEvt = null; });
+  const ua = navigator.userAgent, isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/.test(ua), standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  let wStep = 0, wOS = isIOS ? "ios" : isAndroid ? "android" : "desktop";
+  const ico = {
+    race: '<path d="M4 20V4m0 1h11l-2 4 2 4H4"/>',
+    lab: '<path d="M9 3h6M10 3v6l-5.5 9.5A1.6 1.6 0 0 0 5.9 21h12.2a1.6 1.6 0 0 0 1.4-2.5L14 9V3M7.5 15h9"/>',
+    play: '<path d="M6 12h4m-2-2v4M15 11h.01M18 13h.01M8 6h8a5 5 0 0 1 5 5v1a5 5 0 0 1-5 5l-2-2h-4l-2 2a5 5 0 0 1-5-5v-1a5 5 0 0 1 5-5z"/>',
+    share: '<path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1"/>',
+    plus: '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/>',
+    dots: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    install: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/>',
+  };
+  const svgI = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ico[k]}</svg>`;
+  const logoSvg = () => (document.querySelector(".top .wm") || { outerHTML: "" }).outerHTML;
+  function drawWelcome() {
+    const w = document.getElementById("welcome"); if (!w) return;
+    const bar = `<div class="w-bar">${[0, 1, 2].map((i) => `<i class="${i <= wStep ? "on" : ""}"></i>`).join("")}</div>`;
+    let body = "", foot = "";
+    if (wStep === 0) {
+      const feat = (k, t, d) => `<li><span class="w-ic">${svgI(k)}</span><span><b>${t}</b><small>${d}</small></span></li>`;
+      body = `<div class="w-logo">${logoSvg()}</div><h1 class="w-h">Welcome to ONE&nbsp;F1</h1><p class="w-sub">One place for F1. Free, fast, made by fans.</p>
+        <ul class="w-feat">${feat("race", "Race analysis", "Gaps, strategy and key moments from every race")}${feat("lab", "The Lab", "How every car developed, lap by lap, all season")}${feat("play", "Play", "Lights Out reactions, trivia and friend challenges")}</ul>`;
+      foot = `<button class="w-go" type="button" data-w="next">Get started</button><button class="w-skip" type="button" data-w="done">Skip</button>`;
+    } else if (wStep === 1) {
+      const pick = (kind, id, label, color) => { const on = isFollowed(kind, id); return `<button class="pick ${on ? "on" : ""}" type="button" data-wf="${kind}:${id}" aria-pressed="${on}" style="--tc:${color}">${on ? "★ " : ""}${esc(label)}</button>`; };
+      const n = follow.drivers.length + follow.teams.length;
+      body = `<span class="kicker">Step 2 of 3</span><h1 class="w-h">Who do you follow?</h1><p class="w-sub">Your drivers and teams show first on the home screen. Pick as many as you like.</p>
+        <span class="kicker w-sec">Drivers</span><div class="picks">${DS.filter((x) => x.points > 0 || x.history.length).map((x) => pick("drivers", x.id, driver[x.id].last, tc(driver[x.id].team))).join("")}</div>
+        <span class="kicker w-sec">Teams</span><div class="picks">${TS.map((t) => pick("teams", t.id, t.name, t.color)).join("")}</div>`;
+      foot = `<div class="w-row"><button class="w-back" type="button" data-w="back">Back</button><button class="w-go" type="button" data-w="next">${n ? `Continue · ${n} picked` : "Continue"}</button></div>`;
+    } else {
+      const tabs = [["ios", "iPhone"], ["android", "Android"], ["desktop", "Computer"]].map(([k, l]) => `<button type="button" class="${wOS === k ? "on" : ""}" data-wos="${k}">${l}</button>`).join("");
+      const step = (n, icon, html) => `<li><span class="w-n">${n}</span><span class="w-s">${html}</span>${icon ? `<span class="w-ic sm">${svgI(icon)}</span>` : ""}</li>`;
+      const guides = {
+        ios: `<ol class="w-steps">${step(1, "share", "Open this page in <b>Safari</b> and tap <b>Share</b> in the toolbar")}${step(2, "plus", "Scroll down and tap <b>Add to Home Screen</b>")}${step(3, "", "Tap <b>Add</b>. ONE F1 appears on your home screen and opens full screen")}</ol>
+          <p class="w-note">On Chrome for iPhone: tap <b>Share</b> next to the address bar, then <b>Add to Home Screen</b>.</p>`,
+        android: `${installEvt && wOS === "android" ? `<button class="w-go w-inst" type="button" data-w="install">${svgI("install")}Install ONE F1</button><p class="w-note">One tap, no app store. Or do it by hand:</p>` : ""}
+          <ol class="w-steps">${step(1, "dots", "In <b>Chrome</b>, tap the <b>⋮</b> menu at the top right")}${step(2, "install", "Tap <b>Install app</b> (on some phones: <b>Add to Home screen</b>)")}${step(3, "", "Tap <b>Install</b>. ONE F1 lands in your app drawer and home screen")}</ol>`,
+        desktop: `${installEvt && wOS === "desktop" ? `<button class="w-go w-inst" type="button" data-w="install">${svgI("install")}Install ONE F1</button>` : ""}
+          <ol class="w-steps">${step(1, "install", "In Chrome or Edge, click the <b>install</b> icon at the right of the address bar")}${step(2, "", "Click <b>Install</b>. ONE F1 opens in its own window")}</ol>
+          <p class="w-note">Best on your phone: open <b>${esc(location.host + location.pathname)}</b> there and follow the iPhone or Android steps.</p>`,
+      };
+      body = standalone
+        ? `<span class="kicker">Step 3 of 3</span><div class="w-done">${svgI("check")}</div><h1 class="w-h">You're on the app</h1><p class="w-sub">ONE F1 is already on your home screen. It updates itself after every session.</p>`
+        : `<span class="kicker">Step 3 of 3</span><h1 class="w-h">Add ONE&nbsp;F1 to your phone</h1><p class="w-sub">It installs like an app: its own icon, full screen, works offline. No app store, nothing to pay.</p>
+          <div class="w-tabs" role="tablist">${tabs}</div>${guides[wOS]}`;
+      foot = `<div class="w-row"><button class="w-back" type="button" data-w="back">Back</button><button class="w-go" type="button" data-w="done">Start exploring</button></div>`;
+    }
+    w.innerHTML = `<div class="w-card">${bar}<div class="w-body">${body}</div><div class="w-foot">${foot}</div></div>`;
+    w.querySelector(".w-body").scrollTop = 0;
+  }
+  function openWelcome(step = 0) {
+    if (document.getElementById("welcome")) return;
+    wStep = step; const w = document.createElement("div"); w.id = "welcome"; w.setAttribute("role", "dialog"); w.setAttribute("aria-label", "Welcome to ONE F1");
+    document.body.appendChild(w); document.documentElement.classList.add("welcoming"); drawWelcome();
+    w.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-w],[data-wf],[data-wos]"); if (!b) return;
+      if (b.dataset.wf) { const [k, id] = b.dataset.wf.split(":"); toggleFollow(k, id); const sc = w.querySelector(".w-body").scrollTop; drawWelcome(); w.querySelector(".w-body").scrollTop = sc; return; }
+      if (b.dataset.wos) { wOS = b.dataset.wos; drawWelcome(); return; }
+      const a = b.dataset.w;
+      if (a === "next") { wStep++; drawWelcome(); }
+      else if (a === "back") { wStep--; drawWelcome(); }
+      else if (a === "install" && installEvt) { installEvt.prompt(); const r = await installEvt.userChoice.catch(() => ({})); installEvt = null; if (r && r.outcome === "accepted") closeWelcome(); else drawWelcome(); }
+      else if (a === "done") closeWelcome();
+    });
+  }
+  function closeWelcome() {
+    try { localStorage.setItem(WKEY, "1"); } catch (e) {}
+    const w = document.getElementById("welcome"); if (!w) return;
+    w.classList.add("gone"); document.documentElement.classList.remove("welcoming");
+    setTimeout(() => w.remove(), 350);
+    if (location.hash.startsWith("#/welcome")) location.hash = "#/"; else route();
+  }
+  let welcomed = false; try { welcomed = localStorage.getItem(WKEY) === "1"; } catch (e) {}
+  if (!welcomed && !location.hash.startsWith("#/play/") ) openWelcome(0);
+
   route();
 })();
 

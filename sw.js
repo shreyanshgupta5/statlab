@@ -2,7 +2,7 @@
    - The page and data.js: network first, so new results show up as soon as you deploy; cached copy when offline.
    - Everything else (styles, script, icons, fonts): cache first, refreshed in the background.
    Bump VERSION when you change styles.css or app.js so phones pick up the new files. */
-const VERSION = "statlab-v43";
+const VERSION = "statlab-v44";
 const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "duels.js", "previews.js", "racedetail.js", "lab.js", "play.js", "manifest.webmanifest", "icons/icon-192-speed-cut.png", "icons/icon-512-speed-cut.png", "icons/maskable-512-speed-cut.png", "icons/apple-touch-icon-speed-cut.png"];
 
 self.addEventListener("install", (e) => {
