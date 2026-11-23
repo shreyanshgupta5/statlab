@@ -777,3 +777,33 @@ body *, body *::before, body *::after { text-shadow: none !important; }
 .st-img { position: relative; margin: 0; width: 112px; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: var(--card-2); }
 .st-img figcaption { right: 4px; bottom: 4px; font-size: 8px; }
 .lead-story.has-img { overflow: hidden; }
+
+/* ---- Lab tab (v40) ---- */
+.lchips { display: flex; gap: 8px; overflow-x: auto; margin: 14px calc(var(--gutter) * -1) 0; padding: 2px var(--gutter) 6px; scrollbar-width: none; }
+.lchips::-webkit-scrollbar { display: none; }
+.lchip { flex: none; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); font: 700 12px var(--mono); color: var(--soft); border-left: 4px solid var(--tc); }
+.lchip.on { background: var(--card-2); color: var(--fg); border-color: var(--tc); }
+.lchart text { font: 500 9px var(--mono); fill: var(--muted); }
+.lchart text.on { fill: var(--fg); font-weight: 700; }
+.lchart .gl { stroke: var(--line); stroke-width: .6; }
+.lchart path { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.lchart path.off { stroke-width: 1.2; opacity: .28; } .lchart path.on { stroke-width: 2.8; }
+.lchart .rk { font: 700 8px var(--num); fill: #0E0F12; paint-order: stroke; }
+.lchart rect.sel { stroke-width: 1.6; }
+.dna g.off { opacity: .45; } .dna text { font-weight: 700; }
+.lchart .d { font: 700 10px var(--num); fill: var(--fg); }
+.lrank, .found, .rel { list-style: none; padding: 0; margin: 8px 0 0; }
+.lrank li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: center; min-height: 38px; border-top: 1px solid var(--line); border-left: 3px solid var(--tc); padding-left: 10px; }
+.lrank b { font-weight: 900; font-style: italic; font-size: 15px; }
+.lrank .num, .found .num { font-family: var(--num); font-weight: 700; font-size: 16px; }
+.up { color: var(--up); } .down { color: var(--down); }
+.found li { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; min-height: 44px; border-top: 1px solid var(--line); font-size: 14px; }
+.found li:first-child { border-top: 0; }
+.found .mono { font-size: 12px; }
+.rel li { display: grid; grid-template-columns: 76px 1fr 26px; gap: 10px; align-items: center; min-height: 26px; font: 500 12px var(--mono); color: var(--soft); }
+.rel li.on { color: var(--fg); font-weight: 700; }
+.rel .bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; } .rel .bar i { display: block; height: 100%; background: var(--tc); }
+.rel b { text-align: right; font-size: 14px; }
+.lduel { display: grid; gap: 6px; margin-top: 4px; }
+.lduel b { font: italic 900 22px var(--display); font-stretch: 115%; }
+.lduel .mono { font-size: 12px; color: var(--fg); }

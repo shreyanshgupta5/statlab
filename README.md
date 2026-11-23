@@ -50,6 +50,8 @@ python3 tools/add_quali.py 21     # qualifying times + starting grid (after pena
 
 ## After each race
 
+Also run `python3 tools/build_lab.py` to refresh `lab.js`, the Lab tab's season analysis (qualifying pace gap to the fastest car, pecking order, speed-trap and corner-speed deltas early vs late season, grid vs finish, retirements, points).
+
 The home screen opens on the most recent completed session (race, sprint or qualifying), worked out from `RESULTS`, `QUALI_DETAIL` and an optional `SPRINTS` map (`{round: [{id, pos, points, gap}]}`). Race rows keep `gap` and `best` lap when the results CSV has them.
 
 ```bash
