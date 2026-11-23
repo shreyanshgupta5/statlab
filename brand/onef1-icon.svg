@@ -6,16 +6,16 @@
     <stop offset="0" stop-color="#FF4A3D"/><stop offset=".5" stop-color="#F01E12"/><stop offset="1" stop-color="#B80A02"/></linearGradient>
   <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/></linearGradient>
   <linearGradient id="edgeR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB3AC" stop-opacity=".9"/><stop offset=".3" stop-color="#FFB3AC" stop-opacity="0"/></linearGradient>
-  <clipPath id="clipO"><path d="M34 0 L182.5 0 L154.5 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z"/></clipPath><clipPath id="clip1"><path d="M200 0 L256 0 L256 166 L200 166 L200 66 L156 66 Z"/></clipPath>
+  <clipPath id="clipO"><path d="M34 0 L177.8 0 L126.1 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z"/></clipPath><clipPath id="clip1"><path d="M200 0 L256 0 L256 166 L200 166 L200 46 L72 104 Z"/></clipPath>
   <radialGradient id="bg" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#22252C"/><stop offset=".55" stop-color="#121418"/><stop offset="1" stop-color="#07080A"/></radialGradient>
   <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feOffset dy="10"/><feGaussianBlur stdDeviation="9"/></filter>
 </defs><rect width="1024" height="1024" fill="url(#bg)"/>
 <g>
-  <g transform="translate(174.07999999999998 354.59311120672464) scale(1.7730950457021126) translate(0 166) skewX(-37) translate(0 -166)" filter="url(#shadow)" opacity=".75"><path d="M34 0 L182.5 0 L154.5 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z" fill="#000"/><path d="M200 0 L256 0 L256 166 L200 166 L200 66 L156 66 Z" fill="#000"/></g>
+  <g transform="translate(174.07999999999998 354.59311120672464) scale(1.7730950457021126) translate(0 166) skewX(-37) translate(0 -166)" filter="url(#shadow)" opacity=".75"><path d="M34 0 L177.8 0 L126.1 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z" fill="#000"/><path d="M200 0 L256 0 L256 166 L200 166 L200 46 L72 104 Z" fill="#000"/></g>
   <g transform="translate(174.07999999999998 354.59311120672464) scale(1.7730950457021126) translate(0 166) skewX(-37) translate(0 -166)">
-    <path d="M34 0 L182.5 0 L154.5 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z" fill="url(#silver)"/>
-    <path d="M200 0 L256 0 L256 166 L200 166 L200 66 L156 66 Z" fill="url(#red)"/>
-    <path d="M34 0 L182.5 0 L154.5 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z" fill="none" stroke="url(#edge)" stroke-width="3" clip-path="url(#clipO)"/>
-    <path d="M200 0 L256 0 L256 166 L200 166 L200 66 L156 66 Z" fill="none" stroke="url(#edgeR)" stroke-width="3" clip-path="url(#clip1)"/>
+    <path d="M34 0 L177.8 0 L126.1 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z" fill="url(#silver)"/>
+    <path d="M200 0 L256 0 L256 166 L200 166 L200 46 L72 104 Z" fill="url(#red)"/>
+    <path d="M34 0 L177.8 0 L126.1 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L186 124 L186 166 L34 166 Q0 166 0 132 L0 34 Q0 0 34 0 Z" fill="none" stroke="url(#edge)" stroke-width="3" clip-path="url(#clipO)"/>
+    <path d="M200 0 L256 0 L256 166 L200 166 L200 46 L72 104 Z" fill="none" stroke="url(#edgeR)" stroke-width="3" clip-path="url(#clip1)"/>
   </g>
 </g></svg>

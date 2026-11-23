@@ -15,12 +15,16 @@ GAP = 14
 # unslanted geometry
 # the 1 is a stem whose two long edges run parallel to the O's outer left edge, with a short flag at the top;
 # the O's top bar ends on the flag's diagonal and its bottom bar on the stem's edge, each one GAP away
-STEM_L, STEM_R, FLAG_X, FLAG_Y = 200, 256, 156, 66
-_cut0 = STEM_L - GAP * 1.25                                         # top bar end, parallel to the flag diagonal
-_cut1 = _cut0 - (STEM_L - FLAG_X) * 42 / FLAG_Y
-O = (f"M34 0 L{_cut0:.1f} 0 L{_cut1:.1f} 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L{STEM_L - GAP} 124 L{STEM_L - GAP} {H} L34 {H} "
-     f"Q0 {H} 0 {H - 34} L0 34 Q0 0 34 0 Z")
-ONE = f"M{STEM_L} 0 L{STEM_R} 0 L{STEM_R} {H} L{STEM_L} {H} L{STEM_L} {FLAG_Y} L{FLAG_X} {FLAG_Y} Z"
+STEM_L, STEM_R = 200, 256
+# the 1's flag is stretched into a speedometer needle: from the top of the stem it tapers to a point inside the O
+# (the dial). The O's top bar ends parallel to the needle, one GAP away.
+TIP, NEEDLE_BOT = (72, 104), 46
+_k = (STEM_L - TIP[0]) / TIP[1]                       # needle top edge: x = STEM_L - _k * y
+_off = GAP * (1 + _k * _k) ** 0.5                     # horizontal offset for a perpendicular gap of GAP
+O = (f"M34 0 L{STEM_L - _off:.1f} 0 L{STEM_L - _off - _k * 42:.1f} 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 "
+     f"L{STEM_L - GAP} 124 L{STEM_L - GAP} {H} L34 {H} Q0 {H} 0 {H - 34} L0 34 Q0 0 34 0 Z")
+ONE = (f"M{STEM_L} 0 L{STEM_R} 0 L{STEM_R} {H} L{STEM_L} {H} L{STEM_L} {NEEDLE_BOT} "
+       f"L{TIP[0]} {TIP[1]} Z")
 W = STEM_R + SLANT * H          # slanted width
 
 
