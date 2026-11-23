@@ -2,8 +2,8 @@
 
     python3 tools/make_logo.py            # writes brand/onef1-mark.svg, brand/onef1-icon.svg and the app icons (via Playwright)
 
-The mark: an italic open "O" (rounded left corners, top bar cut on the same diagonal as the 1's flag) and a "1"
-(stem with a sharp flag), both on one 37-degree slant, with an even gap between them.
+The mark: an italic open "O" (rounded left corners) and a "1" whose stem runs parallel to the O's outer left edge,
+with a short flag; the O's bars end one even gap from the 1. Everything on one 37-degree slant.
 """
 import os, subprocess, textwrap
 
@@ -13,10 +13,15 @@ SLANT = 0.754               # tan(37 deg)
 GAP = 14
 
 # unslanted geometry
-O = (f"M34 0 L244 0 L195 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L188 124 L188 {H} L34 {H} "
+# the 1 is a stem whose two long edges run parallel to the O's outer left edge, with a short flag at the top;
+# the O's top bar ends on the flag's diagonal and its bottom bar on the stem's edge, each one GAP away
+STEM_L, STEM_R, FLAG_X, FLAG_Y = 200, 256, 156, 66
+_cut0 = STEM_L - GAP * 1.25                                         # top bar end, parallel to the flag diagonal
+_cut1 = _cut0 - (STEM_L - FLAG_X) * 42 / FLAG_Y
+O = (f"M34 0 L{_cut0:.1f} 0 L{_cut1:.1f} 42 L60 42 Q48 42 48 54 L48 112 Q48 124 60 124 L{STEM_L - GAP} 124 L{STEM_L - GAP} {H} L34 {H} "
      f"Q0 {H} 0 {H - 34} L0 34 Q0 0 34 0 Z")
-ONE = f"M258 0 L258 {H} L202 {H} L202 92 L150 92 Z"
-W = 258 + SLANT * H          # slanted width
+ONE = f"M{STEM_L} 0 L{STEM_R} 0 L{STEM_R} {H} L{STEM_L} {H} L{STEM_L} {FLAG_Y} L{FLAG_X} {FLAG_Y} Z"
+W = STEM_R + SLANT * H          # slanted width
 
 
 def mark(scale, ox, oy, shadow=True):
