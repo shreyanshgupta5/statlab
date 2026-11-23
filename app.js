@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v38"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v39"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -658,20 +658,24 @@
       <p class="foot">Data: Jolpica (results history) and OpenF1 (track layout, qualifying, grid) · unofficial fan project.</p>`;
   }
 
+  // link-preview image: loaded from the publisher (never copied), credited to the source; hidden if it fails to load
+  const newsImg = (n, cls) => n.image ? `<figure class="${cls}"><img src="${esc(n.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"
+      onerror="this.closest('figure').remove()"><figcaption>Image: ${esc(n.tag)}</figcaption></figure>` : "";
   function viewNews() {
     if (!NEWS.length) return `<div class="empty"><h1>No stories yet</h1><p>Add items to news.js to fill this feed.</p></div>`;
     const [lead, ...rest] = NEWS;
     return `
       <div class="page-title reveal"><span class="kicker">Paddock notes</span><h1>News</h1></div>
-      <a class="lead-story reveal" href="#/news/${lead.id}">
+      <a class="lead-story reveal${lead.image ? " has-img" : ""}" href="#/news/${lead.id}">
+        ${newsImg(lead, "lead-img")}
         <span class="tag">${esc(lead.tag)}</span>
         <h2>${esc(lead.title)}</h2>
         <p>${esc(lead.dek)}</p>
         <span class="mono dim">${fmtDate(lead.date, { day: "numeric", month: "long" })}</span>
       </a>
-      <ul class="stories">${rest.map((n, i) => `<li class="reveal" style="--i:${i}"><a href="#/news/${n.id}">
-        <span class="mono dim">${fmtDate(n.date)} · ${esc(n.tag)}</span>
-        <b>${esc(n.title)}</b>
+      <ul class="stories">${rest.map((n, i) => `<li class="reveal" style="--i:${i}"><a class="${n.image ? "has-img" : ""}" href="#/news/${n.id}">
+        <span class="st-text"><span class="mono dim">${fmtDate(n.date)} · ${esc(n.tag)}</span>
+        <b>${esc(n.title)}</b></span>${newsImg(n, "st-img")}
       </a></li>`).join("")}</ul>`;
   }
 
