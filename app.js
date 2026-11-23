@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v40"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v41"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -410,16 +410,43 @@
       return { ch, who: [...who] }; })() : { ch: 0, who: [] };
     const margin = W2 && W2.gap != null ? W2.gap : null;
     const tile = (v, k, sub) => `<div class="tile"><b class="num">${v}</b><span class="kicker">${k}</span>${sub ? `<small>${sub}</small>` : ""}</div>`;
-    const gx = (k) => L + ((k - 0.5) / N) * (W - L - R), bw = Math.max(1.5, (W - L - R) / N - 1.2), GH = 90, GMAX = 3;
-    const gy = (g) => 8 + GH - (Math.min(g, GMAX) / GMAX) * GH;
-    const gapBars = (D.gap12 || []).map((g, k) => g == null ? "" : `<rect x="${(gx(k + 1) - bw / 2).toFixed(1)}" y="${gy(g).toFixed(1)}" width="${bw.toFixed(1)}" height="${(8 + GH - gy(g)).toFixed(1)}" class="${g < 1 ? "close" : "far"}"/>`).join("");
-    const gapSvg = `<svg viewBox="0 0 ${W} ${GH + 30}" class="mini" role="img" aria-label="Gap between first and second at the end of each lap">
-        ${scBands(8, GH)}<line x1="${L}" x2="${W - R}" y1="${gy(1).toFixed(1)}" y2="${gy(1).toFixed(1)}" class="ref"/><text x="${L - 4}" y="${(gy(1) + 3).toFixed(1)}" text-anchor="end">1s</text>
-        <text x="${L - 4}" y="${(gy(3) + 3).toFixed(1)}" text-anchor="end">3s+</text>${gapBars}${lapTicks(GH + 26)}</svg>`;
-    const pl = O.perLap || [], pmax = Math.max(1, ...pl), OH = 60;
-    const ovSvg = pl.length ? `<svg viewBox="0 0 ${W} ${OH + 30}" class="mini" role="img" aria-label="On-track overtakes per lap">
-        ${scBands(8, OH)}${pl.map((c, k) => c ? `<rect x="${(gx(k + 1) - bw / 2).toFixed(1)}" y="${(8 + OH - (c / pmax) * OH).toFixed(1)}" width="${bw.toFixed(1)}" height="${((c / pmax) * OH).toFixed(1)}" class="ov"/>` : "").join("")}
-        <text x="${L - 4}" y="12" text-anchor="end">${pmax}</text>${lapTicks(OH + 26)}</svg>` : "";
+    const gx = (k) => L + ((k - 0.5) / N) * (W - L - R), bw = Math.max(1.5, (W - L - R) / N - 1.2);
+    // season average for comparison: every other race, resampled onto this race's laps by race distance
+    const otherRaces = Object.entries(S.RACE_DETAIL || {}).filter(([r]) => +r !== +round).map(([, x]) => x);
+    const resample = (arr, n) => Array.from({ length: n }, (_, k) => { const v = arr[Math.min(arr.length - 1, Math.floor(((k + 0.5) / n) * arr.length))]; return v; });
+    const meanAt = (key) => Array.from({ length: N }, (_, k) => { const v = otherRaces.map((x) => resample(key(x) || [], N)[k]).filter((v) => v != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; });
+    const avgOf = (a) => { const v = a.filter((x) => x != null); return v.length ? v.reduce((p, q) => p + q, 0) / v.length : null; };
+    const fmtS = (v) => (v == null ? "–" : v < 10 ? v.toFixed(2) + "s" : v.toFixed(1) + "s");
+
+    // gap P1 -> P2: square-root scale so the sub-second laps (where it matters) get room; capped at 8 s
+    const GH = 140, GT = 10, GMAX = 8, gy = (g) => GT + GH - (Math.sqrt(Math.min(g, GMAX)) / Math.sqrt(GMAX)) * GH;
+    const sGap = meanAt((x) => (x.gap12 || []).map((g, k) => (k < 1 ? null : g)));   // lap 1 is a standing start, leave it out
+    const seasonGapLaps = otherRaces.map((x) => (x.gap12 || []).filter((g) => g != null)), seasonWithin = seasonGapLaps.reduce((a, g) => a + g.filter((v) => v < 1).length, 0), seasonLaps = seasonGapLaps.reduce((a, g) => a + g.length, 0);
+    const seasonMedGap = (() => { const all = seasonGapLaps.flat().sort((a, b) => a - b); return all.length ? all[Math.floor(all.length / 2)] : null; })();
+    const thisMed = (() => { const g = [...G].sort((a, b) => a - b); return g.length ? g[Math.floor(g.length / 2)] : null; })();
+    const gapBars = (D.gap12 || []).map((g, k) => g == null ? "" : `<rect x="${(gx(k + 1) - bw / 2).toFixed(1)}" y="${gy(g).toFixed(1)}" width="${bw.toFixed(1)}" height="${(GT + GH - gy(g)).toFixed(1)}" class="${g < 1 ? "close" : "far"}"/>`).join("");
+    const gTicks = [0.25, 0.5, 1, 2, 4, 8].map((v) => `<line x1="${L}" x2="${W - R}" y1="${gy(v).toFixed(1)}" y2="${gy(v).toFixed(1)}" class="${v === 1 ? "ref" : "gl"}"/><text x="${L - 4}" y="${(gy(v) + 3).toFixed(1)}" text-anchor="end">${v === 8 ? "8s+" : v + "s"}</text>`).join("");
+    const avgPath = (vals, y) => vals.map((v, k) => (v == null ? "" : `${k && vals[k - 1] != null ? "L" : "M"}${gx(k + 1).toFixed(1)},${y(v).toFixed(1)}`)).join("");
+    const gapSvg = `<svg viewBox="0 0 ${W} ${GT + GH + 26}" class="mini" role="img" aria-label="Gap between first and second at the end of each lap, with the season average">
+        ${scBands(GT, GH)}${gTicks}${gapBars}${otherRaces.length ? `<path d="${avgPath(sGap, gy)}" class="avg"/>` : ""}${lapTicks(GT + GH + 20)}</svg>`;
+    const gapCmp = `<div class="cmp"><div><span class="kicker">This race</span><b class="num">${fmtS(thisMed)}</b><small>typical gap · ${within1}/${G.length} laps within 1s (${G.length ? Math.round((100 * within1) / G.length) : 0}%)</small></div>
+        <div><span class="kicker">Season average</span><b class="num">${fmtS(seasonMedGap)}</b><small>typical gap · ${seasonLaps ? Math.round((100 * seasonWithin) / seasonLaps) : 0}% of laps within 1s · ${otherRaces.length} races</small></div></div>`;
+
+    // overtakes per lap: lap 1 is off the scale most races, so the axis fits laps 2+ and lap 1 gets its number on top
+    const pl = O.perLap || [], OH = 110, OT = 14;
+    const sOv = meanAt((x) => ((x.overtakes || {}).perLap || []).map((c, k) => (k === 0 ? null : c)));
+    const omax = Math.max(4, Math.ceil(Math.max(...pl.slice(1), ...sOv.filter((v) => v != null)) * 1.15));
+    const oy = (c) => OT + OH - (Math.min(c, omax) / omax) * OH;
+    const oStep = omax > 12 ? 5 : omax > 6 ? 2 : 1;
+    const oTicks = Array.from({ length: Math.floor(omax / oStep) + 1 }, (_, i) => i * oStep).map((v) => `<line x1="${L}" x2="${W - R}" y1="${oy(v).toFixed(1)}" y2="${oy(v).toFixed(1)}" class="gl"/><text x="${L - 4}" y="${(oy(v) + 3).toFixed(1)}" text-anchor="end">${v}</text>`).join("");
+    const seasonOv = otherRaces.map((x) => (x.overtakes || {}).total).filter((v) => v != null), seasonL1 = otherRaces.map((x) => (x.overtakes || {}).lap1).filter((v) => v != null);
+    const sAvgTotal = avgOf(seasonOv), sAvgL1 = avgOf(seasonL1), sPerLap = avgOf(otherRaces.map((x) => { const p = (x.overtakes || {}).perLap || []; return p.length > 1 ? p.slice(1).reduce((a, b) => a + b, 0) / (p.length - 1) : null; }));
+    const thisPerLap = pl.length > 1 ? pl.slice(1).reduce((a, b) => a + b, 0) / (pl.length - 1) : null;
+    const ovSvg = pl.length ? `<svg viewBox="0 0 ${W} ${OT + OH + 26}" class="mini" role="img" aria-label="On-track overtakes per lap, with the season average">
+        ${scBands(OT, OH)}${oTicks}${pl.map((c, k) => c ? `<rect x="${(gx(k + 1) - bw / 2).toFixed(1)}" y="${oy(c).toFixed(1)}" width="${bw.toFixed(1)}" height="${(OT + OH - oy(c)).toFixed(1)}" class="${c > omax ? "ov clip" : "ov"}"/>${c > omax ? `<text x="${gx(k + 1).toFixed(1)}" y="${OT - 3}" text-anchor="middle" class="over">${c}</text>` : ""}` : "").join("")}
+        ${otherRaces.length ? `<path d="${avgPath(sOv, oy)}" class="avg"/>` : ""}${lapTicks(OT + OH + 20)}</svg>` : "";
+    const ovCmp = `<div class="cmp"><div><span class="kicker">This race</span><b class="num">${O.total ?? "–"}</b><small>${O.lap1 ?? 0} on lap 1 · ${thisPerLap != null ? thisPerLap.toFixed(1) : "–"} per lap after</small></div>
+        <div><span class="kicker">Season average</span><b class="num">${sAvgTotal != null ? Math.round(sAvgTotal) : "–"}</b><small>${sAvgL1 != null ? Math.round(sAvgL1) : 0} on lap 1 · ${sPerLap != null ? sPerLap.toFixed(1) : "–"} per lap after</small></div></div>`;
     // teammates share a colour: the second one of a team gets a lighter shade
     const shade = {}; atLine.who.forEach((id) => { const t = (driver[id] || {}).team; shade[id] = Object.keys(shade).some((o) => (driver[o] || {}).team === t) ? `color-mix(in srgb, ${col(id)} 45%, #F2F2F0)` : col(id); });
     const ledLaps = (id) => Array.from({ length: N }, (_, k) => D.pos[id][k + 1] === 1).filter(Boolean).length;
@@ -434,9 +461,12 @@
         ${tile(O.total ?? "–", "On-track overtakes", O.lap1 != null ? `${O.lap1} on lap 1` : "")}
         ${tile(O.top && O.top[0] ? O.top[0][1] : "–", "Most overtakes", O.top && O.top[0] ? nm(O.top[0][0]) : "")}
       </div>`;
-    const gapSec = `${sectionHead("P1 to P2 at the line", "Gap to the leader")}<figure class="chart reveal">${gapSvg}<p class="note">Seconds between first and second at the end of each lap. Bright = within 1s.</p></figure>`;
+    const gapSec = `${sectionHead("P1 to P2 at the line", "Gap to the leader")}<figure class="chart reveal">${gapSvg}
+        <div class="legend"><span style="--tc:#F2F2F0">within 1s</span><span style="--tc:#4A4F58">over 1s</span>${otherRaces.length ? `<span class="dash">season average</span>` : ""}</div>${gapCmp}
+        <p class="note">Seconds between first and second at the end of each lap. Scale is stretched at the bottom so close laps stand out.</p></figure>`;
     const whoSec = `${sectionHead("Leader by lap", "Who led")}<div class="panel reveal">${ldrStrip}</div>`;
-    const ovSec = `${ovSvg ? `${sectionHead("Passing", "Overtakes per lap")}<figure class="chart reveal">${ovSvg}<p class="note">On-track passes only: pit-stop swaps, safety-car laps and cars about to retire are left out (OpenF1 overtakes, ${O.raw} raw position changes).${O.top && O.top.length ? ` Most: ${O.top.slice(0, 3).map(([id, c]) => `${nm(id)} ${c}`).join(", ")}.` : ""}</p></figure>` : ""}`;
+    const ovSec = `${ovSvg ? `${sectionHead("Passing", "Overtakes per lap")}<figure class="chart reveal">${ovSvg}
+        <div class="legend"><span style="--tc:#C9CDD2">this race</span>${otherRaces.length ? `<span class="dash">season average</span>` : ""}</div>${ovCmp}<p class="note">On-track passes only: pit-stop swaps, safety-car laps and cars about to retire are left out (OpenF1 overtakes, ${O.raw} raw position changes).${O.top && O.top.length ? ` Most: ${O.top.slice(0, 3).map(([id, c]) => `${nm(id)} ${c}`).join(", ")}.` : ""}</p></figure>` : ""}`;
     return { pre: "", post: moments + strategy + winlose + gapSec + ovSec + numbers + whoSec + chart };
   }
 

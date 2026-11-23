@@ -807,3 +807,15 @@ body *, body *::before, body *::after { text-shadow: none !important; }
 .lduel { display: grid; gap: 6px; margin-top: 4px; }
 .lduel b { font: italic 900 22px var(--display); font-stretch: 115%; }
 .lduel .mono { font-size: 12px; color: var(--fg); }
+
+/* race charts with season average (v41) */
+.mini .gl { stroke: var(--line); stroke-width: .6; }
+.mini .avg { fill: none; stroke: #FFD12E; stroke-width: 1.8; stroke-dasharray: 5 3; stroke-linejoin: round; }
+.mini .over { font: 700 9px var(--num); fill: var(--fg); }
+.mini .ov.clip { fill: var(--fg); }
+.legend .dash::before { width: 14px; height: 0; border-radius: 0; border-top: 2px dashed #FFD12E; background: none; }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.cmp > div { padding: 12px; border-radius: 12px; background: var(--card-2); display: flex; flex-direction: column; gap: 4px; }
+.cmp b { font-size: 26px; line-height: 1; color: var(--fg); }
+.cmp > div:last-child b { color: #FFD12E; }
+.cmp small { font-size: 11px; color: var(--soft); line-height: 1.35; }
