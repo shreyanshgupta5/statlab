@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v44"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v45"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -1128,44 +1128,59 @@
     dots: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
     check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
     install: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/>',
+    arrow: '<path d="M5 12h13M13 6l6 6-6 6"/>',
+    left: '<path d="M19 12H6M11 6l-6 6 6 6"/>',
   };
   const svgI = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ico[k]}</svg>`;
   const logoSvg = () => (document.querySelector(".top .wm") || { outerHTML: "" }).outerHTML;
   function drawWelcome() {
     const w = document.getElementById("welcome"); if (!w) return;
-    const bar = `<div class="w-bar">${[0, 1, 2].map((i) => `<i class="${i <= wStep ? "on" : ""}"></i>`).join("")}</div>`;
+    // progress = the start lights: one more lit per step
+    const lights = `<div class="w-lights" aria-label="Step ${wStep + 1} of 3">${[0, 1, 2].map((i) => `<i class="${i <= wStep ? "on" : ""}"></i>`).join("")}</div>`;
+    const top = `<div class="w-top"><span class="w-mark">${logoSvg()}</span>${lights}</div>`;
     let body = "", foot = "";
     if (wStep === 0) {
-      const feat = (k, t, d) => `<li><span class="w-ic">${svgI(k)}</span><span><b>${t}</b><small>${d}</small></span></li>`;
-      body = `<div class="w-logo">${logoSvg()}</div><h1 class="w-h">Welcome to ONE&nbsp;F1</h1><p class="w-sub">One place for F1. Free, fast, made by fans.</p>
-        <ul class="w-feat">${feat("race", "Race analysis", "Gaps, strategy and key moments from every race")}${feat("lab", "The Lab", "How every car developed, lap by lap, all season")}${feat("play", "Play", "Lights Out reactions, trivia and friend challenges")}</ul>`;
-      foot = `<button class="w-go" type="button" data-w="next">Get started</button><button class="w-skip" type="button" data-w="done">Skip</button>`;
+      // features as a live timing tower
+      const row = (p, color, name, what, tag) => `<li style="--tc:${color}"><span class="w-p">P${p}</span><span class="w-nm"><b>${name}</b><small>${what}</small></span><span class="w-tag">${tag}</span></li>`;
+      body = `<span class="w-kick">Formation lap · 3 steps</span>
+        <h1 class="w-h">Lights out on<br>your <em>F1</em> season.</h1>
+        <p class="w-sub">Every race decoded, every car's development tracked, and games to settle it with your friends.</p>
+        <ol class="w-tower">${row(1, "#E10600", "Race analysis", "Gaps, strategy, key moments", "LIVE DATA")}${row(2, "#27F4D2", "The Lab", "How every car developed", "21 RNDS")}${row(3, "#FF8000", "Play", "Reaction, trivia, challenges", "VS FRIENDS")}</ol>`;
+      foot = `<button class="w-go" type="button" data-w="next"><span>Start the formation lap</span>${svgI("arrow")}</button><button class="w-skip" type="button" data-w="done">Skip to the app</button>`;
     } else if (wStep === 1) {
-      const pick = (kind, id, label, color) => { const on = isFollowed(kind, id); return `<button class="pick ${on ? "on" : ""}" type="button" data-wf="${kind}:${id}" aria-pressed="${on}" style="--tc:${color}">${on ? "★ " : ""}${esc(label)}</button>`; };
+      // drivers on a staggered starting grid, helmets and all
+      const drv = DS.filter((x) => x.points > 0 || x.history.length);
+      const slot = (x, i) => { const id = x.id, on = isFollowed("drivers", id);
+        return `<button class="w-slot ${on ? "on" : ""} ${i % 2 ? "r" : "l"}" type="button" data-wf="drivers:${id}" aria-pressed="${on}" style="--tc:${tc(driver[id].team)}">
+          <span class="w-gp">${i + 1}</span>${helmet(id, { size: 40, look: i % 2 ? -3 : 3 })}<b>${esc(driver[id].last)}</b>${on ? `<span class="w-star">★</span>` : ""}</button>`; };
       const n = follow.drivers.length + follow.teams.length;
-      body = `<span class="kicker">Step 2 of 3</span><h1 class="w-h">Who do you follow?</h1><p class="w-sub">Your drivers and teams show first on the home screen. Pick as many as you like.</p>
-        <span class="kicker w-sec">Drivers</span><div class="picks">${DS.filter((x) => x.points > 0 || x.history.length).map((x) => pick("drivers", x.id, driver[x.id].last, tc(driver[x.id].team))).join("")}</div>
-        <span class="kicker w-sec">Teams</span><div class="picks">${TS.map((t) => pick("teams", t.id, t.name, t.color)).join("")}</div>`;
-      foot = `<div class="w-row"><button class="w-back" type="button" data-w="back">Back</button><button class="w-go" type="button" data-w="next">${n ? `Continue · ${n} picked` : "Continue"}</button></div>`;
+      body = `<span class="w-kick">Step 2 · Build your grid</span><h1 class="w-h">Who are you<br><em>racing</em> with?</h1>
+        <p class="w-sub">Tap your drivers and teams. They lead your home screen, with their form and gaps.</p>
+        <div class="w-grid">${drv.map(slot).join("")}</div>
+        <span class="w-kick w-sec">Teams</span><div class="w-teams">${TS.map((t) => { const on = isFollowed("teams", t.id);
+          return `<button class="w-team ${on ? "on" : ""}" type="button" data-wf="teams:${t.id}" aria-pressed="${on}" style="--tc:${t.color}">${esc(t.name)}</button>`; }).join("")}</div>`;
+      foot = `<div class="w-row"><button class="w-back" type="button" data-w="back">${svgI("left")}</button><button class="w-go" type="button" data-w="next"><span>${n ? `Lock in ${n} pick${n === 1 ? "" : "s"}` : "Next"}</span>${svgI("arrow")}</button></div>`;
     } else {
       const tabs = [["ios", "iPhone"], ["android", "Android"], ["desktop", "Computer"]].map(([k, l]) => `<button type="button" class="${wOS === k ? "on" : ""}" data-wos="${k}">${l}</button>`).join("");
-      const step = (n, icon, html) => `<li><span class="w-n">${n}</span><span class="w-s">${html}</span>${icon ? `<span class="w-ic sm">${svgI(icon)}</span>` : ""}</li>`;
+      // install steps as pit boards
+      const board = (n, icon, html) => `<li><span class="w-board"><small>L</small>${n}</span><span class="w-s">${html}</span>${icon ? `<span class="w-glyph">${svgI(icon)}</span>` : ""}</li>`;
       const guides = {
-        ios: `<ol class="w-steps">${step(1, "share", "Open this page in <b>Safari</b> and tap <b>Share</b> in the toolbar")}${step(2, "plus", "Scroll down and tap <b>Add to Home Screen</b>")}${step(3, "", "Tap <b>Add</b>. ONE F1 appears on your home screen and opens full screen")}</ol>
-          <p class="w-note">On Chrome for iPhone: tap <b>Share</b> next to the address bar, then <b>Add to Home Screen</b>.</p>`,
-        android: `${installEvt && wOS === "android" ? `<button class="w-go w-inst" type="button" data-w="install">${svgI("install")}Install ONE F1</button><p class="w-note">One tap, no app store. Or do it by hand:</p>` : ""}
-          <ol class="w-steps">${step(1, "dots", "In <b>Chrome</b>, tap the <b>⋮</b> menu at the top right")}${step(2, "install", "Tap <b>Install app</b> (on some phones: <b>Add to Home screen</b>)")}${step(3, "", "Tap <b>Install</b>. ONE F1 lands in your app drawer and home screen")}</ol>`,
-        desktop: `${installEvt && wOS === "desktop" ? `<button class="w-go w-inst" type="button" data-w="install">${svgI("install")}Install ONE F1</button>` : ""}
-          <ol class="w-steps">${step(1, "install", "In Chrome or Edge, click the <b>install</b> icon at the right of the address bar")}${step(2, "", "Click <b>Install</b>. ONE F1 opens in its own window")}</ol>
-          <p class="w-note">Best on your phone: open <b>${esc(location.host + location.pathname)}</b> there and follow the iPhone or Android steps.</p>`,
+        ios: `<ol class="w-pit">${board(1, "share", "In <b>Safari</b>, tap <b>Share</b>")}${board(2, "plus", "Choose <b>Add to Home Screen</b>")}${board(3, "check", "Tap <b>Add</b>. Done.")}</ol>
+          <p class="w-note">Chrome on iPhone: <b>Share</b> sits next to the address bar.</p>`,
+        android: `${installEvt && wOS === "android" ? `<button class="w-go w-inst" type="button" data-w="install"><span>Install ONE F1</span>${svgI("install")}</button><p class="w-note">One tap, no app store. Or by hand:</p>` : ""}
+          <ol class="w-pit">${board(1, "dots", "In <b>Chrome</b>, open the <b>⋮</b> menu")}${board(2, "install", "Tap <b>Install app</b> or <b>Add to Home screen</b>")}${board(3, "check", "Tap <b>Install</b>. Done.")}</ol>`,
+        desktop: `${installEvt && wOS === "desktop" ? `<button class="w-go w-inst" type="button" data-w="install"><span>Install ONE F1</span>${svgI("install")}</button>` : ""}
+          <ol class="w-pit">${board(1, "install", "Click the <b>install</b> icon in the address bar")}${board(2, "check", "Click <b>Install</b>. It opens in its own window.")}</ol>
+          <p class="w-note">Best on your phone: open <b>${esc(location.host + location.pathname)}</b> there.</p>`,
       };
       body = standalone
-        ? `<span class="kicker">Step 3 of 3</span><div class="w-done">${svgI("check")}</div><h1 class="w-h">You're on the app</h1><p class="w-sub">ONE F1 is already on your home screen. It updates itself after every session.</p>`
-        : `<span class="kicker">Step 3 of 3</span><h1 class="w-h">Add ONE&nbsp;F1 to your phone</h1><p class="w-sub">It installs like an app: its own icon, full screen, works offline. No app store, nothing to pay.</p>
+        ? `<span class="w-kick">Step 3 · Box, box</span><h1 class="w-h">You're already<br><em>in the car.</em></h1><p class="w-sub">ONE F1 is on your home screen and updates itself after every session.</p>`
+        : `<span class="w-kick">Step 3 · Box, box</span><h1 class="w-h">Pit it onto<br>your <em>phone.</em></h1>
+          <p class="w-sub">Its own icon, full screen, works offline. No app store, nothing to pay.</p>
           <div class="w-tabs" role="tablist">${tabs}</div>${guides[wOS]}`;
-      foot = `<div class="w-row"><button class="w-back" type="button" data-w="back">Back</button><button class="w-go" type="button" data-w="done">Start exploring</button></div>`;
+      foot = `<div class="w-row"><button class="w-back" type="button" data-w="back">${svgI("left")}</button><button class="w-go" type="button" data-w="done"><span>Lights out</span>${svgI("arrow")}</button></div>`;
     }
-    w.innerHTML = `<div class="w-card">${bar}<div class="w-body">${body}</div><div class="w-foot">${foot}</div></div>`;
+    w.innerHTML = `<div class="w-card">${top}<div class="w-body">${body}</div><div class="w-foot">${foot}</div></div>`;
     w.querySelector(".w-body").scrollTop = 0;
   }
   function openWelcome(step = 0) {
