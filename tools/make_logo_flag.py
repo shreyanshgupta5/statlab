@@ -53,21 +53,27 @@ def _rad(c0, c1, c2, cx="50%", cy="30%"):
 def _lin(c0, c1, c2):
     return f'<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{c0}"/><stop offset=".55" stop-color="{c1}"/><stop offset="1" stop-color="{c2}"/></linearGradient>'
 BGS = {
-    'graphite':  ('Graphite (current)',      _rad('#22252C', '#121418', '#07080A')),
-    'midnight':  ('Midnight blue',           _rad('#1E3266', '#0B1430', '#03060F')),
-    'petrol':    ('Petrol teal',             _rad('#0F4652', '#082229', '#02090B')),
-    'green':     ('Racing green',            _rad('#16503A', '#0A2a1E', '#020A06')),
-    'aubergine': ('Aubergine',               _rad('#3B1F5C', '#1A0E2B', '#06030B')),
-    'oxblood':   ('Oxblood',                 _rad('#5C0E0B', '#2A0605', '#0B0101')),
-    'gunmetal':  ('Gunmetal',                _rad('#4A4F58', '#262A31', '#0E1013')),
-    'sunset':    ('Diagonal red to black',   _lin('#7A110C', '#22090A', '#08080A')),
-    'navyred':   ('Diagonal navy to red',    _lin('#0C1A3A', '#1A0F1F', '#5A0C08')),
-    'carbonblue':('Diagonal black to blue',  _lin('#06070A', '#0E1630', '#1F3C8A')),
-    'bronze':    ('Warm bronze',             _rad('#4A3424', '#22180F', '#090604')),
-    'black':     ('Pure black, spotlight',   _rad('#2A2D33', '#08090B', '#000000', cy="22%")),
+    # colour in the top-left fading to black (same diagonal as the live icon)
+    'red':      ('Red to black (live)',     _lin('#7A110C', '#22090A', '#08080A')),
+    'crimson':  ('Crimson to black',        _lin('#9E1030', '#2A0610', '#08080A')),
+    'orange':   ('Burnt orange to black',   _lin('#8A3A0C', '#2A1206', '#08080A')),
+    'gold':     ('Gold to black',           _lin('#7A5A14', '#241A08', '#08080A')),
+    'green':    ('Racing green to black',   _lin('#11553A', '#06200F', '#08080A')),
+    'teal':     ('Teal to black',           _lin('#0D5560', '#052026', '#08080A')),
+    'blue':     ('Blue to black',           _lin('#1A3C8A', '#0A1430', '#08080A')),
+    'purple':   ('Purple to black',         _lin('#4A1E7A', '#1A0B2C', '#08080A')),
+    # black variants
+    'charcoal': ('Charcoal to black',       _lin('#3A3D44', '#16181C', '#050506')),
+    'graphite': ('Graphite to onyx',        _lin('#2A2D33', '#121418', '#000000')),
+    'warm':     ('Warm black',              _lin('#2E2622', '#141010', '#050404')),
+    'cool':     ('Cool black (blue-black)', _lin('#1C2230', '#0C0F16', '#030405')),
+    'gunmetal': ('Gunmetal to black',       _lin('#4C525C', '#1E2126', '#060607')),
+    'onyx':     ('Onyx, red glow corner',   _lin('#3A0A08', '#0B0B0D', '#000000')),
+    'jet':      ('Jet black, soft sheen',   _lin('#1A1B1F', '#0A0A0C', '#000000')),
+    'redblack': ('Red to black to red',     _lin('#6A0F0B', '#09090B', '#4A0A07')),
 }
 
-def icon_svg(size=1024, fill=0.66, maskable=False, bg="graphite"):
+def icon_svg(size=1024, fill=0.80, maskable=False, bg="graphite"):
     """Square icon: mark centred, `fill` = share of the width it takes."""
     if maskable: fill *= 0.82                                 # keep inside Android's 80% safe zone
     sc = size * fill / W
