@@ -920,3 +920,6 @@ html.welcoming body { overflow: hidden; }
   .w-slot .helmet { width: 28px; height: 28px; }
   .w-slot b { font-size: 13px; }
 }
+
+.ls-latest { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font: 700 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--fg); }
+.ls-latest::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 3px rgba(225,6,0,.25); }

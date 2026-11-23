@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v45"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v46"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -188,6 +188,9 @@
 
   /* ---------- views ---------- */
   // home: the most recent completed session (race, sprint or qualifying), newest first
+  // "today", "yesterday", "3 days ago", "2 weeks ago" from a session's start time
+  const ago = (at) => { const d = Math.floor((Date.now() - at) / 86400000);
+    return d <= 0 ? "today" : d === 1 ? "yesterday" : d < 14 ? `${d} days ago` : `${Math.floor(d / 7)} weeks ago`; };
   function latestSession() {
     const toSec = (t) => { if (t == null || t === "") return null; if (typeof t === "number") return t; const [m, x] = String(t).split(":"); return x == null ? +m : +m * 60 + +x; };
     const cands = [];
@@ -232,7 +235,8 @@
     }
     const ld = DS[0], gap2 = DS[1] ? ld.points - DS[1].points : 0;
     return `<a class="latest reveal" href="${href}">
-        <span class="ls-head"><span class="kicker"><b class="pill">${label}</b> · Round ${L.round} · ${fmtDate(L.kind === "race" ? c.date : new Date(L.at).toISOString().slice(0, 10), { weekday: "short", day: "numeric", month: "short" })}</span>
+        <span class="ls-head"><span class="ls-latest">Latest session · ${ago(L.at)}</span>
+          <span class="kicker"><b class="pill">${label}</b> · Round ${L.round} · ${fmtDate(L.kind === "race" ? c.date : new Date(L.at).toISOString().slice(0, 10), { weekday: "short", day: "numeric", month: "short" })}</span>
           <h1>${c.flag} ${esc(info.location || c.place)}</h1><span class="ls-go" aria-hidden="true">→</span></span>
         <ol class="ls-rows">${rows}</ol>
       </a>`;
