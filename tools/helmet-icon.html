@@ -1,0 +1,83 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,900&display=swap">
+<style>html,body{margin:0;background:#000}svg{display:block}</style></head>
+<body>
+<!-- Realistic ONE F1 helmet icon. ?theme=NAME renders one 1024px icon; tools/make_helmet.js screenshots it. -->
+<svg id="s" width="1024" height="1024" viewBox="0 0 1024 1024"></svg>
+<script>
+const THEMES = {
+  classic:   { label: "Carbon · pearl white · red",      bg: ["#16171B", "#050506"], weave: .05, shell: ["#FFFFFF", "#DCDFE4", "#8E949C"], stripe: ["#FF2A1F", "#A80800"], neon: "#FF2A1F", visor: ["#30343B", "#07080A"] },
+  gunmetal:  { label: "Gunmetal · pearl white · red",    bg: ["#3A3D44", "#101114"], weave: .06, shell: ["#FFFFFF", "#DCDFE4", "#8E949C"], stripe: ["#FF2A1F", "#A80800"], neon: "#FF2A1F", visor: ["#30343B", "#07080A"] },
+  midnight:  { label: "Midnight · pearl white · red",    bg: ["#14204A", "#03050D"], weave: .05, shell: ["#FFFFFF", "#DDE2EC", "#8A93A6"], stripe: ["#FF2A1F", "#A80800"], neon: "#FF3B30", visor: ["#2A3550", "#05070E"] },
+  blackgold: { label: "Black · gloss black · gold",      bg: ["#16151A", "#050505"], weave: .05, shell: ["#3A3B40", "#141518", "#050506"], stripe: ["#FFD978", "#A8761C"], neon: "#FFC94A", visor: ["#2B2A26", "#060605"] },
+  racingred: { label: "Racing red · chrome · black",     bg: ["#7A0A08", "#1A0101"], weave: .06, shell: ["#FFFFFF", "#C9CDD3", "#6E747C"], stripe: ["#2A2B2F", "#050506"], neon: "#FF2A1F", visor: ["#2A2C31", "#060607"] },
+  green:     { label: "Racing green · green · gold",     bg: ["#0E2A1C", "#020805"], weave: .05, shell: ["#2E7A55", "#0F4A2F", "#062616"], stripe: ["#FFD978", "#A8761C"], neon: "#FFC94A", visor: ["#22302A", "#040705"] },
+  titanium:  { label: "Titanium · satin silver · red",   bg: ["#D8DADE", "#8C9096"], weave: .04, shell: ["#F4F5F7", "#B9BDC4", "#6C7179"], stripe: ["#FF2A1F", "#A80800"], neon: "#FF2A1F", visor: ["#2E3238", "#08090A"] },
+  stealth:   { label: "Stealth · matte black · red",     bg: ["#101012", "#030303"], weave: .04, shell: ["#2A2B2F", "#121316", "#050506"], stripe: ["#FF2A1F", "#A80800"], neon: "#FF2A1F", visor: ["#1E2024", "#040405"], matte: true },
+};
+const th = THEMES[new URLSearchParams(location.search).get("theme") || "classic"];
+// helmet silhouette (side view, facing right) and its parts, in a 1024 box
+const SHELL = "M232 690 C196 560 214 420 300 330 C390 236 530 206 650 226 C770 246 852 318 880 420 C896 480 900 560 892 640 L888 690 C886 714 868 730 842 732 L262 732 C246 732 236 712 232 690 Z";
+const VISOR = "M560 392 L860 392 C880 392 894 408 894 428 L894 520 C894 540 880 556 860 556 L600 556 C574 556 552 540 548 514 L540 432 C537 410 545 392 560 392 Z";
+const STRIPE = "M216 618 L900 618 L898 664 L222 664 Z";
+const s = document.getElementById("s");
+s.innerHTML = `
+<defs>
+  <radialGradient id="bgg" cx="50%" cy="24%" r="80%"><stop offset="0" stop-color="${th.bg[0]}"/><stop offset="1" stop-color="${th.bg[1]}"/></radialGradient>
+  <linearGradient id="tw1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${th.weave}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="tw2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${th.weave}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <pattern id="twill" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="7" height="7" fill="url(#tw1)"/><rect x="7" y="7" width="7" height="7" fill="url(#tw1)"/>
+    <rect x="7" width="7" height="7" fill="url(#tw2)"/><rect y="7" width="7" height="7" fill="url(#tw2)"/></pattern>
+  <radialGradient id="vig" cx="50%" cy="45%" r="70%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  <linearGradient id="shell" x1="0.15" y1="0.05" x2="0.75" y2="1"><stop offset="0" stop-color="${th.shell[0]}"/><stop offset=".55" stop-color="${th.shell[1]}"/><stop offset="1" stop-color="${th.shell[2]}"/></linearGradient>
+  <radialGradient id="hot" cx="38%" cy="30%" r="42%"><stop offset="0" stop-color="#fff" stop-opacity="${th.matte ? .18 : .85}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <linearGradient id="ao" x1="0" y1="0" x2="0" y2="1"><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></linearGradient>
+  <linearGradient id="rimL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".08" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="stripe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.stripe[0]}"/><stop offset="1" stop-color="${th.stripe[1]}"/></linearGradient>
+  <linearGradient id="visor" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="${th.visor[0]}"/><stop offset="1" stop-color="${th.visor[1]}"/></linearGradient>
+  <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0.3"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity=".22"/><stop offset=".55" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <filter id="neon" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="3" result="a"/><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/><feGaussianBlur in="SourceGraphic" stdDeviation="28" result="c"/>
+    <feMerge><feMergeNode in="c"/><feMergeNode in="b"/><feMergeNode in="a"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="22"/></filter>
+  <filter id="soft2"><feGaussianBlur stdDeviation="3"/></filter>
+  <clipPath id="shellClip"><path d="${SHELL}"/></clipPath>
+  <clipPath id="visorClip"><path d="${VISOR}"/></clipPath>
+  <linearGradient id="reflFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <mask id="reflMask"><rect x="0" y="732" width="1024" height="300" fill="url(#reflFade)"/></mask>
+</defs>
+<rect width="1024" height="1024" fill="url(#bgg)"/><rect width="1024" height="1024" fill="url(#twill)"/>
+<g transform="translate(-44 -6)">
+<g id="helmet">
+  <path d="${SHELL}" fill="url(#shell)"/>
+  <g clip-path="url(#shellClip)">
+    <ellipse cx="420" cy="360" rx="300" ry="190" fill="url(#hot)"/>
+    <path d="${SHELL}" fill="url(#ao)"/>
+    <path d="${STRIPE}" fill="url(#stripe)"/>
+    <rect x="200" y="618" width="720" height="5" fill="#fff" opacity="${th.matte ? .12 : .45}"/>
+    <rect x="200" y="660" width="720" height="4" fill="#000" opacity=".35"/>
+    <path d="M300 300 C380 236 520 214 640 236" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" opacity="${th.matte ? .08 : .55}" filter="url(#soft2)"/>
+    <path d="M330 286 C420 238 520 226 600 234" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="${th.matte ? .12 : .9}"/>
+    <rect x="210" y="200" width="60" height="560" fill="url(#rimL)" opacity=".5"/>
+  </g>
+  <path d="${VISOR}" fill="none" stroke="#050506" stroke-width="16" stroke-linejoin="round"/>
+  <path d="${VISOR}" fill="url(#visor)"/>
+  <g clip-path="url(#visorClip)">
+    <text x="716" y="508" text-anchor="middle" style="font:italic 900 118px Archivo;font-stretch:125%;letter-spacing:-2px" fill="none" stroke="${th.neon}" stroke-width="7" filter="url(#neon)">F1</text>
+    <text x="716" y="508" text-anchor="middle" style="font:italic 900 118px Archivo;font-stretch:125%;letter-spacing:-2px" fill="none" stroke="#fff" stroke-width="1.6" opacity=".85">F1</text>
+    <path d="M520 392 L700 392 L600 556 L460 556 Z" fill="url(#sky)"/>
+    <rect x="560" y="398" width="300" height="8" rx="4" fill="#fff" opacity=".12"/>
+  </g>
+  <circle cx="866" cy="534" r="7" fill="#F2F2F0"/>
+  <g fill="#0B0C0E"><rect x="806" y="686" width="62" height="9" rx="4.5"/><rect x="800" y="704" width="56" height="9" rx="4.5"/></g>
+  <g fill="#fff" opacity=".25"><rect x="806" y="686" width="62" height="2" rx="1"/><rect x="800" y="704" width="56" height="2" rx="1"/></g>
+</g>
+<ellipse cx="556" cy="738" rx="350" ry="20" fill="#000" opacity=".75" filter="url(#soft)"/>
+<g mask="url(#reflMask)"><use href="#helmet" transform="translate(0 1464) scale(1 -1)"/></g>
+</g>
+<rect width="1024" height="1024" fill="url(#vig)"/>
+`;
+window.LABEL = th.label; window.THEMES = Object.keys(THEMES);
+</script>
+</body></html>
