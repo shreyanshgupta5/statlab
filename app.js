@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v61"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v62"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -643,6 +643,30 @@
       ${pens.length ? `<p class="note">↓ starts behind where they qualified (grid penalty or back-of-grid start): ${pens.map((id) => esc(lastName(id))).join(", ")}.</p>` : ""}`;
   }
 
+  // full weekend schedule in the viewer's own time zone, grouped by day; finished sessions dimmed, the next one marked
+  function weekendSchedule(r) {
+    const ss = r.sessions || [];
+    if (!ss.length) return "";
+    const now = Date.now();
+    const nextIdx = ss.findIndex((x) => new Date(x.end || x.start).getTime() > now);
+    const kind = (n) => /race/i.test(n) ? "race" : /sprint/i.test(n) ? "sprint" : /quali/i.test(n) ? "quali" : "prac";
+    const short = (n) => n.replace("Practice ", "FP").replace("Sprint Qualifying", "Sprint Quali");
+    const days = [];
+    ss.forEach((x, i) => {
+      const d = new Date(x.start), key = d.toDateString();
+      let day = days.find((g) => g.key === key);
+      if (!day) days.push(day = { key, label: d.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "short" }), rows: [] });
+      const t0 = d.getTime(), t1 = new Date(x.end || x.start).getTime();
+      const state = t1 < now ? "done" : t0 <= now ? "live" : i === nextIdx ? "next" : "";
+      const tag = state === "done" ? "Done" : state === "live" ? "Live" : state === "next" ? "Next" : "";
+      day.rows.push(`<li class="ws-row ${state ? "is-" + state : ""} k-${kind(x.name)}"><span class="ws-name">${esc(short(x.name))}</span>
+        <span class="ws-tag mono">${tag}</span><span class="ws-time mono">${d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</span></li>`);
+    });
+    const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "").replace(/_/g, " ");
+    return `${sectionHead("Weekend schedule", "Every session", `<p class="note">Times in your time zone${tz ? " (" + esc(tz) + ")" : ""}.</p>`)}
+      <div class="ws reveal">${days.map((g) => `<div class="ws-day"><span class="kicker">${esc(g.label)}</span><ul>${g.rows.join("")}</ul></div>`).join("")}</div>`;
+  }
+
   function viewPreview(round) {
     const r = raceByRound[round], P = PREVIEWS[round];
     const hist = P ? P.history : [];
@@ -675,6 +699,7 @@
         <span class="mono dim">${esc(localStart(r))} your time</span>
         <button class="cal" type="button" data-ics="${r.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
       </div>
+      ${weekendSchedule(r)}
       ${P && P.track ? `${sectionHead("Circuit", "Track layout")}<figure class="chart track reveal">${previewTrack(P.track)}<figcaption><span class="mono dim">Start/finish and direction of travel marked</span></figcaption></figure>` : ""}
       <div class="facts four reveal">
         ${fact("Length", P && P.lengthKm ? P.lengthKm.toFixed(3) : "–", "km")}
