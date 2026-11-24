@@ -2,7 +2,7 @@
 
 Claude Code skills for making @F1STATLAB reels and graphics: editing, captions, motion graphics, 3D, data animation. They live in `.claude/skills/` and load automatically in every Claude Code session on this branch.
 
-**111 skills** from 26 repos.
+**120 skills** from 27 repos.
 
 Each skill keeps its original licence file. Copied as published, with three local changes: two renamed skills (`tiktok-lower-thirds`, `webgl-threejs-animation`, to avoid duplicate names) and ghost-editor without its 16 MB of demo videos (`docs/media`).
 
@@ -16,6 +16,19 @@ Each skill keeps its original licence file. Copied as published, with three loca
 ## Settings
 
 `.claude/settings.json` sets `DO_NOT_TRACK=1` and `HYPERFRAMES_NO_TELEMETRY=1`, which turns off the anonymous usage tracking built into the HyperFrames media-use scripts.
+
+## Higgsfield AI
+
+The 9 official skills from [higgsfield-ai/skills](https://github.com/higgsfield-ai/skills) (MIT) are in `.claude/skills/higgsfield-*`. They drive Higgsfield's cloud models (Veo, Kling, Seedance, Soul, Nano Banana and more) through the `higgsfield` CLI, which needs a Higgsfield account with credits.
+
+One-time setup on the machine that will run them:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/higgsfield-ai/cli/main/install.sh | sh   # official installer; verifies a SHA-256 checksum
+higgsfield auth login                                                               # signs in to your Higgsfield account
+```
+
+`higgsfield-generate`, `higgsfield-video-explainer`, `higgsfield-faceless-video` and `higgsfield-youtube-thumbnail` are the most useful for reels.
 
 ## Skills by source
 
@@ -122,3 +135,7 @@ Each skill keeps its original licence file. Copied as published, with three loca
 ### [iart-ai/youtube-video-skills](https://github.com/iart-ai/youtube-video-skills) · MIT · 2
 
 `audiogram`, `youtube-intro-outro`
+
+### [higgsfield-ai/skills](https://github.com/higgsfield-ai/skills) · MIT · 9
+
+`higgsfield-brandkit`, `higgsfield-faceless-video`, `higgsfield-generate`, `higgsfield-marketplace-cards`, `higgsfield-product-photoshoot`, `higgsfield-soul-id`, `higgsfield-video-explainer`, `higgsfield-websites`, `higgsfield-youtube-thumbnail`
