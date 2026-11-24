@@ -957,3 +957,12 @@ html.splashing .top .wm { visibility: hidden; }
 .ws-tag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .ws-row.is-done { opacity: .45; }
 .ws-row.is-next .ws-tag, .ws-row.is-live .ws-tag { color: #fff; background: var(--red); padding: 3px 7px; border-radius: 999px; }
+
+/* v63: bigger, clearer dates on the weekend schedule */
+.ws-day { padding: 14px 14px 6px; }
+.ws-date { display: flex; align-items: center; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.ws-date b { font-family: var(--num, var(--mono)); font-size: 34px; font-weight: 700; line-height: 1; color: var(--fg); width: 58px; box-sizing: border-box; padding: 6px 0; text-align: center; font-variant-numeric: tabular-nums; border-radius: 10px; background: var(--card-2); box-shadow: inset 0 3px 0 var(--red); }
+.ws-date span { display: flex; flex-direction: column; gap: 2px; }
+.ws-date em { font-style: italic; font-weight: 900; font-stretch: 125%; font-size: 19px; text-transform: uppercase; color: var(--fg); }
+.ws-date small { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--soft, #B9BDC4); }
+.ws-day ul { margin-top: 2px; }

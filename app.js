@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v62"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v63"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -655,7 +655,7 @@
     ss.forEach((x, i) => {
       const d = new Date(x.start), key = d.toDateString();
       let day = days.find((g) => g.key === key);
-      if (!day) days.push(day = { key, label: d.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "short" }), rows: [] });
+      if (!day) days.push(day = { key, wd: d.toLocaleDateString(undefined, { weekday: "long" }), dn: d.getDate(), mo: d.toLocaleDateString(undefined, { month: "long" }), rows: [] });
       const t0 = d.getTime(), t1 = new Date(x.end || x.start).getTime();
       const state = t1 < now ? "done" : t0 <= now ? "live" : i === nextIdx ? "next" : "";
       const tag = state === "done" ? "Done" : state === "live" ? "Live" : state === "next" ? "Next" : "";
@@ -664,7 +664,7 @@
     });
     const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "").replace(/_/g, " ");
     return `${sectionHead("Weekend schedule", "Every session", `<p class="note">Times in your time zone${tz ? " (" + esc(tz) + ")" : ""}.</p>`)}
-      <div class="ws reveal">${days.map((g) => `<div class="ws-day"><span class="kicker">${esc(g.label)}</span><ul>${g.rows.join("")}</ul></div>`).join("")}</div>`;
+      <div class="ws reveal">${days.map((g) => `<div class="ws-day"><div class="ws-date"><b>${g.dn}</b><span><em>${esc(g.wd)}</em><small>${esc(g.mo)}</small></span></div><ul>${g.rows.join("")}</ul></div>`).join("")}</div>`;
   }
 
   function viewPreview(round) {
