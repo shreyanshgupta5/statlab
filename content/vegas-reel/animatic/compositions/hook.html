@@ -1,0 +1,65 @@
+<template>
+<style>
+@font-face { font-family: "Archivo"; src: url("assets/fonts/Archivo.ttf"); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: "Archivo"; src: url("assets/fonts/Archivo-Italic.ttf"); font-weight: 100 900; font-stretch: 62% 125%; font-style: italic; }
+@font-face { font-family: "Chakra Petch"; src: url("assets/fonts/ChakraPetch-SemiBold.ttf"); font-weight: 600; }
+@font-face { font-family: "Chakra Petch"; src: url("assets/fonts/ChakraPetch-Bold.ttf"); font-weight: 700; }
+#root { position: absolute; inset: 0; background: #0E0F12; color: #F2F2F0; overflow: hidden; font-family: "Archivo", sans-serif; }
+.kick { font: 500 30px "JetBrains Mono", monospace; letter-spacing: .16em; text-transform: uppercase; color: #FF5A4F; }
+.disp { font-family: "Archivo"; font-style: italic; font-weight: 900; font-stretch: 112%; text-transform: uppercase; line-height: .92; letter-spacing: -.01em; }
+.num { font-family: "Chakra Petch"; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mono { font-family: "JetBrains Mono", monospace; }
+  .src { position: absolute; left: 120px; width: 660px; font: 400 28px "JetBrains Mono", monospace; letter-spacing: .06em; color: #7D828C; }
+#h-title { position: absolute; left: 120px; top: 330px; width: 768px; font-size: 100px; }
+#h-title .r { color: #E10600; }
+#h-sub { position: absolute; left: 120px; top: 646px; width: 660px; font: 500 32px "Archivo"; color: #B9BDC4; line-height: 1.25; }
+#h-sub b { color: #F2F2F0; }
+#h-chart { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.bar.g { fill: #3A3E47; } .bar.sc { fill: #F5B700; opacity: .38; } .bar.best { fill: #F2F2F0; }
+#h-sclab { font: 600 28px "JetBrains Mono"; fill: #F5B700; letter-spacing: .12em; }
+#h-onelab { font: 600 28px "JetBrains Mono"; fill: #FF5A4F; letter-spacing: .1em; }
+#h-count { position: absolute; left: 120px; top: 1010px; width: 660px; display: flex; align-items: baseline; gap: 18px; }
+#h-count .v { font-size: 130px; line-height: 1; color: #F2F2F0; }
+#h-count .u { font: 700 54px "Chakra Petch"; color: #B9BDC4; }
+#h-count .l { font: 500 28px "JetBrains Mono"; letter-spacing: .12em; color: #7D828C; text-transform: uppercase; margin-left: auto; text-align: right; line-height: 1.3; }
+#h-src { top: 1190px; }
+#h-line { position: absolute; left: 120px; top: 818px; width: 768px; height: 4px; background: #E10600; transform-origin: 0 50%; }
+</style>
+<div id="root" data-composition-id="hook" data-width="1080" data-height="1920">
+  <div id="h-head" class="clip" data-start="0" data-duration="4.6" data-track-index="1">
+    <div id="h-kick" class="kick" style="position:absolute;left:120px;top:288px;">Las Vegas GP · gap P1 to P2</div>
+    <div id="h-title" class="disp">Under<br><span class="r">1 second.</span><br>Every lap.</div>
+    <div id="h-sub">All <b>43 of 43</b> green-flag laps. Verstappen never shook them.</div>
+  </div>
+  <svg id="h-chart" class="clip" data-start="0" data-duration="4.6" data-track-index="2" viewBox="0 0 1080 1920" data-layout-allow-overflow>
+    <g id="h-bars"><rect id="h-bar-1" class="bar g" x="122.0" y="949.7" width="11.4" height="40.3" rx="3"/><rect id="h-bar-2" class="bar g" x="137.4" y="971.3" width="11.4" height="18.7" rx="3"/><rect id="h-bar-3" class="bar g" x="152.7" y="873.7" width="11.4" height="116.3" rx="3"/><rect id="h-bar-4" class="bar g" x="168.1" y="898.4" width="11.4" height="91.6" rx="3"/><rect id="h-bar-5" class="bar g" x="183.4" y="974.0" width="11.4" height="16.0" rx="3"/><rect id="h-bar-6" class="bar g" x="198.8" y="929.1" width="11.4" height="60.9" rx="3"/><rect id="h-bar-7" class="bar g" x="214.2" y="940.5" width="11.4" height="49.5" rx="3"/><rect id="h-bar-8" class="bar best" x="229.5" y="984.9" width="11.4" height="5.1" rx="3"/><rect id="h-bar-9" class="bar g" x="244.9" y="982.9" width="11.4" height="7.1" rx="3"/><rect id="h-bar-10" class="bar g" x="260.2" y="962.1" width="11.4" height="27.9" rx="3"/><rect id="h-bar-11" class="bar g" x="275.6" y="928.3" width="11.4" height="61.7" rx="3"/><rect id="h-bar-12" class="bar g" x="291.0" y="932.9" width="11.4" height="57.1" rx="3"/><rect id="h-bar-13" class="bar g" x="306.3" y="935.1" width="11.4" height="54.9" rx="3"/><rect id="h-bar-14" class="bar g" x="321.7" y="958.4" width="11.4" height="31.6" rx="3"/><rect id="h-bar-15" class="bar g" x="337.0" y="852.5" width="11.4" height="137.5" rx="3"/><rect id="h-bar-16" class="bar g" x="352.4" y="922.2" width="11.4" height="67.8" rx="3"/><rect id="h-bar-17" class="bar g" x="367.8" y="963.1" width="11.4" height="26.9" rx="3"/><rect id="h-bar-18" class="bar g" x="383.1" y="962.0" width="11.4" height="28.1" rx="3"/><rect id="h-bar-19" class="bar sc" x="398.5" y="726.5" width="11.4" height="263.5" rx="3"/><rect id="h-bar-20" class="bar sc" x="413.8" y="765.4" width="11.4" height="224.6" rx="3"/><rect id="h-bar-21" class="bar sc" x="429.2" y="823.6" width="11.4" height="166.4" rx="3"/><rect id="h-bar-22" class="bar sc" x="444.6" y="862.8" width="11.4" height="127.2" rx="3"/><rect id="h-bar-23" class="bar sc" x="459.9" y="740.6" width="11.4" height="249.4" rx="3"/><rect id="h-bar-24" class="bar sc" x="475.3" y="767.6" width="11.4" height="222.4" rx="3"/><rect id="h-bar-25" class="bar sc" x="490.6" y="878.0" width="11.4" height="112.0" rx="3"/><rect id="h-bar-26" class="bar g" x="506.0" y="850.9" width="11.4" height="139.1" rx="3"/><rect id="h-bar-27" class="bar g" x="521.4" y="945.3" width="11.4" height="44.7" rx="3"/><rect id="h-bar-28" class="bar g" x="536.7" y="922.2" width="11.4" height="67.8" rx="3"/><rect id="h-bar-29" class="bar g" x="552.1" y="896.0" width="11.4" height="94.0" rx="3"/><rect id="h-bar-30" class="bar g" x="567.4" y="948.2" width="11.4" height="41.8" rx="3"/><rect id="h-bar-31" class="bar g" x="582.8" y="946.5" width="11.4" height="43.5" rx="3"/><rect id="h-bar-32" class="bar g" x="598.2" y="887.0" width="11.4" height="103.0" rx="3"/><rect id="h-bar-33" class="bar g" x="613.5" y="952.3" width="11.4" height="37.7" rx="3"/><rect id="h-bar-34" class="bar g" x="628.9" y="972.0" width="11.4" height="18.0" rx="3"/><rect id="h-bar-35" class="bar g" x="644.2" y="905.3" width="11.4" height="84.7" rx="3"/><rect id="h-bar-36" class="bar g" x="659.6" y="933.6" width="11.4" height="56.4" rx="3"/><rect id="h-bar-37" class="bar g" x="675.0" y="937.0" width="11.4" height="53.0" rx="3"/><rect id="h-bar-38" class="bar g" x="690.3" y="891.6" width="11.4" height="98.4" rx="3"/><rect id="h-bar-39" class="bar g" x="705.7" y="942.2" width="11.4" height="47.8" rx="3"/><rect id="h-bar-40" class="bar g" x="721.0" y="910.1" width="11.4" height="79.9" rx="3"/><rect id="h-bar-41" class="bar g" x="736.4" y="960.2" width="11.4" height="29.7" rx="3"/><rect id="h-bar-42" class="bar g" x="751.8" y="929.3" width="11.4" height="60.7" rx="3"/><rect id="h-bar-43" class="bar g" x="767.1" y="931.5" width="11.4" height="58.5" rx="3"/><rect id="h-bar-44" class="bar g" x="782.5" y="922.0" width="11.4" height="68.0" rx="3"/><rect id="h-bar-45" class="bar g" x="797.8" y="921.8" width="11.4" height="68.2" rx="3"/><rect id="h-bar-46" class="bar g" x="813.2" y="890.5" width="11.4" height="99.4" rx="3"/><rect id="h-bar-47" class="bar g" x="828.6" y="930.7" width="11.4" height="59.3" rx="3"/><rect id="h-bar-48" class="bar g" x="843.9" y="951.9" width="11.4" height="38.1" rx="3"/><rect id="h-bar-49" class="bar g" x="859.3" y="833.3" width="11.4" height="156.7" rx="3"/><rect id="h-bar-50" class="bar g" x="874.6" y="881.4" width="11.4" height="108.6" rx="3"/></g>
+    <text id="h-sclab" x="396" y="712">SAFETY CAR</text>
+    <text id="h-onelab" x="780" y="804" text-anchor="end">1 SECOND</text>
+  </svg>
+  <div id="h-line" class="clip" data-start="0" data-duration="4.6" data-track-index="3"></div>
+  <div id="h-count" class="clip" data-start="0" data-duration="4.6" data-track-index="4">
+    <span id="h-num" class="v num">1.000</span><span class="u">s</span>
+    <span class="l">Closest:<br>lap 8</span>
+  </div>
+  <div id="h-src" class="src clip" data-start="0" data-duration="4.6" data-track-index="5">P1–P2 gap, every lap · OpenF1</div>
+</div>
+<script>
+(() => {
+  const tl = gsap.timeline({ paused: true });
+  const bars = gsap.utils.toArray("#h-bars rect");
+  tl.fromTo("#h-line", { scaleX: 0 }, { scaleX: 1, duration: .5, ease: "power3.out" }, .1);
+  tl.fromTo(bars, { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: .32, ease: "power2.out", stagger: .026 }, .2);
+  tl.fromTo(["#h-sclab", "#h-onelab"], { opacity: 0 }, { opacity: 1, duration: .25 }, 1.0);
+  tl.to("#h-bars rect.g, #h-bars rect.sc", { opacity: .28, duration: .3 }, 2.0);
+  tl.fromTo("#h-bar-8", { fill: "#F2F2F0" }, { fill: "#E10600", duration: .2, repeat: 3, yoyo: true }, 2.0);
+  const n = { v: 1 };
+  tl.fromTo(n, { v: 1 }, { v: 0.03, duration: 1.3, ease: "power3.out",
+    onUpdate: () => { document.getElementById("h-num").textContent = n.v.toFixed(3); } }, 2.0);
+  tl.fromTo("#h-count", { opacity: 0 }, { opacity: 1, duration: .2 }, 1.95);
+  // hand-off: everything clears except the red 1-second line, which spans the frame
+  tl.to(["#h-head", "#h-bars", "#h-sclab", "#h-onelab", "#h-count", "#h-src"], { opacity: 0, duration: .35, ease: "power2.in" }, 3.95);
+  tl.to("#h-line", { x: -120, width: 1080, duration: .45, ease: "power3.inOut" }, 3.95);
+  window.__timelines["hook"] = tl;
+})();
+</script>
+</template>

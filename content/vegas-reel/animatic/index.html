@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0E0F12; }
+      #root { position: relative; width: 100%; height: 100%; }
+      #bg { position: absolute; inset: 0; background: #0E0F12; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.8" data-width="1080" data-height="1920">
+      <div id="bg"></div>
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="0" data-duration="4.6"
+        data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+      <div id="lastlap" data-composition-id="lastlap" data-composition-src="compositions/lastlap.html" data-start="4.6" data-duration="14.2"
+        data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+      <audio id="sfx-closest" class="clip" src="assets/sfx/kenney-interface-pluck-001.wav" data-start="2.033" data-duration="0.097" data-track-index="2" data-volume="0.7"></audio>
+      <audio id="sfx-cut" class="clip" src="assets/sfx/whoosh.wav" data-start="4.548" data-duration="0.424" data-track-index="2" data-volume="0.8"></audio>
+      <audio id="sfx-swap1" class="clip" src="assets/sfx/pop.wav" data-start="6.768" data-duration="0.114" data-track-index="2" data-volume="0.75"></audio>
+      <audio id="sfx-delta" class="clip" src="assets/sfx/pop.wav" data-start="11.315" data-duration="0.114" data-track-index="2" data-volume="0.75"></audio>
+      <audio id="sfx-swap2" class="clip" src="assets/sfx/kenney-interface-drop-002.wav" data-start="11.873" data-duration="0.186" data-track-index="2" data-volume="0.75"></audio>
+      <audio id="sfx-swap3" class="clip" src="assets/sfx/kenney-interface-pluck-001.wav" data-start="12.923" data-duration="0.097" data-track-index="2" data-volume="0.75"></audio>
+      <audio id="sfx-impact" class="clip" src="assets/sfx/impact.wav" data-start="14.495" data-duration="0.271" data-track-index="2" data-volume="1.0"></audio>
+      <audio id="sfx-riser" class="clip" src="assets/sfx/riser.wav" data-start="12.600" data-duration="2.015" data-track-index="3" data-volume="0.55"></audio>
+    </div>
+    <script>
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
