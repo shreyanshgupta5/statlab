@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v63"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v64"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -1068,6 +1068,19 @@
       timer = setInterval(tick, 30000);
     }
   }
+  // glass tab bar: see-through while scrolling down, frosted again on scrolling up, at the top, or at rest
+  (() => {
+    let lastY = scrollY, rest;
+    const root = document.documentElement;
+    addEventListener("scroll", () => {
+      const y = scrollY;
+      if (y > lastY + 2 && y > 40) root.classList.add("nav-clear");
+      else if (y < lastY - 2 || y <= 40) root.classList.remove("nav-clear");
+      lastY = y;
+      clearTimeout(rest); rest = setTimeout(() => root.classList.remove("nav-clear"), 1200);
+    }, { passive: true });
+  })();
+
   // navigating between pages: a short cross-fade (View Transitions where supported, a fade-in otherwise)
   window.addEventListener("hashchange", () => {
     if (document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches) { document.startViewTransition(route); return; }
