@@ -1,3 +1,4 @@
 .hyperframes/
 node_modules/
 renders/*-scratch.mp4
+renders/work-*/
