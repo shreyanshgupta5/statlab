@@ -1,0 +1,20 @@
+
+@font-face { font-family: "Oswald"; src: url("fonts/Oswald.ttf"); font-weight: 200 700; }
+@font-face { font-family: "Caveat"; src: url("fonts/Caveat.ttf"); font-weight: 400 700; }
+@font-face { font-family: "Archivo"; src: url("fonts/Archivo-Italic.ttf"); font-weight: 100 900; font-style: italic; }
+.ray { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.grain { position: absolute; inset: 0; background: url("tex/grain.png") 0 0 / 540px 960px; opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+.card { position: absolute; background: #F1E8D4; color: #2A2522; box-shadow: 0 18px 30px rgba(0,0,0,.35); }
+.card::after { content: ""; position: absolute; inset: 0; background: url("tex/grain.png") 0 0 / 540px 960px; opacity: .10; mix-blend-mode: multiply; }
+.ctitle { position: absolute; left: 30px; top: 20px; font: 700 40px "Oswald"; letter-spacing: .01em; text-transform: uppercase; }
+.hand { font-family: "Caveat"; font-weight: 700; }
+.stamp.solid { background: #F1E8D4; box-shadow: 0 8px 16px rgba(0,0,0,.3); }
+.tape { position: absolute; padding: 6px 24px 8px; background: rgba(238,224,186,.95); color: #2A2522; font: 700 46px "Caveat"; white-space: nowrap; box-shadow: 0 6px 12px rgba(0,0,0,.25); }
+.stamp { position: absolute; padding: 4px 20px; border: 7px solid #D7261E; color: #D7261E; font: 700 64px "Oswald"; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap;
+  -webkit-mask-image: url("tex/stamp-mask.png"); mask-image: url("tex/stamp-mask.png"); -webkit-mask-size: 300px 150px; mask-size: 300px 150px; }
+.big { position: absolute; font: 700 120px "Oswald"; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; text-shadow: 0 6px 0 rgba(0,0,0,.25); }
+.lab { font: 500 28px "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+.helm { position: absolute; filter: drop-shadow(0 16px 18px rgba(0,0,0,.4)); }
+.row3 { display: flex; justify-content: space-between; align-items: baseline; font: 700 46px "Oswald"; padding: 6px 0; border-top: 2px solid rgba(42,37,34,.18); }
+.row3:first-of-type { border-top: 0; }
+.row3 .n { font-size: 40px; text-transform: uppercase; } .row3.me { color: #C8102E; }
