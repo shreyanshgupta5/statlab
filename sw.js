@@ -2,8 +2,8 @@
    - The page and data.js: network first, so new results show up as soon as you deploy; cached copy when offline.
    - Everything else (styles, script, icons, fonts): cache first, refreshed in the background.
    Bump VERSION when you change styles.css or app.js so phones pick up the new files. */
-const VERSION = "statlab-v64";
-const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "duels.js", "previews.js", "racedetail.js", "lab.js", "play.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png"];
+const VERSION = "statlab-v65";
+const CORE = ["./", "index.html", "styles.css", "app.js", "data.js", "duels.js", "previews.js", "racedetail.js", "lab.js", "play.js", "stories.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
   // cache: "reload" skips the browser's HTTP cache, so a new version never stores the previous files
@@ -24,7 +24,7 @@ self.addEventListener("fetch", (e) => {
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (!sameOrigin && !isFont) return;
 
-  const fresh = req.mode === "navigate" || ["/data.js", "/previews.js", "/duels.js", "/racedetail.js", "/lab.js"].some((f) => url.pathname.endsWith(f));
+  const fresh = req.mode === "navigate" || ["/data.js", "/previews.js", "/duels.js", "/racedetail.js", "/lab.js", "/stories.js"].some((f) => url.pathname.endsWith(f));
   if (fresh) {
     e.respondWith(
       fetch(req)

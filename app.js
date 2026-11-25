@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v64"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v65"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -191,8 +191,7 @@
   // "today", "yesterday", "3 days ago", "2 weeks ago" from a session's start time
   const ago = (at) => { const d = Math.floor((Date.now() - at) / 86400000);
     return d <= 0 ? "today" : d === 1 ? "yesterday" : d < 14 ? `${d} days ago` : `${Math.floor(d / 7)} weeks ago`; };
-  function latestSession() {
-    const toSec = (t) => { if (t == null || t === "") return null; if (typeof t === "number") return t; const [m, x] = String(t).split(":"); return x == null ? +m : +m * 60 + +x; };
+  function latestCand() {
     const cands = [];
     S.RESULTS.forEach((r) => {
       const c = raceByRound[r.round]; const at = Date.parse(c.raceStart || c.date + "T14:00:00Z");
@@ -202,7 +201,11 @@
     Object.keys(S.QUALI_DETAIL || {}).map(Number).filter((rd) => !S.RESULTS.some((x) => x.round === rd)).forEach((rd) => {
       const c = raceByRound[rd]; cands.push({ kind: "quali", round: rd, at: Date.parse(c.raceStart || c.date + "T14:00:00Z") - 86400000 });
     });
-    const L = cands.sort((a, b) => b.at - a.at)[0];
+    return cands.sort((a, b) => b.at - a.at)[0];
+  }
+  function latestSession() {
+    const toSec = (t) => { if (t == null || t === "") return null; if (typeof t === "number") return t; const [m, x] = String(t).split(":"); return x == null ? +m : +m * 60 + +x; };
+    const L = latestCand();
     if (!L) return "";
     const c = raceByRound[L.round], info = (S.RACE_INFO || {})[L.round] || {};
     const label = { race: "Race", sprint: "Sprint", quali: "Qualifying" }[L.kind];
@@ -241,6 +244,138 @@
         <ol class="ls-rows">${rows}</ol>
       </a>`;
   }
+
+  /* ---------- stories: the circle row on the home page, Instagram-style ---------- */
+  const SKEY = "onef1.stories.seen.v1";
+  let seenStories = {}; try { seenStories = JSON.parse(localStorage.getItem(SKEY)) || {}; } catch (e) {}
+  const markSeen = (id) => { seenStories[id] = Date.now(); try { localStorage.setItem(SKEY, JSON.stringify(seenStories)); } catch (e) {} };
+  function buildStories() {
+    const out = [], nm = (id) => lastName(id);
+    // 1. the session that just finished: always first
+    const L = latestCand();
+    if (L) {
+      const c = raceByRound[L.round], info = (S.RACE_INFO || {})[L.round] || {}, place = info.location || c.place;
+      const kind = { race: "Race", sprint: "Sprint", quali: "Qualifying" }[L.kind];
+      const slides = [];
+      if (L.kind === "quali") {
+        const q = S.QUALI_DETAIL[L.round].filter((x) => x.best != null).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
+        const lap = (x) => x.q3 ?? x.q2 ?? x.q1;
+        slides.push({ kicker: `Qualifying · Round ${L.round} · ${place}`, title: `${nm(q[0].id)} on pole`, helmet: q[0].id, stat: lapTime(lap(q[0])), statLabel: "pole lap" });
+        slides.push({ kicker: "Front of the grid", rows: q.slice(0, 3).map((x, k) => [k + 1, x.id, k ? "+" + (lap(x) - lap(q[0])).toFixed(3) + "s" : lapTime(lap(x))]), link: `#/race/${L.round}`, linkText: "See the grid" });
+      } else {
+        const list = (L.kind === "race" ? L.res.race : L.rows).filter((x) => x.pos).sort((a, b) => a.pos - b.pos);
+        const w = list[0];
+        slides.push({ kicker: `${kind} · Round ${L.round} · ${place}`, title: `${nm(w.id)} wins`, helmet: w.id, stat: list[1] && list[1].gap != null ? list[1].gap.toFixed(3) + "s" : "", statLabel: list[1] && list[1].gap != null ? `winning margin over ${nm(list[1].id)}` : "" });
+        slides.push({ kicker: "The podium", rows: list.slice(0, 3).map((x, k) => [k + 1, x.id, k ? (x.gap != null ? "+" + x.gap.toFixed(3) + "s" : "") : "WIN"]) });
+        if (L.kind === "race") {
+          const gain = list.filter((x) => x.grid).map((x) => [x.grid - x.pos, x]).sort((a, b) => b[0] - a[0])[0];
+          if (gain && gain[0] > 2) slides.push({ kicker: "Climber of the day", title: `${nm(gain[1].id)}: P${gain[1].grid} to P${gain[1].pos}`, helmet: gain[1].id, stat: "+" + gain[0], statLabel: "places gained from the grid", link: `#/race/${L.round}`, linkText: "Open race analysis" });
+          else slides[slides.length - 1].link = `#/race/${L.round}`;
+        }
+      }
+      out.push({ id: `session-${L.kind}-${L.round}`, at: L.at, label: `${kind}`, cover: { text: c.flag }, color: "#E10600", slides });
+    }
+    // 2. hand-written burning stories
+    (window.STORIES || []).forEach((st) => out.push({ ...st, at: Date.parse(st.date + "T12:00:00Z") }));
+    // 3. the title fight
+    const ld = DS[0], p2 = DS[1];
+    if (ld && p2) out.push({ id: `standings-${S.RESULTS.length}`, at: L ? L.at : Date.now(), label: "Standings", cover: { helmet: ld.id }, color: "#F5B700",
+      slides: [{ kicker: `Championship · after ${S.RESULTS.length} rounds`, title: `${nm(ld.id)} leads by ${ld.points - p2.points}`, helmet: ld.id, stat: String(ld.points), statLabel: "points" },
+               { kicker: "Top three", rows: DS.slice(0, 3).map((x, k) => [k + 1, x.id, x.points + " pts"]), text: `${S.CALENDAR.length - S.RESULTS.length} race${S.CALENDAR.length - S.RESULTS.length === 1 ? "" : "s"} left.`, link: "#/", linkText: "Full standings" }] });
+    // 4. the next race weekend
+    if (upcoming) {
+      const fp = (upcoming.sessions || [])[0];
+      out.push({ id: `next-${upcoming.round}`, at: Date.now() - 3600000, label: `Next`, cover: { text: upcoming.flag }, color: "#3B6FD8",
+        slides: [{ kicker: `Next · Round ${upcoming.round}`, title: upcoming.name, text: `${fp ? `${fp.name.replace("Practice ", "FP")} starts ${new Date(fp.start).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}. ` : ""}Lights out ${localStart(upcoming)} your time.`, countdown: upcoming.raceStart || "", link: `#/race/${upcoming.round}`, linkText: "Weekend preview" }] });
+    }
+    // 5. the latest news, one story each
+    (NEWS || []).slice(0, 6).forEach((n) => out.push({ id: `news-${n.id}`, at: Date.parse(n.date + "T12:00:00Z"), label: n.tag.replace(/\.(com|net)$/i, ""), cover: n.image ? { img: n.image } : { text: n.tag.slice(0, 2).toUpperCase() }, color: "#B9BDC4",
+      slides: [{ kicker: `${n.tag} · ${fmtDate(n.date)}`, title: n.title, text: n.dek, img: n.image, link: `#/news/${n.id}`, linkText: "Read the story" }] }));
+    // unseen first (keeping order), seen after
+    return [...out.filter((x) => !seenStories[x.id]), ...out.filter((x) => seenStories[x.id])];
+  }
+  let STORY_LIST = [];
+  const storyCover = (st, size) => st.cover.helmet ? helmet(st.cover.helmet, { size, look: 2 })
+    : st.cover.img ? `<img src="${esc(st.cover.img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="sc-t">${esc(st.cover.text)}</span>`;
+  function storiesRow() {
+    STORY_LIST = buildStories();
+    if (!STORY_LIST.length) return "";
+    return `<div class="story-row" role="list" aria-label="Stories">${STORY_LIST.map((st, i) => {
+      const seen = !!seenStories[st.id], fresh = !seen && Date.now() - st.at < 36 * 3600000;
+      return `<button class="story-c ${seen ? "seen" : ""}" type="button" role="listitem" data-story="${i}" style="--sc:${st.color}" aria-label="${esc(st.label)} story${seen ? "" : ", new"}">
+        <span class="ring"><span class="disc">${storyCover(st, 50)}</span></span>${fresh ? `<span class="new">NEW</span>` : ""}<span class="lbl">${esc(st.label)}</span></button>`; }).join("")}</div>`;
+  }
+  const SLIDE_MS = 5500;
+  let SV = null;   // the open viewer: {si, k, t0, paused, pauseAt, raf}
+  function openStory(si) {
+    closeStory(true);
+    const v = document.createElement("div"); v.id = "storyv"; v.setAttribute("role", "dialog"); v.setAttribute("aria-label", "Story");
+    document.body.appendChild(v); document.documentElement.classList.add("story-open");
+    SV = { si, k: 0, t0: performance.now(), paused: false, el: v };
+    drawStory(); tickStory();
+    let down = null, held = false, holdT = null;
+    v.addEventListener("pointerdown", (e) => { if (e.target.closest("a,button")) return; down = { x: e.clientX, y: e.clientY }; held = false; holdT = setTimeout(() => { held = true; pauseStory(true); }, 220); });
+    v.addEventListener("pointerup", (e) => {
+      clearTimeout(holdT); if (!down) return;
+      const dy = e.clientY - down.y, dx = e.clientX - down.x; down = null;
+      if (held) { pauseStory(false); return; }
+      if (dy > 80 && Math.abs(dy) > Math.abs(dx)) { closeStory(); return; }
+      if (Math.abs(dx) > 60) { dx < 0 ? stepStory(99) : stepStory(-99); return; }
+      e.clientX < innerWidth * 0.3 ? stepStory(-1) : stepStory(1);
+    });
+    v.addEventListener("click", (e) => { if (e.target.closest("[data-sclose]")) closeStory(); else if (e.target.closest("a")) closeStory(true); });
+  }
+  function drawStory() {
+    const st = STORY_LIST[SV.si], sl = st.slides[SV.k]; markSeen(st.id);
+    const row = (r) => `<li style="--tc:${tc((driver[r[1]] || {}).team) || "#5E6470"}"><span class="num">${r[0]}</span>${helmet(r[1], { size: 44, look: 2 })}<b>${esc(lastName(r[1]))}</b><em class="num">${esc(r[2])}</em></li>`;
+    SV.el.style.setProperty("--sc", st.color);
+    SV.el.innerHTML = `<div class="sv-bars">${st.slides.map((_, j) => `<i class="${j < SV.k ? "done" : ""}"><b></b></i>`).join("")}</div>
+      <div class="sv-head"><span class="sv-cov">${storyCover(st, 34)}</span><b>${esc(st.label)}</b><span class="mono dim">${ago(st.at)}</span>
+        <button type="button" class="sv-x" data-sclose aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="sv-slide" key="${SV.si}-${SV.k}">
+        ${sl.img ? `<div class="sv-img" style="background-image:url('${esc(sl.img)}')"></div>` : ""}
+        <span class="kicker">${esc(sl.kicker || "")}</span>
+        ${sl.helmet ? `<div class="sv-helm">${helmet(sl.helmet, { size: 150, look: 3 })}</div>` : ""}
+        ${sl.title ? `<h2>${esc(sl.title)}</h2>` : ""}
+        ${sl.stat ? `<div class="sv-stat num">${esc(sl.stat)}</div>${sl.statLabel ? `<p class="sv-sl">${esc(sl.statLabel)}</p>` : ""}` : ""}
+        ${sl.countdown ? `<div class="sv-stat num countdown" data-start="${esc(sl.countdown)}"></div>` : ""}
+        ${sl.rows ? `<ol class="sv-rows">${sl.rows.map(row).join("")}</ol>` : ""}
+        ${sl.text ? `<p class="sv-text">${esc(sl.text)}</p>` : ""}
+        ${sl.link ? `<a class="sv-link" href="${esc(sl.link)}">${esc(sl.linkText || "Open")} →</a>` : ""}
+      </div>`;
+    SV.t0 = performance.now(); SV.pauseAt = null;
+    const cd = SV.el.querySelector(".sv-stat.countdown");
+    if (cd) { const ms = new Date(cd.dataset.start) - Date.now(); cd.textContent = ms <= 0 ? "Race weekend" : `${Math.floor(ms / 864e5)}d ${String(Math.floor((ms % 864e5) / 36e5)).padStart(2, "0")}h ${String(Math.floor((ms % 36e5) / 6e4)).padStart(2, "0")}m`; }
+  }
+  function tickStory() {
+    if (!SV) return;
+    const bar = SV.el.querySelectorAll(".sv-bars i")[SV.k];
+    const p = SV.paused ? (SV.pauseAt - SV.t0) / SLIDE_MS : (performance.now() - SV.t0) / SLIDE_MS;
+    if (bar) bar.firstChild.style.transform = `scaleX(${Math.min(1, p)})`;
+    if (!SV.paused && p >= 1) stepStory(1);
+    if (SV) SV.raf = requestAnimationFrame(tickStory);
+  }
+  function pauseStory(on) {
+    if (!SV) return;
+    if (on && !SV.paused) { SV.paused = true; SV.pauseAt = performance.now(); SV.el.classList.add("held"); }
+    else if (!on && SV.paused) { SV.t0 += performance.now() - SV.pauseAt; SV.paused = false; SV.el.classList.remove("held"); }
+  }
+  function stepStory(d) {
+    if (!SV) return;
+    const st = STORY_LIST[SV.si];
+    if (d === 99 || (d === 1 && SV.k + 1 >= st.slides.length)) { if (SV.si + 1 < STORY_LIST.length) { SV.si++; SV.k = 0; drawStory(); } else closeStory(); return; }
+    if (d === -99 || (d === -1 && SV.k === 0)) { if (SV.si > 0) { SV.si--; SV.k = 0; drawStory(); } else { SV.t0 = performance.now(); } return; }
+    SV.k += d; drawStory();
+  }
+  function closeStory(silent) {
+    if (!SV) return;
+    cancelAnimationFrame(SV.raf); const el = SV.el; SV = null;
+    document.documentElement.classList.remove("story-open");
+    el.classList.add("gone"); setTimeout(() => el.remove(), 250);
+    if (!silent && (location.hash === "" || location.hash === "#/")) { const y = scrollY; route(); scrollTo(0, y); }
+  }
+  addEventListener("keydown", (e) => { if (!SV) return; if (e.key === "Escape") closeStory(); else if (e.key === "ArrowRight") stepStory(1); else if (e.key === "ArrowLeft") stepStory(-1); });
+  addEventListener("hashchange", () => closeStory(true));
 
   function viewSeason() {
     const leader = DS[0], second = DS[1];
@@ -316,6 +451,7 @@
     }).join("");
 
     return `<div class="season">
+      ${storiesRow()}
       ${latestSession()}
 
       ${upcoming ? `<div class="next t-wet reveal">
@@ -1101,6 +1237,8 @@
     const pl = PLAY && PLAY.onClick(e);
     if (pl === "rerender") { const y = window.scrollY; route(); window.scrollTo(0, y); return; }
     if (pl) return;
+    const sto = e.target.closest("[data-story]");
+    if (sto) { openStory(+sto.dataset.story); return; }
     const ex = e.target.closest("[data-expand]");
     if (ex) { const ol = ex.previousElementSibling, open = ol.classList.toggle("collapsed") === false;
       ex.innerHTML = open ? `Show top 10 <svg viewBox="0 0 24 24" aria-hidden="true" style="transform:rotate(180deg)"><path d="M6 9l6 6 6-6"/></svg>` : `Show all ${ol.children.length} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
