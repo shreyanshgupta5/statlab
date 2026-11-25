@@ -1,0 +1,62 @@
+{
+ "fs-127197-fast-simple-chop-5-aif": {
+  "peak": 0.09,
+  "dur": 0.477,
+  "tp": -3.1
+ },
+ "fs-169867-swoosh": {
+  "peak": 0.995,
+  "dur": 2.136,
+  "tp": -3.1
+ },
+ "fs-177242-cinematic-impact": {
+  "peak": 2.992,
+  "dur": 3.997,
+  "tp": -3.2
+ },
+ "fs-222517-dramatic-hit": {
+  "peak": 0.322,
+  "dur": 3.978,
+  "tp": -3.2
+ },
+ "fs-264777-swoosh": {
+  "peak": 3.578,
+  "dur": 3.999,
+  "tp": -2.9
+ },
+ "impact": {
+  "peak": 0.058,
+  "dur": 0.271,
+  "tp": -3
+ },
+ "kenney-impact-impactpunch-heavy-000": {
+  "peak": 0.034,
+  "dur": 0.548,
+  "tp": -2.8
+ },
+ "kenney-impact-impactpunch-heavy-001": {
+  "peak": 0.029,
+  "dur": 0.439,
+  "tp": -2.8
+ },
+ "kenney-interface-drop-002": {
+  "peak": 0,
+  "dur": 0.186,
+  "tp": -2.9
+ },
+ "kenney-interface-pluck-001": {
+  "peak": 0,
+  "dur": 0.097,
+  "tp": -4.3
+ },
+ "pop": {
+  "peak": 0.005,
+  "dur": 0.113,
+  "tp": -2.8
+ },
+ "riser": {
+  "peak": 1.953,
+  "dur": 2.014,
+  "tp": -3.6
+ }
+}
