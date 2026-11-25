@@ -89,8 +89,74 @@ def chart_slide(s, t_in, t_out=None):
     s.sound('fs-127197-fast-simple-chop-5-aif', t_in + .2, .4)
     if t_out is not None: s.tw(f'tl.to("#{s.ch}-chart", {{opacity:0, y:-60, duration:.3, ease:"power2.in"}}, {t_out:.3f});')
 
+BIGWORD = {'hook': '5?', 'origins': '1981', 'renault': '2005', 'mclaren': '2007', 'f2010': '2010', 'f2012': '2012', 'honda': 'GP2',
+           'away': 'LE MANS', 'reveal': '8', 'today': '2026'}
+ACCENT = {'hook': '#E10600', 'origins': '#FFD200', 'renault': '#FFD200', 'mclaren': '#E10600', 'f2010': '#FFD200', 'f2012': '#FFFFFF',
+          'honda': '#FF8000', 'away': '#EB0A1E', 'reveal': '#E10600', 'today': '#CEDC00'}
+SHARED_CSS += '''
+.dots { position: absolute; left: -200px; top: -200px; width: 1480px; height: 2320px; opacity: .10;
+  background-image: radial-gradient(circle, #fff 2.2px, transparent 2.6px); background-size: 26px 26px; }
+.bigword { position: absolute; left: 0; top: 1290px; font: 700 520px "Oswald"; line-height: 1; white-space: nowrap; color: transparent;
+  -webkit-text-stroke: 4px rgba(255,255,255,.16); letter-spacing: -.02em; }
+.streak { position: absolute; height: 6px; border-radius: 3px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); }
+.sweep { position: absolute; left: 0; top: -300px; width: 900px; height: 2600px; transform-origin: 50% 50%; }
+.scrib { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+'''
+
+class Scene2(Scene):
+    def scribble(self, x, y, w, h, t, color='#FFD200', sw=7):
+        """Hand-drawn loop around a box, drawn on at t."""
+        rx, ry, cx, cy = w / 2 + 18, h / 2 + 14, x + w / 2, y + h / 2
+        pts = []
+        for i in range(0, 41):
+            a = -2.2 + i / 40 * 2 * math.pi * 1.08
+            wob = 1 + 0.05 * math.sin(i * 1.7)
+            pts.append(f'{cx + rx * wob * math.cos(a):.0f},{cy + ry * wob * math.sin(a):.0f}')
+        n = len(self.html); L = 2 * math.pi * math.sqrt((rx * rx + ry * ry) / 2) * 1.12
+        self.add(f'<svg class="scrib" viewBox="0 0 1080 1920" data-layout-ignore><path id="{self.ch}-sc{n}" d="M{" L".join(pts)}" fill="none" stroke="{color}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{L:.0f} {L:.0f}" stroke-dashoffset="{L:.0f}" opacity="0"/></svg>')
+        self.tw(f'tl.fromTo("#{self.ch}-sc{n}", {{opacity:1, attr:{{"stroke-dashoffset":{L:.0f}}}}}, {{opacity:1, attr:{{"stroke-dashoffset":0}}, duration:.45, ease:"power2.out"}}, {t:.3f});')
+    def stamp(self, sel, t, rot=-8):
+        Scene.stamp(self, sel, t, rot)
+        self.tw(f'tl.fromTo("{sel}", {{x:-5}}, {{x:5, duration:.04, repeat:3, yoyo:true, ease:"none"}}, {t + .2:.3f});')
+        self.tw(f'tl.to("{sel}", {{x:0, duration:.04}}, {t + .38:.3f});')
+    def write(self):
+        bg, ray_col, _ = ERA[self.ch]; p = self.ch; d = DUR[p]; acc = ACCENT[p]
+        streaks = ''.join(f'<div id="{p}-st{i}" class="streak" data-layout-ignore style="top:{260 + i * 610}px;left:-700px;width:{520 - i * 90}px"></div>' for i in range(3))
+        doc = f'''<template>
+<link rel="stylesheet" href="assets/film.css" />
+<style>
+#root {{ position: absolute; inset: 0; background: {bg}; overflow: hidden; color: #fff; }}
+</style>
+<div id="root" data-composition-id="{p}" data-width="{W}" data-height="{H}">
+  <div id="{p}-all" class="clip" data-start="0" data-duration="{d}" data-track-index="1" data-layout-allow-overlap>
+    {rays(p + '-rays', ray_col)}
+    <div id="{p}-dots" class="dots" data-layout-ignore></div>
+    <div id="{p}-big" class="bigword" data-layout-ignore>{BIGWORD[p]}</div>
+    {streaks}
+    <div id="{p}-cam" style="position:absolute;inset:0" data-layout-allow-overlap>{''.join(self.html)}</div>
+    <div id="{p}-sweep" class="sweep" style="background:{acc};{'display:none' if p == 'hook' else ''}" data-layout-ignore></div>
+    <div class="grain"></div>
+  </div>
+</div>
+<script>
+(() => {{
+  const tl = gsap.timeline({{ paused: true }});
+  tl.fromTo("#{p}-rays", {{ rotation: 0, svgOrigin: "540 960" }}, {{ rotation: {d * 3.2:.1f}, duration: {d}, ease: "none" }}, 0);
+  tl.fromTo("#{p}-dots", {{ x: 0, y: 0 }}, {{ x: {-d * 9:.0f}, y: {-d * 14:.0f}, duration: {d}, ease: "none" }}, 0);
+  tl.fromTo("#{p}-big", {{ x: 90 }}, {{ x: {90 - min(d * 9, 220):.0f}, duration: {d}, ease: "none" }}, 0);
+  tl.fromTo("#{p}-cam", {{ scale: 1, transformOrigin: "50% 40%" }}, {{ scale: 1.045, duration: {d}, ease: "none" }}, 0);
+  {"//" if "pcard" not in "".join(self.html) else ""}tl.fromTo("#{p}-all .pcard img", {{ scale: 1.0, xPercent: -2.5 }}, {{ scale: 1.14, xPercent: 2.5, duration: {d}, ease: "none" }}, 0);
+  {"//" if p == "hook" else ""}tl.fromTo("#{p}-sweep", {{ x: 1300, rotation: 14 }}, {{ x: -1400, rotation: 14, duration: .55, ease: "power2.inOut" }}, 0);
+  {chr(10).join(f'  tl.fromTo("#{p}-st{i}", {{ x: 0 }}, {{ x: 2400, duration: .7, ease: "power1.in", repeat: {int(d / 2.6)}, repeatDelay: {1.9 + i * .35:.2f} }}, {.4 + i * .8:.2f});' for i in range(3))}
+  {chr(10).join("  " + j for j in self.js)}
+  window.__timelines["{p}"] = tl;
+}})();
+</script>
+</template>'''
+        open(os.path.join(FILM, 'compositions', p + '.html'), 'w').write(doc)
+
 scenes = {}
-def S(ch): scenes[ch] = Scene(ch); return scenes[ch]
+def S(ch): scenes[ch] = Scene2(ch); return scenes[ch]
 
 # ---- 0 hook
 s = S('hook')
@@ -109,7 +175,7 @@ s.pop('#hk-name', s.at('Fernando'), .35)
 
 # ---- 1 origins
 s = S('origins'); hc = ERA['origins'][2]
-s.add('<div id="or-t1" class="tape" style="left:130px;top:300px">Oviedo · 1981</div>')
+s.add('<div id="or-t1" class="tape" style="left:130px;top:312px">Oviedo · 1981</div>')
 s.add(photo('or-k83', 'kart1983', 140, 370, 600, 470, 2))
 s.add('<div id="or-t2" class="tape" style="left:150px;top:900px;font-size:44px">his first kart, built by his father</div>')
 s.add('<div id="or-t3" class="tape" style="left:540px;top:800px;font-size:66px">age 3</div>')
@@ -130,22 +196,22 @@ s.tape('#or-t4', s.at('Formula', 1), 2)
 for x in ('#or-k96', '#or-st1', '#or-t4'): s.out(x, s.at('2001') - .3)
 s.card_in('#or-h', s.at('2001')); s.tape('#or-19', s.at('nineteen'), -3)
 s.stamp('#or-st2', s.at('Minardi'), -6)
-s.pop('#or-zero', s.at('zero')); s.fade('#or-zl', s.at('zero') + .2)
+s.pop('#or-zero', s.at('zero')); s.scribble(460, 500, 180, 250, s.at('zero') + .3, '#FFFFFF'); s.fade('#or-zl', s.at('zero') + .2)
 
 # ---- 2 Renault: the giants
 s = S('renault'); hc = ERA['renault'][2]
 s.add(photo('rn-big', 'renault', 120, 340, 580, 420, 4))
 s.add('<div id="rn-t1" class="tape" style="left:140px;top:300px">2003 · Hungary · first win</div>')
 s.add('<div id="rn-st1" class="stamp solid" style="left:180px;top:800px;font-size:52px">youngest winner</div>')
-s.add(photo('rn-schu', 'schumacher', 110, 300, 330, 380, 5))
-s.add('<div id="rn-schu-n" class="band" style="left:120px;top:640px">Schumacher</div>')
+s.add(photo('rn-schu', 'schu_face', 110, 300, 300, 340, 5))
+s.add('<div id="rn-schu-n" class="band" style="left:120px;top:610px">Schumacher</div>')
 s.add('<div id="rn-schu-s" class="stamp solid" style="left:150px;top:300px;font-size:44px">7 titles</div>')
-s.add(photo('rn-kimi', 'raikkonen', 470, 330, 400, 286, 6))
-s.add('<div id="rn-kimi-n" class="band" style="left:500px;top:590px">Räikkönen</div>')
-s.add('<div id="rn-kimi-t" class="tape" style="left:560px;top:660px">the Iceman</div>')
-s.add('<div id="rn-vs" class="big" style="left:430px;top:710px;font-size:110px;color:#FFD200">VS</div>')
-s.add(photo('rn-alo', 'renault_s', 230, 800, 420, 280, 7))
-s.add('<div id="rn-alo-n" class="band" style="left:250px;top:1030px;background:#FFD200;color:#0B3D91">Alonso</div>')
+s.add(photo('rn-kimi', 'kimi_face', 520, 320, 300, 340, 6))
+s.add('<div id="rn-kimi-n" class="band" style="left:530px;top:630px">Räikkönen</div>')
+s.add('<div id="rn-kimi-t" class="tape" style="left:580px;top:700px">the Iceman</div>')
+s.add('<div id="rn-vs" class="big" style="left:420px;top:680px;font-size:120px;color:#FFD200">VS</div>')
+s.add(photo('rn-alo', 'alo05_face', 300, 770, 260, 300, 7))
+s.add('<div id="rn-alo-n" class="band" style="left:310px;top:1030px;background:#FFD200;color:#0B3D91">Alonso · 23</div>')
 s.add(chart('renault', []))
 s.add(helmet('rn-h', hc, 220, 120, 770))
 s.add('<div id="rn-c1" class="big" style="left:380px;top:800px;font-size:92px"><span id="rn-a1">0</span><span style="color:#FFD200"> v </span>112</div>')
@@ -155,7 +221,7 @@ s.add('<div id="rn-l2" class="lab" style="position:absolute;left:384px;top:910px
 s.add('<div id="rn-dyn" class="tape" style="left:420px;top:990px;font-size:56px">a dynasty?</div>')
 s.card_in('#rn-big', 0, -2); s.tape('#rn-t1', s.at('Hungary'), -3); s.stamp('#rn-st1', s.at('youngest'), -5)
 for x in ('#rn-big', '#rn-t1', '#rn-st1'): s.out(x, s.at('giants') - .3)
-s.card_in('#rn-schu', s.at('Schumacher', 1), -5); s.fade('#rn-schu-n', s.at('Schumacher', 1) + .3); s.stamp('#rn-schu-s', s.at('seven'), -8)
+s.card_in('#rn-schu', s.at('Schumacher', 1), -5); s.fade('#rn-schu-n', s.at('Schumacher', 1) + .3); s.stamp('#rn-schu-s', s.at('seven'), -8); s.scribble(150, 300, 220, 70, s.at('seven') + .3, '#FFD200')
 s.card_in('#rn-kimi', s.at('Räikkönen', 1), 4); s.fade('#rn-kimi-n', s.at('Räikkönen', 1) + .3); s.tape('#rn-kimi-t', s.at('Iceman'), -3)
 s.pop('#rn-vs', s.at('McLaren')); s.card_in('#rn-alo', s.at('McLaren') + .2, -2); s.fade('#rn-alo-n', s.at('McLaren') + .5)
 for x in ('#rn-schu', '#rn-schu-n', '#rn-schu-s', '#rn-kimi', '#rn-kimi-n', '#rn-kimi-t', '#rn-vs', '#rn-alo', '#rn-alo-n'): s.out(x, s.at('2005') - .3)
@@ -172,8 +238,8 @@ s.tape('#rn-dyn', s.at('dynasty'), 3)
 s = S('mclaren'); hc = ERA['mclaren'][2]
 s.add(photo('mc-alo', 'alonso07', 110, 320, 360, 250, 8))
 s.add('<div id="mc-alo-n" class="band" style="left:120px;top:570px;font-size:42px">Alonso · 2× champ</div>')
-s.add(photo('mc-ham', 'hamilton07', 500, 470, 360, 250, 9))
-s.add('<div id="mc-ham-n" class="band" style="left:500px;top:720px;background:#FFD400;color:#111;font-size:46px">Hamilton · rookie</div>')
+s.add(photo('mc-ham', 'ham_face', 500, 420, 360, 300, 9))
+s.add('<div id="mc-ham-n" class="band" style="left:500px;top:740px;background:#FFD400;color:#111;font-size:40px">Hamilton · rookie</div>')
 dots = ''.join(f'<div id="mc-d{i}" style="position:absolute;left:{120 + i * 73}px;top:800px;width:62px;height:62px;border-radius:50%;background:{"#F4C430" if p == 1 else "#C9CED4" if p == 2 else "#CD7F32"};color:#111;font:700 30px Oswald;display:flex;align-items:center;justify-content:center">P{p}</div>'
                for i, p in enumerate([3, 2, 2, 2, 2, 1, 1, 3, 3]))
 s.add(dots)
@@ -201,19 +267,19 @@ s.fade('#mc-9', s.at('nine'))
 s.stamp('#mc-split', s.at('splits'), -6)
 for x in ('#mc-alo', '#mc-alo-n', '#mc-ham', '#mc-ham-n', '#mc-9', '#mc-split') + tuple(f'#mc-d{i}' for i in range(9)): s.out(x, s.at('Hungary') - .3)
 chart_slide(s, s.at('Hungary') - .2); s.card_in('#mc-h', s.at('Hungary'))
-s.card_in('#mc-c1', s.at('Hungary') + .1, 2); s.stamp('#mc-pen', s.at('sixth'), -7)
+s.card_in('#mc-c1', s.at('Hungary') + .1, 2); s.stamp('#mc-pen', s.at('sixth'), -7); s.scribble(520, 860, 160, 110, s.at('sixth') - .1)
 for x in ('#mc-c1', '#mc-pen'): s.out(x, s.at('Japan') - .25)
 s.card_in('#mc-c2', s.at('Japan'), -2); s.stamp('#mc-dnf', s.at('crashes'), 6)
 for x in ('#mc-c2', '#mc-dnf'): s.out(x, s.at('Brazil') - .25)
 s.card_in('#mc-c3', s.at('Brazil'), 1)
-s.bar('mclaren', 2007, s.at('one', 1))
+s.bar('mclaren', 2007, s.at('one', 1)); s.scribble(CX + BX0 + 2 * BSTEP - 10, CY + ZERO - 10, BW + 20, 80, s.at('one', 1) + .5, '#E10600')
 s.stamp('#mc-one', s.at('leaves'), -4)
 
 # ---- 4 Ferrari 2010
 s = S('f2010'); hc = ERA['f2010'][2]
-s.add(photo('f10-vet', 'vettel', 120, 380, 700, 300, 14))
-s.add('<div id="f10-vet-n" class="band" style="left:130px;top:690px;background:#1E3A8A">Vettel · Red Bull</div>')
-s.add('<div id="f10-fast" class="tape" style="left:420px;top:780px;font-size:48px">fastest car of the era</div>')
+s.add(photo('f10-vet', 'vet_face', 110, 320, 320, 380, 14)); s.add(photo('f10-alo', 'alo11_face', 500, 360, 320, 380, 19))
+s.add('<div id="f10-vet-n" class="band" style="left:120px;top:680px;background:#1E3A8A;font-size:44px">Vettel · Red Bull</div><div id="f10-alo-n" class="band" style="left:510px;top:720px;background:#DC0000;font-size:44px">Alonso · Ferrari</div><div id="f10-vs" class="big" style="left:430px;top:560px;font-size:110px;color:#FFD200">VS</div>')
+s.add('<div id="f10-fast" class="tape" style="left:140px;top:820px;font-size:48px">fastest car of the era</div>')
 s.add(chart('f2010', [2005, 2006, 2007]))
 s.add(helmet('f10-h', hc, 230, 120, 770))
 s.add(f'<div id="f10-c1" class="card" style="left:380px;top:740px;width:400px;height:330px;clip-path:{torn(21, 400, 330)}"><div class="ctitle">Before Abu Dhabi</div>'
@@ -227,8 +293,9 @@ s.add(f'<div id="f10-c2" class="card" style="left:120px;top:760px;width:660px;he
       '<div class="lab" style="position:absolute;left:280px;top:100px;color:#2A2522">Petrov</div></div>')
 s.add(helmet('f10-hm', hc, 110, 300, 900))
 s.add('<div id="f10-p7" class="stamp" style="left:560px;top:870px;font-size:80px">P7</div>')
-s.card_in('#f10-vet', s.at('Vettel', 1) - .2, -2); s.fade('#f10-vet-n', s.at('Vettel', 1) + .2); s.tape('#f10-fast', s.at('fastest'), 3)
-for x in ('#f10-vet', '#f10-vet-n', '#f10-fast'): s.out(x, s.at('Abu') - .3)
+s.card_in('#f10-alo', 0, 3); s.fade('#f10-alo-n', .3)
+s.card_in('#f10-vet', s.at('Vettel', 1) - .2, -3); s.fade('#f10-vet-n', s.at('Vettel', 1) + .2); s.pop('#f10-vs', s.at('Vettel', 1) + .3); s.tape('#f10-fast', s.at('fastest'), -2)
+for x in ('#f10-vet', '#f10-vet-n', '#f10-fast', '#f10-alo', '#f10-alo-n', '#f10-vs'): s.out(x, s.at('Abu') - .3)
 chart_slide(s, s.at('Abu') - .2); s.card_in('#f10-h', s.at('Abu'))
 s.card_in('#f10-c1', s.at('Abu') + .1, 2); s.tape('#f10-4th', s.at('Fourth'), -3)
 for x in ('#f10-c1', '#f10-4th', '#f10-h'): s.out(x, s.at('pits') - .25)
@@ -236,12 +303,12 @@ s.card_in('#f10-c2', s.at('pits'), -1)
 t0, t1 = s.at('comes'), s.at('Seventh') - .1
 s.fade('#f10-hm', t0, .25)
 s.tw(f'tl.fromTo("#f10-hm", {{x:-16, y:0}}, {{x:14, y:-8, duration:.32, ease:"sine.inOut", yoyo:true, repeat:{max(1, int((t1 - t0) / .32) - 1)}}}, {t0:.3f});')
-s.stamp('#f10-p7', s.at('Seventh'), -6)
-s.bar('f2010', 2010, s.at('four', 2))
+s.stamp('#f10-p7', s.at('Seventh'), -6); s.scribble(560, 870, 150, 110, s.at('Seventh') + .25, '#FFD200')
+s.bar('f2010', 2010, s.at('four', 2)); s.scribble(CX + BX0 + 3 * BSTEP - 10, CY + ZERO - 10, BW + 20, 90, s.at('four', 2) + .5, '#FFD200')
 
 # ---- 5 Ferrari 2012: the masterpiece
 s = S('f2012'); hc = ERA['f2012'][2]
-s.add(photo('f12-p', 'f2012', 120, 300, 640, 424, 15))
+s.add(photo('f12-p', 'alo_fists', 120, 300, 560, 380, 15))
 s.add('<div id="f12-mp" class="stamp solid" style="left:420px;top:300px;font-size:52px">masterpiece</div>')
 s.add('<div id="f12-g" class="big" style="left:120px;top:790px;font-size:110px;white-space:nowrap">GRID <span id="f12-gv">6.1</span></div>')
 s.add('<div id="f12-f" class="big" style="left:120px;top:910px;font-size:110px;white-space:nowrap;color:#FFD200">FINISH <span id="f12-fv">3.3</span></div>')
@@ -272,7 +339,7 @@ pts = [[round(px(i), 1), round(py(v), 1)] for i, v in enumerate(lead12)]
 s.tw('const P12 = ' + json.dumps(pts) + ', L12 = document.getElementById("f12-line"), g12 = {i: 0};')
 s.tw('const d12 = () => { const k = Math.floor(g12.i), f = g12.i - k; let d = "M" + P12[0]; for (let j = 1; j <= k && j < P12.length; j++) d += " L" + P12[j]; if (k + 1 < P12.length && f > 0) d += " L" + (P12[k][0] + (P12[k + 1][0] - P12[k][0]) * f) + "," + (P12[k][1] + (P12[k + 1][1] - P12[k][1]) * f); L12.setAttribute("d", d); };')
 s.tw(f'tl.fromTo(g12, {{i:0}}, {{i:{i_ger}, duration:1.2, ease:"power2.out", onUpdate:d12}}, {s.at("leads") + .3:.3f});')
-s.pop('#f12-dger', s.at('forty-four')); s.pop('#f12-44', s.at('forty-four') + .1)
+s.pop('#f12-dger', s.at('forty-four')); s.pop('#f12-44', s.at('forty-four') + .1); s.scribble(px(i_ger) - 70, py(44) - 74, 120, 70, s.at('forty-four') + .3, '#C8102E', 6)
 s.tw(f'tl.to(g12, {{i:{i_spa}, duration:.6, ease:"power2.inOut", onUpdate:d12}}, {s.at("Spa"):.3f});')
 s.stamp('#f12-spa', s.at('Spa') + .3, -6)
 s.tw(f'tl.to(g12, {{i:{i_suz}, duration:.6, ease:"power2.inOut", onUpdate:d12}}, {s.at("Suzuka"):.3f});')
@@ -290,13 +357,13 @@ s.add('<div id="hd-q" class="big" style="left:120px;top:740px;font-size:120px;li
 s.add('<div id="hd-ql" class="lab" style="position:absolute;left:126px;top:1000px;font-size:28px">team radio · Suzuka 2015</div>')
 s.add('<div id="hd-0" class="big" style="left:120px;top:720px;font-size:260px">0</div>')
 s.add('<div id="hd-0l" class="lab" style="position:absolute;left:330px;top:820px;font-size:34px;line-height:1.35">podiums<br>in four seasons</div>')
-s.add('<div id="hd-st" class="stamp solid" style="left:140px;top:1000px;font-size:60px">gone · 2018</div>')
+s.add('<div id="hd-st" class="stamp solid" style="left:140px;top:1010px;font-size:60px">gone · 2018</div>')
 s.card_in('#hd-p', 0, -2); s.fade('#hd-n', .3)
 s.stamp('#hd-dis', s.at('disaster'), -6)
 s.pop('#hd-q', s.at('GP2'), .35); s.fade('#hd-ql', s.at('GP2') + .3)
 for x in ('#hd-q', '#hd-ql'): s.out(x, s.at('Zero') - .3)
-s.pop('#hd-0', s.at('Zero')); s.fade('#hd-0l', s.at('Zero') + .2)
-s.stamp('#hd-st', s.at('walks'), -4)
+s.pop('#hd-0', s.at('Zero')); s.scribble(120, 760, 170, 230, s.at('Zero') + .3, '#FF8000'); s.fade('#hd-0l', s.at('Zero') + .2)
+s.add(photo('hd-face', 'alo_mcl_face', 470, 700, 300, 300, 20)); s.out('#hd-0l', s.at('walks') - .45); s.card_in('#hd-face', s.at('walks') - .3, 4); s.stamp('#hd-st', s.at('walks'), -4)
 
 # ---- 7 away and back
 s = S('away'); hc = ERA['away'][2]
@@ -322,7 +389,7 @@ for i, (y, word, el) in enumerate(((2007, 'One', '#rv-1'), (2010, 'Four', '#rv-4
     s.tw(f'tl.fromTo("#reveal-b{y}", {{scaleY:1}}, {{scaleY:2.2, transformOrigin:"50% 0%", duration:.18, yoyo:true, repeat:1, ease:"power2.out"}}, {t:.3f});')
     s.pop(el, t, .25); s.sound('pop', t + .1, .7)
     if i: s.fade(f'#rv-p{i}', t - .1, .2)
-s.pop('#rv-8', s.at('Eight'), .4); s.fade('#rv-8l', s.at('Eight') + .3)
+s.pop('#rv-8', s.at('Eight'), .4); s.scribble(220, 950, 230, 230, s.at('Eight') + .4, '#FFD200', 9); s.fade('#rv-8l', s.at('Eight') + .3)
 s.sound('riser', s.at('Eight') + 1 / 30 - 1.953, .5); s.sound('fs-222517-dramatic-hit', s.at('Eight') + 1 / 30 - .322, .8)
 
 # ---- 9 today
@@ -346,6 +413,45 @@ s.fade('#td-end', end_t, .4)
 
 for sc in scenes.values(): sc.write()
 
-# captions, sound and root: same as v1
-exec(src[src.index('# ------------------------------------------------------------------ captions'):src.index("print('total'")], globals())
+# captions: 2-3 words, broken at punctuation; the word being spoken turns yellow
+caps, cur = [], []
+for ch, w, st, en in words:
+    cur.append((w, st, en))
+    if len(cur) == 3 or w[-1] in '.,:' or (len(cur) == 2 and len(''.join(x[0] for x in cur)) > 15):
+        caps.append(cur); cur = []
+if cur: caps.append(cur)
+groups, hl = [], []
+for i, g in enumerate(caps):
+    st = g[0][1]; en = caps[i + 1][0][1] if i + 1 < len(caps) and caps[i + 1][0][1] - g[-1][2] < .9 else g[-1][2] + .35
+    spans = []
+    for j, (w, a, b) in enumerate(g):
+        spans.append(f'<span id="cw{i}-{j}">{w.rstrip(".,:").replace(chr(39), "’").upper()}</span>')
+        hl.append((f'#cw{i}-{j}', a, (g[j + 1][1] if j + 1 < len(g) else en)))
+    groups.append((round(st - .05, 3), round(en - st, 3), ' '.join(spans)))
+cap_html = '\n'.join(f'    <div id="cap-{i}" class="cap clip" data-start="{s_:.3f}" data-duration="{d:.3f}" data-track-index="1"><div class="in" id="capin-{i}">{t}</div></div>' for i, (s_, d, t) in enumerate(groups))
+cap_js = '\n'.join(f'  tl.fromTo("#capin-{i}", {{opacity:0, y:18, scale:.9}}, {{opacity:1, y:0, scale:1, duration:.14, ease:"back.out(2)"}}, {s_:.3f});' for i, (s_, d, t) in enumerate(groups))
+cap_js += '\n' + '\n'.join(f'  tl.fromTo("{sel}", {{color:"#FFFFFF"}}, {{color:"#FFD200", duration:.06}}, {a:.3f}); tl.to("{sel}", {{color:"#FFFFFF", duration:.06}}, {max(a + .07, b - .03):.3f});' for sel, a, b in hl)
+cap_doc = f'''<template>
+<link rel="stylesheet" href="assets/film.css" />
+<style>
+#root {{ position: absolute; inset: 0; }}
+.cap {{ position: absolute; left: 120px; width: 660px; top: 1130px; text-align: center; }}
+.cap .in {{ display: inline-block; font: 700 68px "Oswald"; letter-spacing: .01em; color: #fff; line-height: 1.05;
+  text-shadow: 0 4px 0 rgba(0,0,0,.6), 0 0 18px rgba(0,0,0,.55); }}
+.cap .in span {{ color: #fff; }}
+</style>
+<div id="root" data-composition-id="captions" data-width="{W}" data-height="{H}">
+{cap_html}
+</div>
+<script>
+(() => {{
+  const tl = gsap.timeline({{ paused: true }});
+{cap_js}
+  window.__timelines["captions"] = tl;
+}})();
+</script>
+</template>'''
+open(os.path.join(FILM, 'compositions', 'captions.html'), 'w').write(cap_doc)
+open(os.path.join(FILM, 'assets', 'film.css'), 'w').write(SHARED_CSS)
+exec(src[src.index('# ------------------------------------------------------------------ sound and root'):src.index("print('total'")], globals())
 print('total', TOTAL, 's |', ' '.join(f'{c} {START[c]}+{DUR[c]}' for c in CH), '|', len(groups), 'captions,', len(audio), 'sounds')

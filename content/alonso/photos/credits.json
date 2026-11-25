@@ -1,19 +1,5 @@
 [
  {
-  "use": "Schumacher, Ferrari",
-  "title": "FERRARI-F1",
-  "creator": "jonycunha",
-  "license": "CC BY-SA 2.0",
-  "source": "https://www.flickr.com/photos/40279385@N08/3907226140"
- },
- {
-  "use": "Räikkönen, McLaren 2005",
-  "title": "Kimi Raikkonen 2005 USA",
-  "creator": "Jeff Wunrow from Minneapolis, MN, USA",
-  "license": "CC BY 2.0",
-  "source": "https://commons.wikimedia.org/w/index.php?curid=3249947"
- },
- {
   "use": "Alonso, Renault 2006",
   "title": "Fernando Alonso 2006 Canada",
   "creator": "taken by TMWolf",
@@ -35,32 +21,11 @@
   "source": "https://www.flickr.com/photos/60123499@N06/12267174085"
  },
  {
-  "use": "Hamilton, McLaren 2007",
-  "title": "Lewis Hamilton 2007 Canada",
-  "creator": "Mark McArdle from Canada",
-  "license": "CC BY-SA 2.0",
-  "source": "https://commons.wikimedia.org/w/index.php?curid=4196165"
- },
- {
   "use": "Alonso, McLaren 2007",
   "title": "Fernando Alonso 2007 Britain",
   "creator": "Martin Pettitt from Bury St Edmunds, UK",
   "license": "CC BY 2.0",
   "source": "https://commons.wikimedia.org/w/index.php?curid=2539818"
- },
- {
-  "use": "Alonso, Hamilton and Vettel 2012",
-  "title": "Alonso, Hamilton and Vettel",
-  "creator": "nic_r",
-  "license": "CC BY-SA 2.0",
-  "source": "https://www.flickr.com/photos/37256969@N08/7455551672"
- },
- {
-  "use": "Vettel, Red Bull 2012",
-  "title": "2012 British GP - Vettel (rotate)",
-  "creator": "Daniel Herrick LBIPP",
-  "license": "CC BY-SA 2.0",
-  "source": "https://commons.wikimedia.org/w/index.php?curid=20224762"
  },
  {
   "use": "Alonso, McLaren-Honda 2016",
@@ -82,5 +47,75 @@
   "creator": "Liauzh",
   "license": "CC BY 4.0",
   "source": "https://commons.wikimedia.org/w/index.php?curid=186479106"
+ },
+ {
+  "use": "Alonso's first kart, 1983 (Museo Fernando Alonso)",
+  "title": "Fernando Alonso 1983 kart front-left 2017 Museo Fernando Alonso",
+  "creator": "Morio",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/w/index.php?curid=79420601"
+ },
+ {
+  "use": "Schumacher, Ferrari 2005",
+  "title": "Wrooom 2005, Madonna di Campiglio",
+  "creator": "schumachergirl1956",
+  "license": "CC BY 2.0",
+  "source": "https://www.flickr.com/photos/8127814@N07/1370504111"
+ },
+ {
+  "use": "Räikkönen portrait 2008",
+  "title": "Kimi Raikkonen portrait 2008",
+  "creator": "Yuki Shimazu",
+  "license": "CC BY-SA 2.0",
+  "source": "https://commons.wikimedia.org/w/index.php?curid=20664512"
+ },
+ {
+  "use": "Alonso, 2005 San Marino GP podium",
+  "title": "Alonso, 2005 San Marino Grand Prix Podium",
+  "creator": "File:GP Imola2005 Podium.jpg: http://formula1photos.tn38.net/ derivative work: Minerva97",
+  "license": "CC BY-SA 2.5",
+  "source": "https://commons.wikimedia.org/w/index.php?curid=88417950"
+ },
+ {
+  "use": "Vettel, Red Bull",
+  "title": "LG전자, 전 세계 F1™팬 사로잡았다",
+  "creator": "LGEPR",
+  "license": "CC BY 2.0",
+  "source": "https://www.flickr.com/photos/32985045@N08/5108599443"
+ },
+ {
+  "use": "Alonso, Ferrari 2011",
+  "title": "ALONSO BRITISH GP 2011 (3)",
+  "creator": "PresidenBertho",
+  "license": "CC BY-SA 2.0",
+  "source": "https://www.flickr.com/photos/60123499@N06/6033914948"
+ },
+ {
+  "use": "Alonso celebrating, British GP 2011",
+  "title": "ALONSO BRITISH GP 2011 (4)",
+  "creator": "PresidenBertho",
+  "license": "CC BY-SA 2.0",
+  "source": "https://www.flickr.com/photos/60123499@N06/6033351587"
+ },
+ {
+  "use": "Alonso, McLaren (F1 Live London)",
+  "title": "A smile from McLaren driver Fernando Alonso at F1 Live in London",
+  "creator": "Ben Sutherland",
+  "license": "CC BY 2.0",
+  "source": "https://www.flickr.com/photos/60179301@N00/35054347174"
+ },
+ {
+  "use": "Hamilton, McLaren (British GP)",
+  "title": "British GP - Lewis Hamilton",
+  "creator": "First Stop - Bridgestone's UK tyre retail network",
+  "license": "CC BY 2.0",
+  "source": "https://www.flickr.com/photos/52942783@N08/5083057421"
+ },
+ {
+  "use": "Alonso, Aston Martin 2025 (Japan GP fanzone)",
+  "title": "2025 Japan GP - Aston Martin - Fernando Alonso - Fanzone Stage",
+  "creator": "Liauzh",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/w/index.php?curid=163502497"
  }
 ]

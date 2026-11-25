@@ -22,3 +22,11 @@
 .pcard { position: absolute; background: #F1E8D4; box-shadow: 0 18px 30px rgba(0,0,0,.42); }
 .pcard img { position: absolute; left: 14px; top: 14px; object-fit: cover; }
 .band { position: absolute; padding: 4px 18px; background: #111; color: #fff; font: 700 52px "Oswald"; text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+
+.dots { position: absolute; left: -200px; top: -200px; width: 1480px; height: 2320px; opacity: .10;
+  background-image: radial-gradient(circle, #fff 2.2px, transparent 2.6px); background-size: 26px 26px; }
+.bigword { position: absolute; left: 0; top: 1290px; font: 700 520px "Oswald"; line-height: 1; white-space: nowrap; color: transparent;
+  -webkit-text-stroke: 4px rgba(255,255,255,.16); letter-spacing: -.02em; }
+.streak { position: absolute; height: 6px; border-radius: 3px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); }
+.sweep { position: absolute; left: 0; top: -300px; width: 900px; height: 2600px; transform-origin: 50% 50%; }
+.scrib { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
