@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v65"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v66"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -96,7 +96,16 @@
   };
   const SKIN = { ALB: "#D9A982", BOR: "#D8A47E", COL: "#E2B48E", PER: "#D29A72", LIN: "#C98F68", HAD: "#E2B48E", SAI: "#E2B48E", ALO: "#E2B48E", TSU: "#EBC3A0", HIR: "#EBC3A0" };
   let hid = 0;
-  function helmet(id, { size = 96, look = 0, cls = "", colors = null } = {}) {
+  // a driver's cartoon portrait (portraits.js) wherever a helmet is drawn; the helmet stays as the fallback
+  function helmet(id, opts = {}) {
+    const P = (window.PORTRAITS || {})[id];
+    if (!P || opts.colors) return helmetSVG(id, opts);
+    const size = opts.size || 96, d = driver[id];
+    const ring = d && team[d.team] ? team[d.team].color : "#8D939B";
+    return `<span class="portrait ${opts.cls || ""}" style="width:${size}px;height:${Math.round(size * 480 / 440)}px;--pr:${ring}">
+      <img src="${esc(P.src || P)}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg');this.remove()">${helmetSVG(id, opts)}</span>`;
+  }
+  function helmetSVG(id, { size = 96, look = 0, cls = "", colors = null } = {}) {
     const d = driver[id];
     const base = d && team[d.team] ? team[d.team].color : "#8D939B";
     const [h1, h2, h3, skin, iris, mood] = colors || LOOK[id] || [base, "#F2F2F0", "#16181C", SKIN[id] || "#EFC29C", "#5A4632", "focus"];
