@@ -114,7 +114,7 @@ class Scene2(Scene):
             pts.append(f'{cx + rx * wob * math.cos(a):.0f},{cy + ry * wob * math.sin(a):.0f}')
         n = len(self.html); L = 2 * math.pi * math.sqrt((rx * rx + ry * ry) / 2) * 1.12
         self.add(f'<svg class="scrib" viewBox="0 0 1080 1920" data-layout-ignore><path id="{self.ch}-sc{n}" d="M{" L".join(pts)}" fill="none" stroke="{color}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{L:.0f} {L:.0f}" stroke-dashoffset="{L:.0f}" opacity="0"/></svg>')
-        self.tw(f'tl.fromTo("#{self.ch}-sc{n}", {{opacity:1, attr:{{"stroke-dashoffset":{L:.0f}}}}}, {{opacity:1, attr:{{"stroke-dashoffset":0}}, duration:.45, ease:"power2.out"}}, {t:.3f});')
+        self.tw(f'tl.fromTo("#{self.ch}-sc{n}", {{opacity:0, attr:{{"stroke-dashoffset":{L:.0f}}}}}, {{opacity:1, attr:{{"stroke-dashoffset":0}}, duration:.45, ease:"power2.out"}}, {t:.3f});')
     def stamp(self, sel, t, rot=-8):
         Scene.stamp(self, sel, t, rot)
         self.tw(f'tl.fromTo("{sel}", {{x:-5}}, {{x:5, duration:.04, repeat:3, yoyo:true, ease:"none"}}, {t + .2:.3f});')
