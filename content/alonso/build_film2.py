@@ -13,16 +13,13 @@ W, H, FPS = 1080, 1920, 30
 VO = [
     ('hook', "Two world titles. Eight points from five. This is the story of Fernando Alonso, and the championships that got away."),
     ('origins', "Oviedo, northern Spain. His father, a mechanic who raced karts for fun, built a kart for Fernando's older sister. She didn't want it. Fernando, aged three, did. By fifteen he was junior world karting champion. Formula Nissan champion at eighteen. And in 2001, at nineteen, he was on the Formula One grid, with Minardi. He scored zero points."),
-    ('renault', "Renault saw something. In 2003 he wins in Hungary, the youngest winner Formula One had ever seen. Then he takes on the two giants of his time. Michael Schumacher: seven world titles. Kimi Räikkönen: the Iceman, in a McLaren that was often the fastest car on the grid. In 2005, Alonso beats Räikkönen to the title. In 2006, he beats Schumacher, head to head. Two titles by twenty-five. Everyone expected a dynasty."),
+    ('renault', "Renault saw something. In 2003 he wins in Hungary, the youngest winner Formula One had ever seen. Then he takes on the two giants of his time. Michael Schumacher: seven world titles. Kimi Räikkönen: the Iceman, in a McLaren that was often the fastest car on the grid. 2005. Räikkönen wins seven races. So does Alonso. Räikkönen sets ten fastest laps. Alonso sets two. But twice, the McLaren breaks down after starting from pole. Alonso is on the podium fifteen times, and wins the title by twenty-one points. 2006. Schumacher, in his last season with Ferrari. Seven wins each, again. Alonso's fourteen podiums take the title by thirteen. Two titles by twenty-five. Everyone expected a dynasty."),
     ('mclaren', "2007. The double champion joins McLaren. His teammate: a rookie called Lewis Hamilton. Alonso expects to lead. Instead, Hamilton finishes on the podium in each of his first nine races. The garage splits. In Hungary, Alonso holds Hamilton up in the pit lane and is moved from pole to sixth. In Japan, he crashes out in the rain. And in Brazil, Räikkönen steals the title from both of them. Alonso misses it by one point. After one season, he leaves."),
     ('f2010', "2010. Ferrari. Against him: Sebastian Vettel, and a Red Bull that was the fastest car of the era. Abu Dhabi, the final race. Alonso leads the championship. Fourth would be enough. Ferrari pits him early, he comes out behind Petrov's Renault, and he never gets past. Seventh. Vettel is champion by four points."),
-    ('f2012', "2012 is his masterpiece. His Ferrari starts sixth on average. He finishes third on average, with thirteen podiums and more than double his teammate's points. He leads by forty-four in July. Then two first-lap crashes, at Spa and Suzuka. Vettel wins it by three."),
-    ('honda', "2015. Back to McLaren, now with Honda. It's a disaster. In Japan he says it on the radio: GP2 engine. Four seasons. Zero podiums. In 2018, he walks away from Formula One."),
-    ('away', "So he goes looking for other wins. Le Mans, twice, with Toyota. The Indy 500. The Dakar. Then in 2021, he comes back: a podium with Alpine at forty, and eight more with Aston Martin in 2023."),
-    ('reveal', "One point. Four points. Three points. Eight points between two titles and five."),
-    ('today', "Now he's forty-five. Four hundred and forty-nine Grands Prix. His last win: Spain, 2013. This year, seven points from twenty-one races. But he's still here, chasing one thing. Win number thirty-three."),
+    ('f2012', "2012 is his masterpiece. His Ferrari starts sixth on average. He finishes third on average, with thirteen podiums and more than double his teammate's points. He leads by forty-four in July. Then two first-lap crashes, at Spa and Suzuka. Vettel wins it by three. One point. Four points. Three points. Eight points from five titles."),
+    ('today', "2026. He's forty-five, and he's still out there. Four hundred and forty-nine Grands Prix. Thirty-two wins, the last in Spain, 2013. In 2025, Aston Martin signed Adrian Newey, the designer of the Red Bulls that beat him in 2010 and 2012. Now Newey's car is his car. And Fernando Alonso is still chasing one last title."),
 ]
-SPOKEN_LEN = {'2001': 4, '2003': 4, '2005': 4, '2006': 4, '2007': 4, '2010': 3, '2012': 3, '2013': 3, '2015': 3, '2018': 3, '2021': 3, '2023': 3,
+SPOKEN_LEN = {'2001': 4, '2003': 4, '2005': 4, '2006': 4, '2007': 4, '2010': 3, '2012': 3, '2013': 3, '2015': 3, '2025': 4, '2026': 4, 'thirty-two': 3, '2018': 3, '2021': 3, '2023': 3,
               'twenty-five': 3, 'forty-four': 3, 'forty-five': 3, 'twenty-one': 3, 'thirty-three': 3, 'first-lap': 2, 'GP2': 3, '500': 3}
 
 words = []
@@ -115,6 +112,7 @@ class Scene2(Scene):
         n = len(self.html); L = 2 * math.pi * math.sqrt((rx * rx + ry * ry) / 2) * 1.12
         self.add(f'<svg class="scrib" viewBox="0 0 1080 1920" data-layout-ignore><path id="{self.ch}-sc{n}" d="M{" L".join(pts)}" fill="none" stroke="{color}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{L:.0f} {L:.0f}" stroke-dashoffset="{L:.0f}" opacity="0"/></svg>')
         self.tw(f'tl.fromTo("#{self.ch}-sc{n}", {{opacity:0, attr:{{"stroke-dashoffset":{L:.0f}}}}}, {{opacity:1, attr:{{"stroke-dashoffset":0}}, duration:.45, ease:"power2.out"}}, {t:.3f});')
+        return f'#{self.ch}-sc{n}'
     def stamp(self, sel, t, rot=-8):
         Scene.stamp(self, sel, t, rot)
         self.tw(f'tl.fromTo("{sel}", {{x:-5}}, {{x:5, duration:.04, repeat:3, yoyo:true, ease:"none"}}, {t + .2:.3f});')
@@ -187,8 +185,7 @@ s.add('<div id="or-19" class="tape" style="left:460px;top:360px;font-size:60px">
 s.add('<div id="or-zero" class="big" style="left:460px;top:470px;font-size:300px;color:#FFD200">0</div>')
 s.add('<div id="or-zl" class="lab" style="position:absolute;left:640px;top:690px;font-size:34px">points</div>')
 s.add('<div id="or-st2" class="stamp solid" style="left:150px;top:820px;font-size:64px">Minardi</div>')
-s.tape('#or-t1', s.at('Oviedo'), -4)
-s.card_in('#or-k83', s.at('built'), -2); s.tape('#or-t2', s.at('built') + .3, 2)
+s.card_in('#or-k83', 0, -2); s.tape('#or-t1', max(.7, s.at('Oviedo')), -4); s.tape('#or-t2', s.at('built') + .3, 2)
 s.tape('#or-t3', s.at('three'), 6)
 for x in ('#or-k83', '#or-t2', '#or-t3', '#or-t1'): s.out(x, s.at('fifteen') - .3)
 s.card_in('#or-k96', s.at('fifteen') - .1, 2); s.stamp('#or-st1', s.at('junior'), -3)
@@ -198,11 +195,51 @@ s.card_in('#or-h', s.at('2001')); s.tape('#or-19', s.at('nineteen'), -3)
 s.stamp('#or-st2', s.at('Minardi'), -6)
 s.pop('#or-zero', s.at('zero')); s.scribble(460, 500, 180, 250, s.at('zero') + .3, '#FFFFFF'); s.fade('#or-zl', s.at('zero') + .2)
 
-# ---- 2 Renault: the giants
+# ---- 2 Renault: the giants (every beat opens on a photo; 2005 and 2006 stat duels from data/h2h_2005_2006.json)
+H2H = json.load(open(os.path.join(D, 'h2h_2005_2006.json')))
+WINS_BY_SEASON = {}
+for r in json.load(open(os.path.join(D, 'alonso_all_results.json'))):
+    WINS_BY_SEASON[int(r['season'])] = WINS_BY_SEASON.get(int(r['season']), 0) + (r['Results'][0]['position'] == '1')
+assert [WINS_BY_SEASON.get(y) for y in (2003, 2004, 2005, 2006)] == [1, 0, 7, 7]
+assert H2H['2005']['alonso']['wins'] == H2H['2005']['raikkonen']['wins'] == 7 and H2H['2005']['raikkonen']['fastest_laps'] == 10
+assert H2H['2006']['alonso']['wins'] == H2H['2006']['michael_schumacher']['wins'] == 7 and H2H['2006']['alonso']['podiums'] == 14
+
+def duel(uid, year, rival, rcode, rows, seed):
+    """Stat card: Alonso v a rival, one row per stat. rows = [(label, key)]; the better number goes red."""
+    a, b = H2H[str(year)]['alonso'], H2H[str(year)][rival]
+    html = (f'<div id="{uid}" class="card" style="left:120px;top:740px;width:660px;height:370px;clip-path:{torn(seed, 660, 370)}">'
+            f'<div class="ctitle">{year} · head to head</div>'
+            f'<div class="lab" style="position:absolute;left:372px;top:80px;width:120px;text-align:center;color:#C8102E">ALO</div>'
+            f'<div class="lab" style="position:absolute;left:512px;top:80px;width:120px;text-align:center;color:#6B625A">{rcode}</div>')
+    for i, (lab, key) in enumerate(rows):
+        va, vb = int(a[key]), int(b[key])
+        ca = '#C8102E' if va > vb else '#2A2522'; cb = '#2A2522'
+        html += (f'<div id="{uid}-r{i}" style="position:absolute;left:30px;right:30px;top:{118 + i * 60}px;height:58px;border-top:2px solid rgba(42,37,34,.18)">'
+                 f'<div class="lab" style="position:absolute;left:0;top:14px;color:#2A2522;font-size:27px">{lab}</div>'
+                 f'<div style="position:absolute;left:342px;width:120px;text-align:center;font:700 50px Oswald;color:{ca}">{va}</div>'
+                 f'<div style="position:absolute;left:482px;width:120px;text-align:center;font:700 50px Oswald;color:{cb}">{vb}</div></div>')
+    return html + '</div>'
+
+def wins_strip(uid, years, gold, seed):
+    mx = 7; bw, step, base = 64, 92, 300
+    html = (f'<div id="{uid}" class="card" style="left:120px;top:740px;width:660px;height:370px;clip-path:{torn(seed, 660, 370)}">'
+            f'<div class="ctitle">Wins per season</div>')
+    for i, y in enumerate(years):
+        v = WINS_BY_SEASON.get(y); x = 44 + i * step; h = 0 if not v else v / mx * 170
+        col = '#E3A92B' if y in gold else '#8A8178'
+        html += (f'<div id="{uid}-b{i}" style="position:absolute;left:{x}px;top:{base - h:.0f}px;width:{bw}px;height:{max(h, 4):.0f}px;background:{col}"></div>'
+                 f'<div id="{uid}-v{i}" style="position:absolute;left:{x - 10}px;top:{base - h - 54:.0f}px;width:{bw + 20}px;text-align:center;font:700 44px Oswald;color:{col if y in gold else "#6B625A"}">{"–" if v is None else v}</div>'
+                 f'<div class="lab" style="position:absolute;left:{x - 14}px;top:{base + 12}px;width:{bw + 28}px;text-align:center;color:{"#2A2522" if y in gold else "#6B625A"};font-size:24px">{y}</div>')
+    return html + '</div>'
+
 s = S('renault'); hc = ERA['renault'][2]
+# beat 1: Renault, Hungary 2003
 s.add(photo('rn-big', 'renault', 120, 340, 580, 420, 4))
 s.add('<div id="rn-t1" class="tape" style="left:140px;top:300px">2003 · Hungary · first win</div>')
 s.add('<div id="rn-st1" class="stamp solid" style="left:180px;top:800px;font-size:52px">youngest winner</div>')
+s.card_in('#rn-big', 0, -2); s.tape('#rn-t1', max(.7, s.at('Hungary')), -3); s.stamp('#rn-st1', s.at('youngest'), -5)
+for x in ('#rn-big', '#rn-t1', '#rn-st1'): s.out(x, s.at('giants') - .3)
+# beat 2: the giants, dealt like trading cards
 s.add(photo('rn-schu', 'schu_face', 110, 300, 300, 340, 5))
 s.add('<div id="rn-schu-n" class="band" style="left:120px;top:610px">Schumacher</div>')
 s.add('<div id="rn-schu-s" class="stamp solid" style="left:150px;top:300px;font-size:44px">7 titles</div>')
@@ -212,26 +249,56 @@ s.add('<div id="rn-kimi-t" class="tape" style="left:580px;top:700px">the Iceman<
 s.add('<div id="rn-vs" class="big" style="left:420px;top:680px;font-size:120px;color:#FFD200">VS</div>')
 s.add(photo('rn-alo', 'alo05_face', 300, 770, 260, 300, 7))
 s.add('<div id="rn-alo-n" class="band" style="left:310px;top:1030px;background:#FFD200;color:#0B3D91">Alonso · 23</div>')
+s.card_in('#rn-schu', s.at('giants') - .1, -5); s.fade('#rn-schu-n', s.at('Schumacher', 1) + .1); s.stamp('#rn-schu-s', s.at('seven'), -8); sc7 = s.scribble(150, 300, 220, 70, s.at('seven') + .3, '#FFD200')
+s.card_in('#rn-kimi', s.at('Räikkönen', 1) - .3, 4); s.fade('#rn-kimi-n', s.at('Räikkönen', 1) + .1); s.tape('#rn-kimi-t', s.at('Iceman'), -3)
+s.card_in('#rn-alo', s.at('McLaren') - .1, -2); s.pop('#rn-vs', s.at('McLaren') + .3); s.fade('#rn-alo-n', s.at('McLaren') + .5)
+for x in (sc7, '#rn-schu', '#rn-schu-n', '#rn-schu-s', '#rn-kimi', '#rn-kimi-n', '#rn-kimi-t', '#rn-vs', '#rn-alo', '#rn-alo-n'): s.out(x, s.at('2005') - .45)
+# beat 3: 2005 v Räikkönen. Photo first, then the duel card, then the chart bar
+s.add(photo('rn-k05', 'raikkonen', 120, 300, 640, 400, 41))
+s.add('<div id="rn-k05-n" class="band" style="left:130px;top:670px;background:#C9CED4;color:#111;font-size:44px">Räikkönen · McLaren 2005</div>')
+s.add('<div id="rn-k05-st" class="stamp solid" style="left:380px;top:330px;font-size:44px">broke down from pole ×2</div>')
+s.add(duel('rn-d05', 2005, 'raikkonen', 'RÄI', [('wins', 'wins'), ('fastest laps', 'fastest_laps'), ('podiums', 'podiums'), ('points', 'points')], 42))
 s.add(chart('renault', []))
-s.add(helmet('rn-h', hc, 220, 120, 770))
-s.add('<div id="rn-c1" class="big" style="left:380px;top:800px;font-size:92px"><span id="rn-a1">0</span><span style="color:#FFD200"> v </span>112</div>')
-s.add('<div id="rn-l1" class="lab" style="position:absolute;left:384px;top:910px;color:#FFD200;letter-spacing:.04em">2005 · v Räikkönen</div>')
-s.add('<div id="rn-c2" class="big" style="left:380px;top:800px;font-size:92px"><span id="rn-a2">0</span><span style="color:#FFD200"> v </span>121</div>')
-s.add('<div id="rn-l2" class="lab" style="position:absolute;left:384px;top:910px;color:#FFD200;letter-spacing:.04em">2006 · v Schumacher</div>')
-s.add('<div id="rn-dyn" class="tape" style="left:420px;top:990px;font-size:56px">a dynasty?</div>')
-s.card_in('#rn-big', 0, -2); s.tape('#rn-t1', s.at('Hungary'), -3); s.stamp('#rn-st1', s.at('youngest'), -5)
-for x in ('#rn-big', '#rn-t1', '#rn-st1'): s.out(x, s.at('giants') - .3)
-s.card_in('#rn-schu', s.at('Schumacher', 1), -5); s.fade('#rn-schu-n', s.at('Schumacher', 1) + .3); s.stamp('#rn-schu-s', s.at('seven'), -8); s.scribble(150, 300, 220, 70, s.at('seven') + .3, '#FFD200')
-s.card_in('#rn-kimi', s.at('Räikkönen', 1), 4); s.fade('#rn-kimi-n', s.at('Räikkönen', 1) + .3); s.tape('#rn-kimi-t', s.at('Iceman'), -3)
-s.pop('#rn-vs', s.at('McLaren')); s.card_in('#rn-alo', s.at('McLaren') + .2, -2); s.fade('#rn-alo-n', s.at('McLaren') + .5)
-for x in ('#rn-schu', '#rn-schu-n', '#rn-schu-s', '#rn-kimi', '#rn-kimi-n', '#rn-kimi-t', '#rn-vs', '#rn-alo', '#rn-alo-n'): s.out(x, s.at('2005') - .3)
-chart_slide(s, s.at('2005') - .1)
-s.card_in('#rn-h', s.at('2005'))
-s.fade('#rn-c1', s.at('Alonso')); s.count('#rn-a1', 0, 133, s.at('Alonso'), 1.2); s.fade('#rn-l1', s.at('Alonso') + .2)
-s.bar('renault', 2005, s.at('title'))
-for x in ('#rn-c1', '#rn-l1'): s.out(x, s.at('2006') - .25)
-s.fade('#rn-c2', s.at('2006')); s.count('#rn-a2', 0, 134, s.at('2006'), 1.2); s.fade('#rn-l2', s.at('2006') + .2)
-s.bar('renault', 2006, s.at('head', 1))
+t05 = s.at('2005')
+s.card_in('#rn-k05', t05 - .3, -2); s.fade('#rn-k05-n', t05 + .15)
+s.card_in('#rn-d05', s.at('seven', 2) - .4, 1)
+s.pop('#rn-d05-r0', s.at('Alonso', 1), .25); s.pop('#rn-d05-r1', s.at('ten'), .25)
+sc05 = s.scribble(120 + 30 + 482, 740 + 118 + 60, 120, 52, s.at('two', 2) + .1, '#C8102E', 6)
+s.stamp('#rn-k05-st', s.at('breaks'), -5)
+s.pop('#rn-d05-r2', s.at('fifteen'), .25)
+t_title = s.at('title', 2)
+for x in ('#rn-k05', '#rn-k05-n', '#rn-k05-st'): s.out(x, t_title - .3)
+chart_slide(s, t_title - .1); s.pop('#rn-d05-r3', s.at('twenty-one'), .25)
+s.bar('renault', 2005, s.at('twenty-one'))
+for x in ('#renault-chart', '#rn-d05', sc05): s.out(x, s.at('2006') - .45)
+# beat 4: 2006 v Schumacher
+s.add(photo('rn-s06', 'schumacher', 120, 300, 640, 400, 43))
+s.add('<div id="rn-s06-n" class="band" style="left:130px;top:670px;background:#DC0000;font-size:44px">Schumacher · Ferrari</div>')
+s.add('<div id="rn-s06-t" class="tape" style="left:440px;top:320px;font-size:44px">his last Ferrari season</div>')
+s.add(duel('rn-d06', 2006, 'michael_schumacher', 'MSC', [('wins', 'wins'), ('fastest laps', 'fastest_laps'), ('podiums', 'podiums'), ('points', 'points')], 44))
+s.add(chart('renault2', [2005]))
+t06 = s.at('2006')
+s.card_in('#rn-s06', t06 - .3, 2); s.fade('#rn-s06-n', t06 + .15); s.tape('#rn-s06-t', s.at('last'), 3)
+s.card_in('#rn-d06', s.at('Seven', 3) - .4, -1)
+s.pop('#rn-d06-r0', s.at('each'), .25); s.pop('#rn-d06-r1', s.at('again') + .1, .25)
+s.pop('#rn-d06-r2', s.at('fourteen'), .25); sc06 = s.scribble(120 + 30 + 342, 740 + 118 + 120, 120, 52, s.at('fourteen') + .3, '#C8102E', 6)
+t_th = s.at('thirteen')
+for x in ('#rn-s06', '#rn-s06-n', '#rn-s06-t'): s.out(x, t_th - .55)
+s.tw(f'tl.fromTo("#renault2-chart", {{opacity:0, y:-80, rotation:-4}}, {{opacity:1, y:0, rotation:-1, duration:.45, ease:"back.out(1.4)"}}, {t_th - .35:.3f});')
+s.pop('#rn-d06-r3', t_th, .25); s.bar('renault2', 2006, t_th)
+for x in ('#renault2-chart', '#rn-d06', sc06): s.out(x, s.at('titles', 2) - .45)
+# beat 5: two titles by 25, wins per season
+s.add(photo('rn-a25', 'renault_s', 120, 300, 640, 400, 45))
+s.add('<div id="rn-a25-n" class="band" style="left:130px;top:670px;background:#FFD200;color:#0B3D91;font-size:44px">Alonso · 2× champion at 25</div>')
+s.add(wins_strip('rn-ws', [2001, 2002, 2003, 2004, 2005, 2006], (2005, 2006), 46))
+s.add('<div id="rn-dyn" class="tape" style="left:470px;top:310px;font-size:56px">a dynasty?</div>')
+t2 = s.at('titles', 2)
+s.card_in('#rn-a25', t2 - .1, -2); s.fade('#rn-a25-n', t2 + .1)
+s.card_in('#rn-ws', t2 + .35, 1)
+for i in range(6):
+    s.tw(f'tl.fromTo("#rn-ws-b{i}", {{scaleY:0, transformOrigin:"50% 100%"}}, {{scaleY:1, duration:.4, ease:"power3.out"}}, {t2 + .6 + i * .08:.3f});')
+    s.fade(f'#rn-ws-v{i}', t2 + .85 + i * .08, .2)
+s.scribble(120 + 44 + 4 * 92 - 10, 740 + 70, 2 * 92 + 10, 250, t2 + 1.4, '#C8102E', 6)
 s.tape('#rn-dyn', s.at('dynasty'), 3)
 
 # ---- 3 McLaren 2007: the rookie
@@ -266,12 +333,16 @@ for i in range(9): s.pop(f'#mc-d{i}', s.at('podium') + i * .09, .22)
 s.fade('#mc-9', s.at('nine'))
 s.stamp('#mc-split', s.at('splits'), -6)
 for x in ('#mc-alo', '#mc-alo-n', '#mc-ham', '#mc-ham-n', '#mc-9', '#mc-split') + tuple(f'#mc-d{i}' for i in range(9)): s.out(x, s.at('Hungary') - .3)
-chart_slide(s, s.at('Hungary') - .2); s.card_in('#mc-h', s.at('Hungary'))
-s.card_in('#mc-c1', s.at('Hungary') + .1, 2); s.stamp('#mc-pen', s.at('sixth'), -7); s.scribble(520, 860, 160, 110, s.at('sixth') - .1)
+s.add(photo('mc-car', 'hamilton07', 120, 300, 640, 400, 47))
+s.add('<div id="mc-car-n" class="band" style="left:130px;top:670px;background:#C9CED4;color:#111;font-size:44px">McLaren · 2007</div>')
+s.card_in('#mc-car', s.at('Hungary') - .3, -2); s.fade('#mc-car-n', s.at('Hungary') + .1); s.card_in('#mc-h', s.at('Hungary') + .35)
+s.card_in('#mc-c1', s.at('Hungary') + .1, 2); s.stamp('#mc-pen', s.at('sixth'), -7); s.out(s.scribble(520, 860, 160, 110, s.at('sixth') - .1), s.at('Japan') - .25)
 for x in ('#mc-c1', '#mc-pen'): s.out(x, s.at('Japan') - .25)
 s.card_in('#mc-c2', s.at('Japan'), -2); s.stamp('#mc-dnf', s.at('crashes'), 6)
 for x in ('#mc-c2', '#mc-dnf'): s.out(x, s.at('Brazil') - .25)
 s.card_in('#mc-c3', s.at('Brazil'), 1)
+for x in ('#mc-car', '#mc-car-n'): s.out(x, s.at('Brazil') - .1)
+chart_slide(s, s.at('Brazil') + .2)
 s.bar('mclaren', 2007, s.at('one', 1)); s.scribble(CX + BX0 + 2 * BSTEP - 10, CY + ZERO - 10, BW + 20, 80, s.at('one', 1) + .5, '#E10600')
 s.stamp('#mc-one', s.at('leaves'), -4)
 
@@ -296,7 +367,9 @@ s.add('<div id="f10-p7" class="stamp" style="left:560px;top:870px;font-size:80px
 s.card_in('#f10-alo', 0, 3); s.fade('#f10-alo-n', .3)
 s.card_in('#f10-vet', s.at('Vettel', 1) - .2, -3); s.fade('#f10-vet-n', s.at('Vettel', 1) + .2); s.pop('#f10-vs', s.at('Vettel', 1) + .3); s.tape('#f10-fast', s.at('fastest'), -2)
 for x in ('#f10-vet', '#f10-vet-n', '#f10-fast', '#f10-alo', '#f10-alo-n', '#f10-vs'): s.out(x, s.at('Abu') - .3)
-chart_slide(s, s.at('Abu') - .2); s.card_in('#f10-h', s.at('Abu'))
+s.add(photo('f10-rb', 'vettel', 120, 300, 640, 330, 48))
+s.add('<div id="f10-rb-n" class="band" style="left:130px;top:610px;background:#1E3A8A;font-size:44px">Red Bull · Vettel</div>')
+s.card_in('#f10-rb', s.at('Abu') - .3, 2); s.fade('#f10-rb-n', s.at('Abu') + .1); s.card_in('#f10-h', s.at('Abu') + .35)
 s.card_in('#f10-c1', s.at('Abu') + .1, 2); s.tape('#f10-4th', s.at('Fourth'), -3)
 for x in ('#f10-c1', '#f10-4th', '#f10-h'): s.out(x, s.at('pits') - .25)
 s.card_in('#f10-c2', s.at('pits'), -1)
@@ -304,6 +377,8 @@ t0, t1 = s.at('comes'), s.at('Seventh') - .1
 s.fade('#f10-hm', t0, .25)
 s.tw(f'tl.fromTo("#f10-hm", {{x:-16, y:0}}, {{x:14, y:-8, duration:.32, ease:"sine.inOut", yoyo:true, repeat:{max(1, int((t1 - t0) / .32) - 1)}}}, {t0:.3f});')
 s.stamp('#f10-p7', s.at('Seventh'), -6); s.scribble(560, 870, 150, 110, s.at('Seventh') + .25, '#FFD200')
+for x in ('#f10-rb', '#f10-rb-n'): s.out(x, s.at('Vettel', 2) - .3)
+chart_slide(s, s.at('Vettel', 2) - .1)
 s.bar('f2010', 2010, s.at('four', 2)); s.scribble(CX + BX0 + 3 * BSTEP - 10, CY + ZERO - 10, BW + 20, 90, s.at('four', 2) + .5, '#FFD200')
 
 # ---- 5 Ferrari 2012: the masterpiece
@@ -333,82 +408,78 @@ s.card_in('#f12-p', 0, -2); s.stamp('#f12-mp', s.at('masterpiece'), -6)
 s.pop('#f12-g', s.at('sixth')); s.pop('#f12-f', s.at('third')); s.fade('#f12-avg', s.at('third') + .3)
 s.tape('#f12-mas', s.at('double'), -3)
 for x in ('#f12-p', '#f12-mp', '#f12-g', '#f12-f', '#f12-avg', '#f12-mas'): s.out(x, s.at('leads') - .3)
-chart_slide(s, s.at('leads') - .2)
+s.add(photo('f12-race', 'f2012', 120, 300, 640, 400, 49))
+s.add('<div id="f12-race-n" class="band" style="left:130px;top:670px;background:#DC0000;font-size:44px">Alonso leads · 2012</div>')
+s.card_in('#f12-race', s.at('leads') - .3, -2); s.fade('#f12-race-n', s.at('leads') + .1)
 s.card_in('#f12-card', s.at('leads'), -1); s.fade('#f12-plot', s.at('leads') + .2, .2)
 pts = [[round(px(i), 1), round(py(v), 1)] for i, v in enumerate(lead12)]
 s.tw('const P12 = ' + json.dumps(pts) + ', L12 = document.getElementById("f12-line"), g12 = {i: 0};')
 s.tw('const d12 = () => { const k = Math.floor(g12.i), f = g12.i - k; let d = "M" + P12[0]; for (let j = 1; j <= k && j < P12.length; j++) d += " L" + P12[j]; if (k + 1 < P12.length && f > 0) d += " L" + (P12[k][0] + (P12[k + 1][0] - P12[k][0]) * f) + "," + (P12[k][1] + (P12[k + 1][1] - P12[k][1]) * f); L12.setAttribute("d", d); };')
 s.tw(f'tl.fromTo(g12, {{i:0}}, {{i:{i_ger}, duration:1.2, ease:"power2.out", onUpdate:d12}}, {s.at("leads") + .3:.3f});')
-s.pop('#f12-dger', s.at('forty-four')); s.pop('#f12-44', s.at('forty-four') + .1); s.scribble(px(i_ger) - 70, py(44) - 74, 120, 70, s.at('forty-four') + .3, '#C8102E', 6)
+s.pop('#f12-dger', s.at('forty-four')); s.pop('#f12-44', s.at('forty-four') + .1); sc44 = s.scribble(px(i_ger) - 70, py(44) - 74, 120, 70, s.at('forty-four') + .3, '#C8102E', 6)
 s.tw(f'tl.to(g12, {{i:{i_spa}, duration:.6, ease:"power2.inOut", onUpdate:d12}}, {s.at("Spa"):.3f});')
 s.stamp('#f12-spa', s.at('Spa') + .3, -6)
 s.tw(f'tl.to(g12, {{i:{i_suz}, duration:.6, ease:"power2.inOut", onUpdate:d12}}, {s.at("Suzuka"):.3f});')
 s.stamp('#f12-suz', s.at('Suzuka') + .3, 5)
 s.tw(f'tl.to(g12, {{i:{len(lead12) - 1}, duration:1.0, ease:"power2.inOut", onUpdate:d12}}, {s.at("Vettel"):.3f});')
 s.pop('#f12-end', s.at('three'))
+for x in ('#f12-race', '#f12-race-n'): s.out(x, s.at('Vettel') - .3)
+chart_slide(s, s.at('Vettel') - .1)
 s.bar('f2012', 2012, s.at('three'))
-
-# ---- 6 McLaren-Honda: the wilderness
-s = S('honda'); hc = ERA['honda'][2]
-s.add(photo('hd-p', 'honda', 120, 320, 640, 300, 16))
-s.add('<div id="hd-n" class="band" style="left:130px;top:620px;background:#FF8000;color:#111">McLaren-Honda · 2015</div>')
-s.add('<div id="hd-dis" class="stamp solid" style="left:430px;top:300px;font-size:56px">disaster</div>')
-s.add('<div id="hd-q" class="big" style="left:120px;top:740px;font-size:120px;line-height:1;color:#FF8000">“GP2<br>ENGINE!”</div>')
-s.add('<div id="hd-ql" class="lab" style="position:absolute;left:126px;top:1000px;font-size:28px">team radio · Suzuka 2015</div>')
-s.add('<div id="hd-0" class="big" style="left:120px;top:720px;font-size:260px">0</div>')
-s.add('<div id="hd-0l" class="lab" style="position:absolute;left:330px;top:820px;font-size:34px;line-height:1.35">podiums<br>in four seasons</div>')
-s.add('<div id="hd-st" class="stamp solid" style="left:140px;top:1010px;font-size:60px">gone · 2018</div>')
-s.card_in('#hd-p', 0, -2); s.fade('#hd-n', .3)
-s.stamp('#hd-dis', s.at('disaster'), -6)
-s.pop('#hd-q', s.at('GP2'), .35); s.fade('#hd-ql', s.at('GP2') + .3)
-for x in ('#hd-q', '#hd-ql'): s.out(x, s.at('Zero') - .3)
-s.pop('#hd-0', s.at('Zero')); s.scribble(120, 760, 170, 230, s.at('Zero') + .3, '#FF8000'); s.fade('#hd-0l', s.at('Zero') + .2)
-s.add(photo('hd-face', 'alo_mcl_face', 470, 700, 300, 300, 20)); s.out('#hd-0l', s.at('walks') - .45); s.card_in('#hd-face', s.at('walks') - .3, 4); s.stamp('#hd-st', s.at('walks'), -4)
-
-# ---- 7 away and back
-s = S('away'); hc = ERA['away'][2]
-s.add(photo('aw-p', 'lemans', 120, 320, 640, 380, 17))
-s.add('<div id="aw-lm" class="stamp solid" style="left:420px;top:640px;font-size:64px">Le Mans ×2</div>')
-s.add('<div id="aw-indy" class="tape" style="left:140px;top:760px;font-size:54px">Indy 500</div>')
-s.add('<div id="aw-dak" class="tape" style="left:420px;top:780px;font-size:54px">Dakar</div>')
-s.add('<div id="aw-q" class="tape" style="left:140px;top:880px;font-size:50px">2021 · Qatar · P3 · age 40</div>')
-s.add('<div id="aw-8" class="stamp solid" style="left:160px;top:980px;font-size:54px">2023 · 8 podiums</div>')
-s.card_in('#aw-p', s.at('Le') - .2, -2); s.stamp('#aw-lm', s.at('twice'), -5)
-s.tape('#aw-indy', s.at('Indy'), -3); s.tape('#aw-dak', s.at('Dakar'), 4)
-s.tape('#aw-q', s.at('podium'), -2); s.stamp('#aw-8', s.at('eight'), -4)
-
-# ---- 8 reveal: 1 + 4 + 3 = 8
-s = S('reveal')
-s.add(chart('reveal', YEARS, rot=0))
-s.add('<div id="rv-eq" class="big" style="left:120px;top:770px;font-size:150px;white-space:nowrap"><span id="rv-1">1</span> <span id="rv-p1" style="color:#888">+</span> <span id="rv-4">4</span> <span id="rv-p2" style="color:#888">+</span> <span id="rv-3">3</span></div>')
-s.add('<div id="rv-8" class="big" style="left:120px;top:930px;font-size:250px;color:#E10600">= 8</div>')
-s.add('<div id="rv-8l" class="lab" style="position:absolute;left:470px;top:1010px;color:#fff;font-size:36px;line-height:1.3">points<br>from five</div>')
-s.fade('#reveal-chart', 0, .01)
-for i, (y, word, el) in enumerate(((2007, 'One', '#rv-1'), (2010, 'Four', '#rv-4'), (2012, 'Three', '#rv-3'))):
-    t = s.at(word)
-    s.tw(f'tl.fromTo("#reveal-b{y}", {{scaleY:1}}, {{scaleY:2.2, transformOrigin:"50% 0%", duration:.18, yoyo:true, repeat:1, ease:"power2.out"}}, {t:.3f});')
+# the 2012 chapter ends on 1 + 4 + 3 = 8, then a hard cut to today
+s.add('<div id="f12-eq" class="big" style="left:120px;top:760px;font-size:130px;white-space:nowrap"><span id="f12-e1">1</span> <span id="f12-p1" style="color:#888">+</span> <span id="f12-e4">4</span> <span id="f12-p2" style="color:#888">+</span> <span id="f12-e3">3</span></div>')
+s.add('<div id="f12-8" class="big" style="left:120px;top:890px;font-size:190px;color:#E10600">= 8</div>')
+s.add('<div id="f12-8l" class="lab" style="position:absolute;left:420px;top:950px;color:#fff;font-size:36px;line-height:1.3">points<br>from five</div>')
+for x in (sc44, '#f12-card', '#f12-plot', '#f12-44', '#f12-dger', '#f12-spa', '#f12-suz', '#f12-end'): s.out(x, s.at('One') - .3)
+for i, (y, word, el) in enumerate(((2007, 'One', '#f12-e1'), (2010, 'Four', '#f12-e4'), (2012, 'Three', '#f12-e3'))):
+    t = s.at(word, 2 if word == 'Three' else 1)
+    s.tw(f'tl.to("#f2012-b{y}", {{scaleY:1.6, transformOrigin:"50% 0%", duration:.18, yoyo:true, repeat:1, ease:"power2.out"}}, {t:.3f});')
     s.pop(el, t, .25); s.sound('pop', t + .1, .7)
-    if i: s.fade(f'#rv-p{i}', t - .1, .2)
-s.pop('#rv-8', s.at('Eight'), .4); s.scribble(220, 950, 230, 230, s.at('Eight') + .4, '#FFD200', 9); s.fade('#rv-8l', s.at('Eight') + .3)
+    if i: s.fade(f'#f12-p{i}', t - .1, .2)
+s.pop('#f12-8', s.at('Eight'), .4); s.scribble(215, 900, 160, 180, s.at('Eight') + .4, '#FFD200', 9); s.fade('#f12-8l', s.at('Eight') + .3)
 s.sound('riser', s.at('Eight') + 1 / 30 - 1.953, .5); s.sound('fs-222517-dramatic-hit', s.at('Eight') + 1 / 30 - .322, .8)
 
-# ---- 9 today
+# ---- 9 today: straight cut from 2012 to 2026. Newey joins (no openly licensed Newey photo found yet, so a drawn blueprint card)
 s = S('today'); hc = ERA['today'][2]
 s.add(photo('td-p', 'today', 120, 310, 400, 500, 18))
-s.add('<div id="td-45" class="tape" style="left:560px;top:330px;font-size:64px">age 45</div>')
+s.add('<div id="td-45" class="tape" style="left:560px;top:330px;font-size:60px">2026 · age 45</div>')
 s.add('<div id="td-n" class="big" style="left:560px;top:430px;font-size:150px;color:#CEDC00">0</div>')
 s.add('<div id="td-nl" class="lab" style="position:absolute;left:566px;top:590px;font-size:30px">Grands Prix</div>')
-s.add('<div id="td-win" class="tape" style="left:540px;top:660px;font-size:42px">last win: Spain 2013</div>')
-s.add('<div id="td-26" class="tape" style="left:150px;top:870px;font-size:46px">2026: 7 points, 21 races</div>')
-s.add('<div id="td-33" class="stamp solid" style="left:200px;top:960px;font-size:110px">#33?</div>')
+s.add('<div id="td-w" class="big" style="left:560px;top:640px;font-size:110px">32</div>')
+s.add('<div id="td-wl" class="lab" style="position:absolute;left:690px;top:676px;font-size:30px">wins</div>')
+s.add('<div id="td-win" class="tape" style="left:540px;top:770px;font-size:42px">last: Spain 2013</div>')
+car = ('<svg viewBox="0 0 400 120" style="position:absolute;left:24px;top:150px;width:372px;height:112px" fill="none" stroke="#DCE8F5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">'
+       '<path d="M8 84 L40 84 L62 70 L150 66 L178 44 L214 42 L232 60 L300 62 L340 40 L386 40 L388 74 L352 84 L300 88 L120 90 Z"/>'
+       '<circle cx="86" cy="88" r="24"/><circle cx="318" cy="88" r="24"/><circle cx="86" cy="88" r="8"/><circle cx="318" cy="88" r="8"/>'
+       '<path d="M8 84 L8 70 L44 70" /><path d="M190 44 Q200 30 214 30" /><path d="M120 100 L300 100" stroke-dasharray="6 6"/>'
+       '<path d="M40 112 L120 112 M300 112 L370 112" stroke-width="2"/><path d="M40 106 L40 118 M120 106 L120 118" stroke-width="2"/></svg>')
+grid = 'background-color:#0F3B73;background-image:linear-gradient(rgba(255,255,255,.10) 2px, transparent 2px),linear-gradient(90deg, rgba(255,255,255,.10) 2px, transparent 2px);background-size:40px 40px'
+s.add(f'<div id="td-nw" class="pcard" style="left:540px;top:330px;width:420px;height:440px;{grid};clip-path:{torn(51, 420, 440)}">'
+      '<div class="lab" style="position:absolute;left:26px;top:28px;color:#DCE8F5;font-size:24px">drawing no. 1 · design office</div>'
+      f'{car}'
+      '<div style="position:absolute;left:24px;top:300px;padding:2px 14px;background:#111;color:#fff;font:700 54px Oswald;text-transform:uppercase">Adrian Newey</div>'
+      '<div class="hand" style="position:absolute;left:28px;top:376px;font-size:40px;color:#DCE8F5">joins Aston Martin · 2025</div></div>')
+s.add('<div id="td-rb" class="card" style="left:120px;top:850px;width:660px;height:240px;clip-path:polygon(0 0,100% 2px,100% 100%,0 98%)">'
+      '<div class="ctitle">His Red Bulls beat Alonso</div>'
+      '<div class="row3" style="position:absolute;left:30px;right:30px;top:84px"><span class="n">2010</span><span style="color:#C8102E">−4</span></div>'
+      '<div class="row3" style="position:absolute;left:30px;right:30px;top:150px"><span class="n">2012</span><span style="color:#C8102E">−3</span></div></div>')
+s.add('<div id="td-same" class="tape" style="left:560px;top:790px;font-size:46px">now on his side</div>')
+for i in range(3): s.add(trophy(f'td-t{i}', 150 + i * 140, 880, i < 2, 1.0))
+s.add('<div id="td-last" class="stamp solid" style="left:500px;top:915px;font-size:54px">one last title?</div>')
 end_t = round(last['today'] - START['today'] + .25, 2)
 s.add(f'<div id="td-end" style="position:absolute;inset:0;background:#0E0F12"><div style="position:absolute;left:120px;top:640px;width:768px;font:italic 900 140px Archivo, Oswald;color:#fff;letter-spacing:-.02em">ONE <span style="color:#E10600">F1</span></div>'
       '<div class="lab" style="position:absolute;left:126px;top:820px;font-size:34px;color:#B9BDC4">Follow @F1STATLAB</div>'
       '<div class="lab" style="position:absolute;left:126px;top:880px;font-size:28px;color:#7D828C">Data: Jolpica · photos: CC, credits in caption</div></div>')
-s.card_in('#td-p', 0, -3); s.tape('#td-45', s.at('forty-five'), 4)
+s.card_in('#td-p', 0, -3); s.tape('#td-45', max(.7, s.at('forty-five')), 4)
 s.fade('#td-n', s.at('Four') - .1, .2); s.count('#td-n', 0, 449, s.at('Four'), 1.3); s.fade('#td-nl', s.at('Four') + .3)
-s.tape('#td-win', s.at('2013'), -3); s.tape('#td-26', s.at('seven'), 2)
-s.stamp('#td-33', s.at('thirty-three'), -6)
+s.pop('#td-w', s.at('Thirty-two')); s.fade('#td-wl', s.at('Thirty-two') + .2); s.tape('#td-win', s.at('2013'), -3)
+for x in ('#td-45', '#td-n', '#td-nl', '#td-w', '#td-wl', '#td-win'): s.out(x, s.at('2025') - .3)
+s.card_in('#td-nw', s.at('2025'), 3)
+s.card_in('#td-rb', s.at('Red'), -1); scrb = s.scribble(560, 920, 200, 150, s.at('2012', 1) + .2, '#C8102E', 6)
+s.tape('#td-same', s.at('car', 2), -3)
+s.out('#td-rb', s.at('chasing') - .3); s.out(scrb, s.at('chasing') - .3)
+for i in range(3): s.pop(f'#td-t{i}', s.at('chasing') + i * .15)
+s.stamp('#td-last', s.at('title'), -5)
 s.fade('#td-end', end_t, .4)
 
 for sc in scenes.values(): sc.write()

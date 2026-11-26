@@ -1,0 +1,60 @@
+{
+ "2005": {
+  "alonso": {
+   "wins": 7,
+   "podiums": 15,
+   "grid1": 6,
+   "fastest_laps": 2,
+   "points": 133.0,
+   "finished": 17,
+   "races": 19
+  },
+  "raikkonen": {
+   "wins": 7,
+   "podiums": 12,
+   "grid1": 5,
+   "fastest_laps": 10,
+   "points": 112.0,
+   "finished": 15,
+   "races": 19
+  },
+  "michael_schumacher": {
+   "wins": 1,
+   "podiums": 5,
+   "grid1": 1,
+   "fastest_laps": 3,
+   "points": 62.0,
+   "finished": 13,
+   "races": 19
+  }
+ },
+ "2006": {
+  "alonso": {
+   "wins": 7,
+   "podiums": 14,
+   "grid1": 6,
+   "fastest_laps": 5,
+   "points": 134.0,
+   "finished": 16,
+   "races": 18
+  },
+  "raikkonen": {
+   "wins": 0,
+   "podiums": 6,
+   "grid1": 3,
+   "fastest_laps": 3,
+   "points": 65.0,
+   "finished": 12,
+   "races": 18
+  },
+  "michael_schumacher": {
+   "wins": 7,
+   "podiums": 12,
+   "grid1": 4,
+   "fastest_laps": 7,
+   "points": 121.0,
+   "finished": 15,
+   "races": 18
+  }
+ }
+}
