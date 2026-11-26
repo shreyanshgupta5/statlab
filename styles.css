@@ -1061,3 +1061,6 @@ html.story-open, html.story-open body { overflow: hidden; }
 #storyv > .sv-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.05) 25%, rgba(0,0,0,.2) 45%, rgba(11,12,15,.92) 72%, #0B0C0F); }
 #storyv > .sv-bars, #storyv > .sv-head, #storyv > .sv-slide { position: relative; z-index: 1; }
 .gapc line.mkl { stroke: #fff; stroke-width: 1.5; stroke-dasharray: none; opacity: .9; }
+
+/* v69: news stories wear the named driver's face; long headlines step down */
+.sv-slide h2.long { font-size: 30px; line-height: 1.02; }

@@ -4,6 +4,16 @@
 // cover: {helmet: "ANT", hook: "−36"}, {chart: "gap", race: 21, text: "<1s"}, {img} or {text: "0.03"}, color (ring/slide accent), slides: [{kicker, title, text, stat, statLabel, helmet, img, chart: {type: "gap", race, mark, caption}, link, linkText}].
 window.STORIES = [
   {
+    id: "qatar-preview-2026", date: "2026-11-26", label: "Qatar", cover: { helmet: "VER", hook: "3 wins" }, color: "#C8102E",
+    slides: [
+      { kicker: "Qatar GP · this weekend", title: "Lusail belongs to Verstappen", helmet: "VER", stat: "3", statLabel: "Qatar wins in a row: 2023, 2024, 2025" },
+      { kicker: "The fight for second", title: "Leave Qatar 26 clear and P2 is his", rows: [[2, "VER", "304"], [3, "HAM", "267"]], stat: "37", statLabel: "points ahead of Hamilton, with 50 left" },
+      { kicker: "The fight for third", title: "Three drivers, three points", rows: [[3, "HAM", "267"], [4, "RUS", "264"], [5, "NOR", "264"]] },
+      { kicker: "Constructors · third place", title: "Red Bull vs McLaren", stat: "9", statLabel: "points between them: Red Bull 440, McLaren 431" },
+      { kicker: "Tyres", title: "A two-stop race", stat: "27", statLabel: "laps max on any set of tyres, in a 57-lap race (Pirelli)", link: "#/race/22", linkText: "Weekend preview" },
+    ],
+  },
+  {
     id: "vegas-under-one-second", date: "2026-11-23", label: "1 second", cover: { chart: "gap", race: 21, text: "<1s" }, color: "#E10600",
     slides: [
       { kicker: "Las Vegas GP · the gap", title: "Never more than a second apart", stat: "43/43", statLabel: "green-flag laps with P1 and P2 under 1 second", chart: { type: "gap", race: 21 } },

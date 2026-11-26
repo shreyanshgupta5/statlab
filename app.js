@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v68"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v69"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -298,8 +298,15 @@
         slides: [{ kicker: `Next · Round ${upcoming.round}`, title: upcoming.name, text: `${fp ? `${fp.name.replace("Practice ", "FP")} starts ${new Date(fp.start).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}. ` : ""}Lights out ${localStart(upcoming)} your time.`, countdown: upcoming.raceStart || "", link: `#/race/${upcoming.round}`, linkText: "Weekend preview" }] });
     }
     // 5. the latest news, one story each
-    (NEWS || []).slice(0, 6).forEach((n) => out.push({ id: `news-${n.id}`, at: Date.parse(n.date + "T12:00:00Z"), label: n.tag.replace(/\.(com|net)$/i, ""), cover: n.image ? { img: n.image } : { text: n.tag.slice(0, 2).toUpperCase() }, color: "#B9BDC4",
-      slides: [{ kicker: `${n.tag} · ${fmtDate(n.date)}`, title: n.title, text: n.dek, img: n.image, link: `#/news/${n.id}`, linkText: "Read the story" }] }));
+    // v69: a news story wears the face of the first driver its headline names (else the first team's colour)
+    const newsWho = (n) => { const t = " " + n.title + " "; let best = null;
+      Object.values(driver).forEach((d) => { const i = t.search(new RegExp(`[^A-Za-z]${d.last}[^A-Za-z]`)); if (i >= 0 && (!best || i < best[0])) best = [i, d.id]; });
+      return best && best[1]; };
+    const newsTeam = (n) => { const tm = Object.values(team).map((x) => [n.title.indexOf(x.name.split(" ")[0]), x]).filter((x) => x[0] >= 0).sort((a, b) => a[0] - b[0])[0]; return tm && tm[1]; };
+    (NEWS || []).slice(0, 6).forEach((n) => { const who = newsWho(n), tm = !who && newsTeam(n);
+      out.push({ id: `news-${n.id}`, at: Date.parse(n.date + "T12:00:00Z"), label: who ? lastName(who) : tm ? tm.name.split(" ")[0] : n.tag.replace(/\.(com|net)$/i, ""),
+        cover: n.image ? { img: n.image } : who ? { helmet: who } : { text: tm ? tm.name.slice(0, 3).toUpperCase() : n.tag.slice(0, 2).toUpperCase() }, color: who ? tc(driver[who].team) : tm ? tm.color : "#B9BDC4",
+        slides: [{ kicker: `${n.tag} · ${fmtDate(n.date)}`, title: n.title, helmet: n.image ? null : who, small: true, text: n.dek, img: n.image, link: `#/news/${n.id}`, linkText: "Read the story" }] }); });
     // unseen first (keeping order), seen after
     return [...out.filter((x) => !seenStories[x.id]), ...out.filter((x) => seenStories[x.id])];
   }
@@ -360,8 +367,8 @@
       ${sl.img ? `<div class="sv-img" style="background-image:url('${esc(sl.img)}')"></div>` : ""}
       <div class="sv-slide${sl.img ? " has-img" : ""}" key="${SV.si}-${SV.k}">
         <span class="kicker">${esc(sl.kicker || "")}</span>
-        ${sl.helmet ? `<div class="sv-helm">${helmet(sl.helmet, { size: 150, look: 3 })}</div>` : ""}
-        ${sl.title ? `<h2>${esc(sl.title)}</h2>` : ""}
+        ${sl.helmet ? `<div class="sv-helm">${helmet(sl.helmet, { size: sl.small ? 96 : 150, look: 3 })}</div>` : ""}
+        ${sl.title ? `<h2${sl.title.length > 48 ? ' class="long"' : ""}>${esc(sl.title)}</h2>` : ""}
         ${sl.stat ? `<div class="sv-stat num">${esc(sl.stat)}</div>${sl.statLabel ? `<p class="sv-sl">${esc(sl.statLabel)}</p>` : ""}` : ""}
         ${sl.countdown ? `<div class="sv-stat num countdown" data-start="${esc(sl.countdown)}"></div>` : ""}
         ${sl.chart && sl.chart.type === "gap" ? `<figure class="sv-chart">${gapChart(sl.chart.race, { w: 300, h: 120, max: 1.5, line: true, mark: sl.chart.mark })}<figcaption class="mono"><span>Lap 1</span><span>${esc(sl.chart.caption || "P1–P2 gap · dashes = 1s · grey = over 1s")}</span><span>Lap ${((S.RACE_DETAIL || {})[sl.chart.race] || {}).laps || ""}</span></figcaption></figure>` : ""}
