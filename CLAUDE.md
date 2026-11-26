@@ -5,6 +5,7 @@ This branch (`app-v2`) is the ONE F1 progressive web app, live at https://shreya
 
 ## Ship a change
 1. Bump `APP_VERSION` in `app.js` (e.g. `"v66"` → `"v67"`) and `VERSION` in `sw.js` (`"statlab-v66"` → `"statlab-v67"`) together.
+   Read the file before writing it: `open(f,'w').write(open(f).read()...)` empties the file (it did to sw.js in v70–v71).
 2. Check in a browser at phone size with Playwright (390×844): no page errors. Set `localStorage onef1.welcomed.v1 = "1"` and
    `sessionStorage onef1-splash = "1"` to skip the welcome guide and the intro.
 3. Commit, then deploy: `git push -q origin app-v2 && git push -q origin app-v2:main`.
@@ -21,11 +22,15 @@ Never add a workflow that pushes to `main` automatically.
 - `portraits.js` + `portraits/`: cartoon driver portraits (spec and style prompt: `content/faces/PORTRAITS.md` on the `content` branch).
 - `styles.css`: tokens (`--bg #0E0F12`, `--card`, `--fg`, `--red`) and versioned blocks appended at the end.
 - `sw.js`: offline cache (CORE list) and network-first for the data files. Add any new JS file to both lists.
-- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`.
+- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`.
+- Stories row: sorted newest first. Hand stories in `stories.js` (themes: next GP, contracts, rule changes, last-race fallout);
+  `round: N` replaces the automatic next-race story, `news: [id prefixes]` hides news items a story already covers.
 
 ## Data tools (`tools/`)
 - `build_data.py` (needs the Stat Lab season source), then `add_schedule.py` (session times from OpenF1) and `add_quali.py`.
 - `build_race_detail.py`, `build_lab.py`, `build_duels.py`, `news_images.py` (news-site hosts are blocked here).
+- `build_analysis.py 22 23`: race-weekend analysis from past editions (strategy, safety cars, temps) for the preview page.
+- `add_news.py stories.json`: add news items (optional `short` = 2-line story label).
 - APIs that work from the cloud environment: api.openf1.org, api.jolpi.ca, api.openverse.org.
 
 ## Rules the user set

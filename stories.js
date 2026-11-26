@@ -10,16 +10,18 @@
 // Top-story themes: the next Grand Prix, driver contracts, rule announcements, midweek fallout from the last race.
 window.STORIES = [
   {
-    id: "qatar-preview-2026-v2", date: "2026-11-26T18:00:00Z", round: 22, label: "Qatar GP: what to watch", cover: { text: "🇶🇦", hook: "3D" }, color: "#C8102E",
+    id: "qatar-preview-2026-v3", date: "2026-11-26T18:00:00Z", round: 22, label: "Qatar GP: what to watch", cover: { text: "🇶🇦", hook: "3D" }, color: "#C8102E",
     news: ["verstappen-heads-to-qatar", "qatar-preview-27-lap", "alonso-sits-out-qatar", "titles-settled-but-hamilton"],
     slides: [
       { kicker: "Round 22 of 23 · Lusail · this weekend", title: "Qatar Grand Prix", countdown: "2026-11-29T16:00:00Z", text: "57 laps under the lights. Practice Friday, qualifying Saturday, lights out Sunday at 16:00 GMT (19:00 in Qatar). No sprint this time." },
       { kicker: "The favourite", title: "Lusail belongs to Verstappen", helmet: "VER", stat: "3", statLabel: "Qatar wins in a row: 2023, 2024, 2025", text: "He arrives off the Las Vegas win and is the bookmakers' pick. Antonelli, Norris and Russell are next in the betting." },
+      { kicker: "How Qatar is won", title: "A safety car every year", stat: "3/3", statLabel: "of the last three races here had at least one", text: "In 2025 it came out on lap 7. Verstappen pitted under it and won from third, while Piastri, on pole, stayed out and finished second. In 2024 Verstappen's only stop also came under a safety car." },
+      { kicker: "Form · last 5 races", title: "Nobody is hotter", rows: [[1, "VER", "108"], [2, "ANT", "77"], [3, "NOR", "75"]], text: "Points from the last five Grands Prix: Verstappen has three wins and nothing worse than third." },
       { kicker: "The fight for second", title: "Leave Qatar 26 clear and P2 is his", rows: [[2, "VER", "304"], [3, "HAM", "267"]], stat: "37", statLabel: "points ahead of Hamilton, with 50 left" },
       { kicker: "The fight for third", title: "Three drivers, three points", rows: [[3, "HAM", "267"], [4, "RUS", "264"], [5, "NOR", "264"]], text: "Both titles are settled. This is what Qatar and Abu Dhabi still decide." },
       { kicker: "Constructors · third place", title: "Red Bull vs McLaren", stat: "9", statLabel: "points between them: Red Bull 440, McLaren 431" },
       { kicker: "Tyres", title: "A two-stop race", stat: "27", statLabel: "laps max on any set of tyres, in a 57-lap race (reported by race previews)", text: "Lusail's fast, long corners punish the left-front. A cap per set forces at least two stops, so pit timing and safety cars decide a lot." },
-      { kicker: "Friday line-up", title: "Alonso sits out FP1", helmet: "ALO", small: true, text: "Aston Martin reserve Jak Crawford drives his car in first practice, as he did in Las Vegas, where rain left him with little more than an installation lap.", link: "#/race/22", linkText: "Full weekend preview" },
+      { kicker: "Friday line-up", title: "Alonso sits out FP1", helmet: "ALO", small: true, text: "Aston Martin reserve Jak Crawford drives his car in first practice, as he did in Las Vegas, where rain left him with little more than an installation lap.", link: "#/race/22", linkText: "Full analysis" },
     ],
   },
   {

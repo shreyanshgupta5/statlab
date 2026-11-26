@@ -1087,3 +1087,29 @@ html.story-open, html.story-open body { overflow: hidden; }
 .story-c .sc-hook.sm { font-size: 12px; padding-top: 12px; }
 .story-c .sc-t.sm { font-size: 19px; } .sv-head .sv-cov .sc-t.sm { font-size: 9px; }
 .sv-stat.countdown { font-size: 54px; white-space: nowrap; }
+
+/* v72: race-weekend analysis on the preview page */
+.an-watch { list-style: none; counter-reset: w; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.an-watch li { counter-increment: w; position: relative; padding: 14px 14px 14px 48px; background: var(--card); border-radius: 14px; font-size: 14px; line-height: 1.45; color: var(--soft, #B9BDC4); }
+.an-watch li::before { content: counter(w); position: absolute; left: 14px; top: 12px; font: 700 22px var(--num, var(--mono)); color: var(--red); }
+.an-watch b { color: var(--fg); }
+.an-eds { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.an-ed { padding: 14px; background: var(--card); border-radius: 14px; border-left: 4px solid var(--tc); }
+.an-top { display: flex; align-items: center; gap: 10px; } .an-top .yr { font-size: 20px; font-weight: 700; } .an-top b { font: italic 800 18px var(--display); font-stretch: 112%; text-transform: uppercase; } .an-top .r { margin-left: auto; }
+.an-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.an-grid span { display: flex; flex-direction: column; font-size: 11px; color: var(--muted); } .an-grid em { font-style: normal; font-size: 20px; font-weight: 700; color: var(--fg); }
+.an-txt { margin-top: 10px; font-size: 13px; line-height: 1.45; color: var(--soft, #B9BDC4); }
+.an-call { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, #F5B700 22%, transparent); color: #F5B700; font-size: 12px; font-weight: 700; }
+.an-note { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.an-form { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 10px; row-gap: 4px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); }
+.an-forms li:first-child { border-top: 0; }
+.an-form .portrait, .an-form svg.helmet { grid-row: 1 / 3; } .an-form b { font: italic 800 15px var(--display); font-stretch: 112%; text-transform: uppercase; }
+.an-form em { grid-row: 1 / 3; grid-column: 3; font-style: normal; font-size: 20px; font-weight: 700; }
+.an-dots { display: flex; gap: 3px; } .an-dots i { width: 20px; height: 18px; border-radius: 4px; display: grid; place-items: center; font: 700 10px var(--mono); font-style: normal; background: rgba(255,255,255,.08); color: var(--soft, #B9BDC4); }
+.an-dots i.w { background: #F5B700; color: #111; } .an-dots i.p { background: rgba(255,255,255,.22); color: #fff; } .an-dots i.x { color: var(--red-text, #FF5A4E); }
+.an-bar { display: none; }
+.an-stake { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; column-gap: 10px; row-gap: 2px; align-items: center; padding: 12px 14px; border-top: 1px solid var(--line); }
+.drows .an-stake:first-child { border-top: 0; }
+.an-stake b { font-size: 14px; } .an-stake em { font-style: normal; font-size: 20px; font-weight: 700; }
+.an-stake small { grid-column: 2 / 4; font-size: 12px; color: var(--muted); }
+.an-top .r { white-space: nowrap; }

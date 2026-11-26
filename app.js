@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v71"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v72"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -845,6 +845,76 @@
       <div class="ws reveal">${days.map((g) => `<div class="ws-day"><div class="ws-date"><b>${g.dn}</b><span><em>${esc(g.wd)}</em><small>${esc(g.mo)}</small></span></div><ul>${g.rows.join("")}</ul></div>`).join("")}</div>`;
   }
 
+
+  /* ---------- v72: race-weekend analysis (analysis.js) on the preview page ---------- */
+  const ANALYSIS = window.ANALYSIS || {};
+  // what is still mathematically open: adjacent places where the gap is within what is left to score
+  function stillAtStake(round) {
+    const left = S.CALENDAR.filter((c) => c.round >= round).length, dMax = 25 * left, tMax = 43 * left;
+    const fights = (list, max, key) => list.slice(0, 6).map((a, i) => [a, list[i + 1]]).filter(([a, b]) => b && a.points - b.points <= max)
+      .map(([a, b]) => ({ place: list.indexOf(a) + 1, a, b, gap: a.points - b.points, max, key }));
+    return { left, dMax, tMax, drivers: fights(DS, dMax, "d").filter((f) => f.place <= 5), teams: fights(TS, tMax, "t").filter((f) => f.place <= 4) };
+  }
+  function formLast(n, upto) {
+    const rs = S.RESULTS.filter((r) => r.round < upto).slice(-n);
+    const pts = {}, pos = {};
+    rs.forEach((r) => (r.race || []).forEach((x) => { pts[x.id] = (pts[x.id] || 0) + (x.points || 0); (pos[x.id] = pos[x.id] || []).push(x.dnf || !x.pos ? null : x.pos); }));
+    return { rounds: rs.map((r) => r.round), rows: Object.keys(pts).map((id) => ({ id, pts: pts[id], pos: pos[id] })).sort((a, b) => b.pts - a.pts) };
+  }
+  function analysisBlock(round) {
+    const A = ANALYSIS[round], r = raceByRound[round];
+    if (!A || !A.editions.length) return "";
+    const E = A.editions, names = Object.assign({}, ...E.map((e) => e.names || {})), nm = (c) => (driver[c] ? driver[c].last : names[c] || c), col = (c) => (driver[c] && team[driver[c].team] ? team[driver[c].team].color : "#5E6470");
+    const scRaces = E.filter((e) => e.sc.length || e.vsc.length).length, scCalls = E.filter((e) => e.winnerPitUnderSC.length).length;
+    const fromPole = E.filter((e) => e.winnerGrid === 1).length, avgGain = Math.round(E.reduce((a, e) => a + e.gained, 0) / E.length);
+    const temps = E.map((e) => e.trackTemp).filter(Boolean);
+    const fact = (k, v, sub) => `<div><span class="kicker">${k}</span><b class="mono">${v}</b>${sub ? `<span class="mono dim">${sub}</span>` : ""}</div>`;
+    const eds = E.map((e) => {
+      const call = e.winnerPitUnderSC.length ? `<span class="an-call">Pitted under the safety car, lap ${e.winnerPitUnderSC[0]}</span>` : "";
+      const scTxt = e.sc.length ? e.sc.map(([a, b]) => `laps ${a}–${b}`).join(", ") : "none";
+      return `<li class="an-ed" style="--tc:${col(e.winner)}">
+        <div class="an-top"><span class="yr mono">${e.year}</span>${helmet(e.winner, { size: 40, look: 3 })}<b>${esc(nm(e.winner))}</b><span class="mono dim r">from P${e.winnerGrid}</span></div>
+        <div class="an-grid">
+          <span><em class="mono">${e.stops ?? "–"}</em>stop${e.stops === 1 ? "" : "s"} for most</span>
+          <span><em class="mono">${e.sc.length}${e.vsc.length ? "+" + e.vsc.length : ""}</em>safety car${e.sc.length === 1 ? "" : "s"}${e.vsc.length ? " + VSC" : ""}</span>
+          <span><em class="mono">${e.trackTemp ?? "–"}°</em>track</span>
+          <span><em class="mono">${e.dnf}</em>retired</span>
+        </div>
+        <p class="an-txt">Podium: ${e.podium.map(([c, g]) => `${esc(nm(c))} (P${g})`).join(", ")}. Safety car: ${scTxt}.${e.bestGain && e.bestGain[0] >= 5 ? ` Biggest climb: ${esc(nm(e.bestGain[1]))}, P${e.bestGain[2]} to P${e.bestGain[3]}.` : ""}</p>
+        ${call}${e.note ? `<p class="an-note">${esc(e.note)}</p>` : ""}</li>`; }).join("");
+    // form
+    const F = formLast(5, round), fmax = F.rows.length ? F.rows[0].pts : 1;
+    const form = F.rows.slice(0, 8).map((x) => `<li class="an-form" style="--tc:${col(x.id)}">${helmet(x.id, { size: 32, look: 3 })}<b>${esc(nm(x.id))}</b>
+        <span class="an-dots">${x.pos.map((p) => `<i class="${p === 1 ? "w" : p && p <= 3 ? "p" : !p ? "x" : ""}">${p || "×"}</i>`).join("")}</span>
+        <span class="an-bar"><i style="width:${Math.round(x.pts / fmax * 100)}%"></i></span><em class="mono">${x.pts}</em></li>`).join("");
+    // stakes
+    const K = stillAtStake(round);
+    const fightTxt = (f) => { const A1 = f.key === "d" ? nm(f.a.id) : f.a.name, B1 = f.key === "d" ? nm(f.b.id) : f.b.name;
+      const safe = f.gap > f.max - (f.key === "d" ? 25 : 43);
+      return `<li class="an-stake"><span class="mono dim">P${f.place}</span><b>${esc(A1)} <span class="dim">vs</span> ${esc(B1)}</b><em class="mono">${f.gap}</em>
+        <small>${f.gap === 0 ? "level on points" : `${esc(A1)} ahead by ${f.gap} of ${f.max} left`}${safe ? ` · leave ${esc(r.name.replace(/ Grand Prix$/, ""))} more than ${f.key === "d" ? 25 : 43} clear and it's settled` : ""}</small></li>`; };
+    // three things to watch, from the numbers
+    const watch = [];
+    if (scRaces === E.length) watch.push(`<b>The safety car.</b> There was at least one in each of the last ${E.length} races here${scCalls ? `, and in ${scCalls} of them the winner made a stop under it` : ""}. A free pit stop is worth a lot on a track this fast.`);
+    if (A.note) watch.push(`<b>Tyres.</b> ${esc(A.note)}`);
+    const k = E.filter((e) => e.winner === E[0].winner).length;
+    if (k >= 2) watch.push(`<b>${esc(nm(E[0].winner))}.</b> Won ${k} of the last ${E.length} here${E.some((e) => e.winnerGrid > 1) ? ", not always from pole" : ""}. ${F.rows[0] ? `On form, ${esc(nm(F.rows[0].id))} has the most points over the last 5 races (${F.rows[0].pts}).` : ""}`);
+    return `
+      ${sectionHead("Analysis · last " + E.length + " races here", "How it's won")}
+      <div class="facts four reveal">
+        ${fact("Safety car", `${scRaces}/${E.length}`, "races with one")}
+        ${fact("Won from pole", `${fromPole}/${E.length}`, E.some((e) => e.winnerGrid > 1) ? "others from P" + E.filter((e) => e.winnerGrid > 1).map((e) => e.winnerGrid).join(", P") : "every time")}
+        ${fact("Places gained", avgGain, "by finishers, per race")}
+        ${fact("Track temp", temps.length ? Math.round(Math.min(...temps)) + "–" + Math.round(Math.max(...temps)) + "°" : "–", "°C, race average")}
+      </div>
+      ${watch.length ? `<ol class="an-watch reveal">${watch.map((w) => `<li>${w}</li>`).join("")}</ol>` : ""}
+      <ul class="an-eds reveal">${eds}</ul>
+      ${sectionHead(`Form · Grands Prix ${F.rounds[0]}–${F.rounds[F.rounds.length - 1]}`, "Who's hot", `<p class="note">Finishing positions in the last 5 races and points scored (sprints not included).</p>`)}
+      <ul class="drows an-forms reveal">${form}</ul>
+      ${sectionHead(`${K.left} race${K.left === 1 ? "" : "s"} left · ${K.dMax} driver points, ${K.tMax} team points`, "Still at stake")}
+      <ul class="drows reveal">${[...K.drivers, ...K.teams].map(fightTxt).join("")}</ul>`;
+  }
+
   function viewPreview(round) {
     const r = raceByRound[round], P = PREVIEWS[round];
     const hist = P ? P.history : [];
@@ -889,10 +959,11 @@
       ${mine.length ? `${sectionHead("Your drivers here", "Following")}<div class="favs reveal">${mine.map((d) => `<a class="fav-card has-helmet" href="#/driver/${d.id}" style="--tc:${codeCol(d.id)}">${helmet(d.id, { size: 56, look: 3 })}<span class="mono dim">${d.starts} START${d.starts === 1 ? "" : "S"} HERE</span><b>${esc(codeName(d.id))}</b><span class="note">${d.wins} win${d.wins === 1 ? "" : "s"} · ${d.podiums} podium${d.podiums === 1 ? "" : "s"} · best ${d.best ? "P" + d.best : "–"} · avg ${d.avg ?? "–"}</span></a>`).join("")}</div>` : ""}
       ${kings ? `${sectionHead(`Current grid · ${span}`, "Best on this track", best ? `<p class="note">${esc(codeName(best.id))} leads with ${best.wins} win${best.wins === 1 ? "" : "s"} and ${best.podiums} podium${best.podiums === 1 ? "" : "s"}.</p>` : "")}
         <ul class="drows reveal"><li class="drow head king"><span></span><span>Driver</span><span class="r">Wins</span><span class="r">Pod</span><span class="r">Poles</span><span class="r">Avg</span></li>${kings}</ul>` : ""}
+      ${analysisBlock(round)}
       ${gridBlock(round)}
       ${past ? `${sectionHead("Winners", "Past results")}<ul class="drows reveal">${past}</ul>` : ""}
       ${!P ? `<div class="panel reveal" style="margin-top:20px"><p class="note">Track history for this round isn't loaded yet.</p></div>` : ""}
-      <p class="foot">Data: Jolpica (results history) and OpenF1 (track layout, qualifying, grid) · unofficial fan project.</p>`;
+      <p class="foot">Data: Jolpica (results history) and OpenF1 (track layout, qualifying, grid, strategy, safety cars, weather) · unofficial fan project.</p>`;
   }
 
   // link-preview image: loaded from the publisher (never copied), credited to the source; hidden if it fails to load
