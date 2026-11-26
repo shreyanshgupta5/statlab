@@ -1040,3 +1040,24 @@ html.story-open, html.story-open body { overflow: hidden; }
   background: color-mix(in srgb, var(--pr) 35%, #1E2128); box-shadow: 0 0 0 3px var(--pr), 0 8px 18px rgba(0,0,0,.35); }
 .portrait svg.helmet { display: none; }
 .portrait.noimg svg.helmet { display: block; width: 100%; height: 100%; }
+
+/* v67: data-drawn story covers, in-slide gap chart, full-screen slide photos */
+.story-c .disc, .sv-head .sv-cov { position: relative; }
+.story-c .disc > *, .sv-head .sv-cov > * { position: relative; z-index: 1; }
+.story-c .disc > .sc-art, .story-c .disc > .sc-team, .sv-head .sv-cov > .sc-art, .sv-head .sv-cov > .sc-team { position: absolute; inset: 0; z-index: 0; }
+.sc-art .gapc { width: 100%; height: 100%; display: block; }
+.gapc rect { fill: rgba(255,255,255,.18); } .gapc rect.hot { fill: var(--sc); } .gapc rect.mk { fill: #fff; }
+.gapc line { stroke: rgba(255,255,255,.55); stroke-width: 1; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+.sc-art { opacity: .75; } .story-c .disc .sc-t, .sv-head .sv-cov .sc-t { text-shadow: 0 1px 6px rgba(0,0,0,.85); }
+.sc-team { background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--tm) 85%, #fff) 0%, var(--tm) 45%, color-mix(in srgb, var(--tm) 40%, #000) 100%); }
+.sc-hook { position: absolute !important; left: 0; right: 0; bottom: 0; z-index: 2 !important; padding: 2px 0 4px; text-align: center; font-size: 11px; font-weight: 700; line-height: 1; color: #fff;
+  background: linear-gradient(transparent, rgba(0,0,0,.75) 40%); }
+.story-c .disc:has(.sc-hook) svg.helmet { margin-top: -6px; }
+.sv-head .sv-cov .sc-hook { display: none; } .sv-head .sv-cov svg.helmet { width: 30px; height: auto; }
+.sv-chart { margin: 4px 0 0; } .sv-chart .gapc { width: 100%; height: 120px; display: block; }
+.sv-chart figcaption { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--muted); margin-top: 6px; }
+.sv-slide.has-img { justify-content: flex-end; padding-bottom: 8px; }
+#storyv > .sv-img { position: absolute; inset: 0; height: auto; opacity: 1; z-index: 0; -webkit-mask-image: none; mask-image: none; }
+#storyv > .sv-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.05) 25%, rgba(0,0,0,.2) 45%, rgba(11,12,15,.92) 72%, #0B0C0F); }
+#storyv > .sv-bars, #storyv > .sv-head, #storyv > .sv-slide { position: relative; z-index: 1; }
+.gapc line.mkl { stroke: #fff; stroke-width: 1.5; stroke-dasharray: none; opacity: .9; }

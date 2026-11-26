@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v66"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v67"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -304,8 +304,24 @@
     return [...out.filter((x) => !seenStories[x.id]), ...out.filter((x) => seenStories[x.id])];
   }
   let STORY_LIST = [];
-  const storyCover = (st, size) => st.cover.helmet ? helmet(st.cover.helmet, { size, look: 2 })
-    : st.cover.img ? `<img src="${esc(st.cover.img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="sc-t">${esc(st.cover.text)}</span>`;
+  // v67: covers drawn from data. {chart:"gap", race, text} = the lap-by-lap P1–P2 gap behind the hook;
+  // {helmet, hook} = driver on a team-colour background with a short number on top.
+  function gapChart(race, o = {}) {
+    const g = ((S.RACE_DETAIL || {})[race] || {}).gap12 || [];
+    if (!g.length) return "";
+    const W = o.w || 100, H = o.h || 40, top = o.max || 1.5, bw = W / g.length;
+    const bars = g.map((v, i) => { const h = Math.max(1, Math.min(v, top) / top * H), hot = v < 1;
+      return `<rect x="${(i * bw + bw * .15).toFixed(2)}" y="${(H - h).toFixed(2)}" width="${(bw * .7).toFixed(2)}" height="${h.toFixed(2)}" class="${hot ? "hot" : ""}${o.mark === i + 1 ? " mk" : ""}"/>`; }).join("");
+    const one = (H - H / top).toFixed(2), mx = o.mark ? ((o.mark - .5) * bw).toFixed(2) : 0;
+    const mk = o.mark ? `<line class="mkl" x1="${mx}" x2="${mx}" y1="0" y2="${H}"/>` : "";
+    return `<svg class="gapc" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${mk}${bars}${o.line ? `<line x1="0" x2="${W}" y1="${one}" y2="${one}"/>` : ""}</svg>`;
+  }
+  const storyCover = (st, size) => {
+    const c = st.cover;
+    if (c.chart === "gap") return `<span class="sc-art">${gapChart(c.race, { w: 60, h: 60, max: 1.2 })}</span><span class="sc-t">${esc(c.text || "")}</span>`;
+    if (c.helmet) return `<span class="sc-team" style="--tm:${tc((driver[c.helmet] || {}).team) || "#5E6470"}"></span>${helmet(c.helmet, { size, look: 2 })}${c.hook ? `<span class="sc-hook num">${esc(c.hook)}</span>` : ""}`;
+    return c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="sc-t">${esc(c.text)}</span>`;
+  };
   function storiesRow() {
     STORY_LIST = buildStories();
     if (!STORY_LIST.length) return "";
@@ -341,13 +357,14 @@
     SV.el.innerHTML = `<div class="sv-bars">${st.slides.map((_, j) => `<i class="${j < SV.k ? "done" : ""}"><b></b></i>`).join("")}</div>
       <div class="sv-head"><span class="sv-cov">${storyCover(st, 34)}</span><b>${esc(st.label)}</b><span class="mono dim">${ago(st.at)}</span>
         <button type="button" class="sv-x" data-sclose aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-      <div class="sv-slide" key="${SV.si}-${SV.k}">
-        ${sl.img ? `<div class="sv-img" style="background-image:url('${esc(sl.img)}')"></div>` : ""}
+      ${sl.img ? `<div class="sv-img" style="background-image:url('${esc(sl.img)}')"></div>` : ""}
+      <div class="sv-slide${sl.img ? " has-img" : ""}" key="${SV.si}-${SV.k}">
         <span class="kicker">${esc(sl.kicker || "")}</span>
         ${sl.helmet ? `<div class="sv-helm">${helmet(sl.helmet, { size: 150, look: 3 })}</div>` : ""}
         ${sl.title ? `<h2>${esc(sl.title)}</h2>` : ""}
         ${sl.stat ? `<div class="sv-stat num">${esc(sl.stat)}</div>${sl.statLabel ? `<p class="sv-sl">${esc(sl.statLabel)}</p>` : ""}` : ""}
         ${sl.countdown ? `<div class="sv-stat num countdown" data-start="${esc(sl.countdown)}"></div>` : ""}
+        ${sl.chart && sl.chart.type === "gap" ? `<figure class="sv-chart">${gapChart(sl.chart.race, { w: 300, h: 120, max: 1.5, line: true, mark: sl.chart.mark })}<figcaption class="mono"><span>Lap 1</span><span>${esc(sl.chart.caption || "P1–P2 gap · dashes = 1s · grey = over 1s")}</span><span>Lap ${((S.RACE_DETAIL || {})[sl.chart.race] || {}).laps || ""}</span></figcaption></figure>` : ""}
         ${sl.rows ? `<ol class="sv-rows">${sl.rows.map(row).join("")}</ol>` : ""}
         ${sl.text ? `<p class="sv-text">${esc(sl.text)}</p>` : ""}
         ${sl.link ? `<a class="sv-link" href="${esc(sl.link)}">${esc(sl.linkText || "Open")} →</a>` : ""}
