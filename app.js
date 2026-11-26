@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v70"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v71"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -286,14 +286,18 @@
       out.push({ id: `session-${L.kind}-${L.round}`, at: L.at, label: L.kind === "quali" ? `${nm(top)} on pole in ${placeShort}` : `${nm(top)} wins ${placeShort}`, cover: { helmet: top, hook: L.kind === "quali" ? "POLE" : "WIN" }, color: "#E10600", slides });
     }
     // 2. hand-written burning stories
-    (window.STORIES || []).forEach((st) => out.push({ ...st, at: Date.parse(st.date + "T12:00:00Z") }));
+    const hand = window.STORIES || [];
+    const daysTo = (iso) => { const ms = Date.parse(iso) - Date.now(), d = Math.floor(ms / 864e5); return { ms, d, hook: d >= 1 ? d + "D" : ms > 0 ? "TODAY" : "LIVE" }; };
+    hand.forEach((st) => { const r = st.round && raceByRound[st.round];
+      const cover = r && st.cover && st.cover.hook ? { ...st.cover, hook: daysTo(r.raceStart || r.date).hook } : st.cover;
+      out.push({ ...st, cover, at: Date.parse(st.date.length > 10 ? st.date : st.date + "T12:00:00Z") }); });
     // 3. the title fight
     const ld = DS[0], p2 = DS[1];
     if (ld && p2) out.push({ id: `standings-${S.RESULTS.length}`, at: L ? L.at : Date.now(), label: `${nm(ld.id)} leads by ${ld.points - p2.points}`, cover: { helmet: ld.id, hook: "+" + (ld.points - p2.points) }, color: "#F5B700",
       slides: [{ kicker: `Championship · after ${S.RESULTS.length} rounds`, title: `${nm(ld.id)} leads by ${ld.points - p2.points}`, helmet: ld.id, stat: String(ld.points), statLabel: "points" },
                { kicker: "Top three", rows: DS.slice(0, 3).map((x, k) => [k + 1, x.id, x.points + " pts"]), text: `${S.CALENDAR.length - S.RESULTS.length} race${S.CALENDAR.length - S.RESULTS.length === 1 ? "" : "s"} left.`, link: "#/", linkText: "Full standings" }] });
     // 4. the next race weekend
-    if (upcoming) {
+    if (upcoming && !hand.some((st) => +st.round === +upcoming.round)) {
       const fp = (upcoming.sessions || [])[0];
       const msLeft = Date.parse(upcoming.raceStart || upcoming.date) - Date.now(), dleft = Math.floor(msLeft / 864e5), nShort = upcoming.name.replace(/ Grand Prix$/, "");
       out.push({ id: `next-${upcoming.round}`, at: Date.now() - 3600000, label: dleft >= 1 ? `${nShort} in ${dleft} day${dleft === 1 ? "" : "s"}` : msLeft > 0 ? `${nShort}: race day` : `${nShort} is on`, cover: { text: upcoming.flag, hook: dleft >= 1 ? dleft + "D" : msLeft > 0 ? "TODAY" : "LIVE" }, color: "#3B6FD8",
@@ -306,11 +310,13 @@
       return best && best[1]; };
     const newsTeam = (n) => { const tm = Object.values(team).map((x) => [n.title.indexOf(x.name.split(" ")[0]), x]).filter((x) => x[0] >= 0).sort((a, b) => a[0] - b[0])[0]; return tm && tm[1]; };
     const raceIn = (n) => S.CALENDAR.find((c) => n.title.includes(c.name.replace(/ Grand Prix$/, "")));
-    (NEWS || []).slice(0, 6).forEach((n) => { const who = newsWho(n), tm = !who && newsTeam(n);
+    const covered = hand.flatMap((st) => st.news || []);
+    (NEWS || []).filter((n) => !covered.some((p) => n.id.startsWith(p)) && Date.parse(n.date) >= Date.parse((NEWS[0] || n).date) - 3 * 864e5).slice(0, 6).forEach((n) => { const who = newsWho(n), tm = !who && newsTeam(n);
       out.push({ id: `news-${n.id}`, at: Date.parse(n.date + "T12:00:00Z"), label: n.short || n.title,
         cover: n.image ? { img: n.image } : who ? { helmet: who } : tm ? { text: tm.id, bg: tm.color } : raceIn(n) ? { text: raceIn(n).flag, hook: "NEWS" } : { text: n.tag.slice(0, 2).toUpperCase() }, color: who ? tc(driver[who].team) : tm ? tm.color : "#B9BDC4",
         slides: [{ kicker: `${n.tag} · ${fmtDate(n.date)}`, title: n.title, helmet: n.image ? null : who, small: true, text: n.dek, img: n.image, link: `#/news/${n.id}`, linkText: "Read the story" }] }); });
-    // unseen first (keeping order), seen after
+    // v71: newest first across every kind of story; unseen first (keeping that order), seen after
+    out.sort((a, b) => b.at - a.at);
     return [...out.filter((x) => !seenStories[x.id]), ...out.filter((x) => seenStories[x.id])];
   }
   let STORY_LIST = [];
@@ -330,7 +336,7 @@
     const c = st.cover;
     if (c.chart === "gap") return `<span class="sc-art">${gapChart(c.race, { w: 60, h: 60, max: 1.2 })}</span><span class="sc-t">${esc(c.text || "")}</span>`;
     if (c.helmet) return `<span class="sc-team" style="--tm:${tc((driver[c.helmet] || {}).team) || "#5E6470"}"></span>${helmet(c.helmet, { size, look: 2 })}${c.hook ? `<span class="sc-hook num${c.hook.length > 4 ? " sm" : ""}">${esc(c.hook)}</span>` : ""}`;
-    return (c.bg ? `<span class="sc-team" style="--tm:${esc(c.bg)}"></span>` : "") + (c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="sc-t">${esc(c.text)}</span>`) + (c.hook ? `<span class="sc-hook num${c.hook.length > 4 ? " sm" : ""}">${esc(c.hook)}</span>` : "");
+    return (c.bg ? `<span class="sc-team" style="--tm:${esc(c.bg)}"></span>` : "") + (c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="sc-t${[...c.text].length > 3 ? " sm" : ""}">${esc(c.text)}</span>`) + (c.hook ? `<span class="sc-hook num${c.hook.length > 4 ? " sm" : ""}">${esc(c.hook)}</span>` : "");
   };
   function storiesRow() {
     STORY_LIST = buildStories();

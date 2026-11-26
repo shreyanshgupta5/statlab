@@ -1085,3 +1085,5 @@ html.story-open, html.story-open body { overflow: hidden; }
 .story-c .sc-hook { text-transform: uppercase; }
 .story-c .new { top: 2px; left: auto; right: 0; transform: none; }
 .story-c .sc-hook.sm { font-size: 12px; padding-top: 12px; }
+.story-c .sc-t.sm { font-size: 19px; } .sv-head .sv-cov .sc-t.sm { font-size: 9px; }
+.sv-stat.countdown { font-size: 54px; white-space: nowrap; }
