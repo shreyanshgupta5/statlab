@@ -12,14 +12,14 @@ W, H, FPS = 1080, 1920, 30
 
 VO = [
     ('hook', "Two world titles. Eight points from five. This is the story of Fernando Alonso, and the championships that got away."),
-    ('origins', "Oviedo, northern Spain. His father, a mechanic who raced karts for fun, built a kart for Fernando's older sister. She didn't want it. Fernando, aged three, did. By fifteen he was junior world karting champion. Formula Nissan champion at eighteen. And in 2001, at nineteen, he was on the Formula One grid, with Minardi. He scored zero points."),
+    ('origins', "Formula One, 2001. A nineteen-year-old from Oviedo, in northern Spain, makes his debut with Minardi. He scores zero points all season. So does the whole team."),
     ('renault', "Renault saw something. In 2003 he wins in Hungary, the youngest winner Formula One had ever seen. Then he takes on the two giants of his time. Michael Schumacher: seven world titles. Kimi Räikkönen: the Iceman, in a McLaren that was often the fastest car on the grid. 2005. Räikkönen wins seven races. So does Alonso. Räikkönen sets ten fastest laps. Alonso sets two. But twice, the McLaren breaks down after starting from pole. Alonso is on the podium fifteen times, and wins the title by twenty-one points. 2006. Schumacher, in his last season with Ferrari. Seven wins each, again. Alonso's fourteen podiums take the title by thirteen. Two titles by twenty-five. Everyone expected a dynasty."),
     ('mclaren', "2007. The double champion joins McLaren. His teammate: a rookie called Lewis Hamilton. Alonso expects to lead. Instead, Hamilton finishes on the podium in each of his first nine races. The garage splits. In Hungary, Alonso holds Hamilton up in the pit lane and is moved from pole to sixth. In Japan, he crashes out in the rain. And in Brazil, Räikkönen steals the title from both of them. Alonso misses it by one point. After one season, he leaves."),
     ('f2010', "2010. Ferrari. Against him: Sebastian Vettel, and a Red Bull that was the fastest car of the era. Abu Dhabi, the final race. Alonso leads the championship. Fourth would be enough. Ferrari pits him early, he comes out behind Petrov's Renault, and he never gets past. Seventh. Vettel is champion by four points."),
     ('f2012', "2012 is his masterpiece. His Ferrari starts sixth on average. He finishes third on average, with thirteen podiums and more than double his teammate's points. He leads by forty-four in July. Then two first-lap crashes, at Spa and Suzuka. Vettel wins it by three. One point. Four points. Three points. Eight points from five titles."),
     ('today', "2026. He's forty-five, and he's still out there. Four hundred and forty-nine Grands Prix. Thirty-two wins, the last in Spain, 2013. In 2025, Aston Martin signed Adrian Newey, the designer of the Red Bulls that beat him in 2010 and 2012. Now Newey's car is his car. And Fernando Alonso is still chasing one last title."),
 ]
-SPOKEN_LEN = {'2001': 4, '2003': 4, '2005': 4, '2006': 4, '2007': 4, '2010': 3, '2012': 3, '2013': 3, '2015': 3, '2025': 4, '2026': 4, 'thirty-two': 3, '2018': 3, '2021': 3, '2023': 3,
+SPOKEN_LEN = {'2001': 4, 'nineteen-year-old': 5, '2003': 4, '2005': 4, '2006': 4, '2007': 4, '2010': 3, '2012': 3, '2013': 3, '2015': 3, '2025': 4, '2026': 4, 'thirty-two': 3, '2018': 3, '2021': 3, '2023': 3,
               'twenty-five': 3, 'forty-four': 3, 'forty-five': 3, 'twenty-one': 3, 'thirty-three': 3, 'first-lap': 2, 'GP2': 3, '500': 3}
 
 words = []
@@ -60,7 +60,7 @@ src = open(os.path.join(HERE, 'build_film.py')).read()
 exec(src[src.index('# ------------------------------------------------------------------ data'):src.index('scenes = {}')], globals())
 ERA = {
     'hook':    ('#121318', 'rgba(225,6,0,.10)',      ('#1F3F95', '#FFD200', '#C8102E')),
-    'origins': ('#1F3F95', 'rgba(255,255,255,.07)',  ('#111111', '#FFFFFF', '#FFD200')),
+    'origins': ('#17181C', 'rgba(255,210,0,.07)',    ('#111111', '#FFFFFF', '#FFD200')),
     'renault': ('#0B3D91', 'rgba(255,210,0,.10)',    ('#0B4EA2', '#FFD200', '#111111')),
     'mclaren': ('#4B5159', 'rgba(255,255,255,.07)',  ('#C9CED4', '#E10600', '#1A1A1A')),
     'f2010':   ('#A70D12', 'rgba(255,214,0,.09)',    ('#DC0000', '#FFD200', '#111111')),
@@ -86,7 +86,7 @@ def chart_slide(s, t_in, t_out=None):
     s.sound('fs-127197-fast-simple-chop-5-aif', t_in + .2, .4)
     if t_out is not None: s.tw(f'tl.to("#{s.ch}-chart", {{opacity:0, y:-60, duration:.3, ease:"power2.in"}}, {t_out:.3f});')
 
-BIGWORD = {'hook': '5?', 'origins': '1981', 'renault': '2005', 'mclaren': '2007', 'f2010': '2010', 'f2012': '2012', 'honda': 'GP2',
+BIGWORD = {'hook': '5?', 'origins': '2001', 'renault': '2005', 'mclaren': '2007', 'f2010': '2010', 'f2012': '2012', 'honda': 'GP2',
            'away': 'LE MANS', 'reveal': '8', 'today': '2026'}
 ACCENT = {'hook': '#E10600', 'origins': '#FFD200', 'renault': '#FFD200', 'mclaren': '#E10600', 'f2010': '#FFD200', 'f2012': '#FFFFFF',
           'honda': '#FF8000', 'away': '#EB0A1E', 'reveal': '#E10600', 'today': '#CEDC00'}
@@ -171,29 +171,20 @@ s.out('#hk-p', s.at('This') - .2); s.out('#hk-five', s.at('This') - .2); s.out('
 s.add('<div id="hk-name" class="big" style="left:120px;top:420px;font-size:150px;line-height:.95">FERNANDO<br><span style="color:#E10600">ALONSO</span></div>')
 s.pop('#hk-name', s.at('Fernando'), .35)
 
-# ---- 1 origins
+# ---- 1 origins: straight into Formula One, 2001 (no openly licensed Minardi photo yet, so the drawn helmet leads)
 s = S('origins'); hc = ERA['origins'][2]
-s.add('<div id="or-t1" class="tape" style="left:130px;top:312px">Oviedo · 1981</div>')
-s.add(photo('or-k83', 'kart1983', 140, 370, 600, 470, 2))
-s.add('<div id="or-t2" class="tape" style="left:150px;top:900px;font-size:44px">his first kart, built by his father</div>')
-s.add('<div id="or-t3" class="tape" style="left:540px;top:800px;font-size:66px">age 3</div>')
-s.add(photo('or-k96', 'kart1996', 140, 370, 600, 470, 3))
-s.add('<div id="or-st1" class="stamp solid" style="left:140px;top:880px;font-size:46px">1996 · junior world champion</div>')
-s.add('<div id="or-t4" class="tape" style="left:180px;top:990px;font-size:44px">1999 · Formula Nissan champion</div>')
-s.add(helmet('or-h', hc, 300, 120, 340))
-s.add('<div id="or-19" class="tape" style="left:460px;top:360px;font-size:60px">2001 · age 19</div>')
-s.add('<div id="or-zero" class="big" style="left:460px;top:470px;font-size:300px;color:#FFD200">0</div>')
-s.add('<div id="or-zl" class="lab" style="position:absolute;left:640px;top:690px;font-size:34px">points</div>')
-s.add('<div id="or-st2" class="stamp solid" style="left:150px;top:820px;font-size:64px">Minardi</div>')
-s.card_in('#or-k83', 0, -2); s.tape('#or-t1', max(.7, s.at('Oviedo')), -4); s.tape('#or-t2', s.at('built') + .3, 2)
-s.tape('#or-t3', s.at('three'), 6)
-for x in ('#or-k83', '#or-t2', '#or-t3', '#or-t1'): s.out(x, s.at('fifteen') - .3)
-s.card_in('#or-k96', s.at('fifteen') - .1, 2); s.stamp('#or-st1', s.at('junior'), -3)
-s.tape('#or-t4', s.at('Formula', 1), 2)
-for x in ('#or-k96', '#or-st1', '#or-t4'): s.out(x, s.at('2001') - .3)
-s.card_in('#or-h', s.at('2001')); s.tape('#or-19', s.at('nineteen'), -3)
+s.add(helmet('or-h', hc, 320, 120, 330))
+s.add('<div id="or-f1" class="tape" style="left:470px;top:330px;font-size:60px">Formula One · 2001</div>')
+s.add('<div id="or-19" class="tape" style="left:480px;top:430px;font-size:56px">age 19 · Oviedo, Spain</div>')
+s.add('<div id="or-st2" class="stamp solid" style="left:150px;top:720px;font-size:72px">Minardi</div>')
+s.add('<div id="or-zero" class="big" style="left:580px;top:560px;font-size:300px;color:#FFD200">0</div>')
+s.add('<div id="or-zl" class="lab" style="position:absolute;left:760px;top:780px;font-size:34px">points</div>')
+s.add('<div id="or-team" class="tape" style="left:180px;top:930px;font-size:52px">the whole team: 0</div>')
+s.card_in('#or-h', 0); s.tape('#or-f1', max(.7, s.at('Formula')), -3)
+s.tape('#or-19', s.at('nineteen'), 2)
 s.stamp('#or-st2', s.at('Minardi'), -6)
-s.pop('#or-zero', s.at('zero')); s.scribble(460, 500, 180, 250, s.at('zero') + .3, '#FFFFFF'); s.fade('#or-zl', s.at('zero') + .2)
+s.pop('#or-zero', s.at('zero')); s.scribble(580, 590, 180, 250, s.at("zero") + .3, '#FFFFFF'); s.fade('#or-zl', s.at('zero') + .2)
+s.tape('#or-team', s.at('whole'), -2)
 
 # ---- 2 Renault: the giants (every beat opens on a photo; 2005 and 2006 stat duels from data/h2h_2005_2006.json)
 H2H = json.load(open(os.path.join(D, 'h2h_2005_2006.json')))
