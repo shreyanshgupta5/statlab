@@ -14,9 +14,9 @@ The ONE F1 app is on the `app-v2` branch and is worked on in a separate session.
   out of git; commit only a compressed `*-preview.mp4` (CRF 28 for films with moving textures).
 
 ## Projects
-- `content/alonso/`: **"The champion who should have won five"** — Fernando Alonso documentary reel, 2:51, illustrated data style
+- `content/alonso/`: **"The champion who should have won five"** — Fernando Alonso documentary reel, 2:40, illustrated data style
   (inspired by Dugout's Kohli reel). Script and checked facts: `SCRIPT.md` (v3). Build: `python3 build_film2.py` → `film/`, then render.
-  Current: `film/renders/alonso-v4-preview.mp4`: every beat opens on a photo, 2005/2006 head-to-head stats and wins per season,
+  Current: `film/renders/alonso-v5-preview.mp4`: starts at the 2001 Minardi debut (junior career cut), every beat opens on a photo, 2005/2006 head-to-head stats and wins per season,
   2012 ends on 1+4+3=8 then cuts straight to 2026 (Newey joins Aston Martin, "one last title?"). Honda and Le Mans chapters cut. Estimated pace.
   **Waiting on the user:** the voiceover recording (via Google Drive) → retime with `python3 build_film2.py --vo vo.json`
   (one `[start, end]` per script word); music; checking the facts marked † in SCRIPT.md. Photo credits for the caption: `photos/credits.json`.
