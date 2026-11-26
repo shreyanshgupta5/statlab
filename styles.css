@@ -1064,3 +1064,24 @@ html.story-open, html.story-open body { overflow: hidden; }
 
 /* v69: news stories wear the named driver's face; long headlines step down */
 .sv-slide h2.long { font-size: 30px; line-height: 1.02; }
+
+/* v70: bigger story circles, a single brand-red ring, headline labels, bold hooks burned onto covers */
+.story-row { gap: 10px; }
+.story-c { width: 92px; }
+.story-c .ring { width: 86px; height: 86px; padding: 3px; background: var(--red, #E10600); }
+.story-c.seen .ring { background: #3A3D44; }
+.story-c .disc { border-width: 3px; }
+.story-c .disc svg.helmet { width: 60px; margin-top: 6px; }
+.story-c .disc .portrait { width: 100% !important; height: 100% !important; }
+.story-c .disc .portrait img { box-shadow: none; }
+.story-c .sc-t { font-size: 26px; }
+.story-c .sc-hook { font: italic 900 15px/1 var(--display); font-stretch: 112%; letter-spacing: .01em; padding: 10px 0 7px; text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  background: linear-gradient(transparent, rgba(0,0,0,.8) 45%); }
+.story-c .disc:has(.sc-hook) svg.helmet { margin-top: -8px; }
+.story-c .lbl { max-width: 92px; white-space: normal; text-align: center; font-size: 12px; line-height: 1.22; font-weight: 700; color: var(--fg);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.44em; }
+.story-c.seen .lbl { color: var(--muted); }
+.story-c .new { top: 72px; }
+.story-c .sc-hook { text-transform: uppercase; }
+.story-c .new { top: 2px; left: auto; right: 0; transform: none; }
+.story-c .sc-hook.sm { font-size: 12px; padding-top: 12px; }

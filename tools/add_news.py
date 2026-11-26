@@ -2,7 +2,8 @@
 
     python3 tools/add_news.py stories.json
 
-stories.json is a list of {"tag", "date", "title", "dek", "url"} (newest first). Each story gets an id from its
+stories.json is a list of {"tag", "date", "title", "dek", "url", optional "short"} (newest first). "short" is the
+2-line headline under the story circle (~26 characters); without it the full title is clamped. Each story gets an id from its
 title; a story whose id is already in data.js is skipped, so re-running is safe.
 """
 import json, os, re, sys
@@ -20,7 +21,7 @@ def main():
         sid = re.sub(r'[^a-z0-9]+', '-', s['title'].lower()).strip('-')[:48]
         if sid in have:
             continue
-        added.append({'id': sid, 'tag': s['tag'], 'date': s['date'], 'title': s['title'], 'dek': s['dek'], 'body': s.get('body', []), 'url': s['url']})
+        added.append({'id': sid, 'tag': s['tag'], 'date': s['date'], 'title': s['title'], 'dek': s['dek'], 'body': s.get('body', []), 'url': s['url'], **({'short': s['short']} if s.get('short') else {})})
         have.add(sid)
     news = added + news
     news.sort(key=lambda n: n['date'], reverse=True)  # newest first; stable for same-day stories
