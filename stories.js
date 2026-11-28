@@ -10,18 +10,47 @@
 // Top-story themes: the next Grand Prix, driver contracts, rule announcements, midweek fallout from the last race.
 window.STORIES = [
   {
-    id: "qatar-preview-2026-v3", date: "2026-11-26T18:00:00Z", round: 22, label: "Qatar GP: what to watch", cover: { text: "🇶🇦", hook: "3D" }, color: "#C8102E",
+    id: "qatar-preview-2026-v4", date: "2026-11-28T07:00:00Z", round: 22, label: "Qatar GP: what to watch", cover: { text: "🇶🇦", hook: "3D" }, color: "#C8102E",
     news: ["verstappen-heads-to-qatar", "qatar-preview-27-lap", "alonso-sits-out-qatar", "titles-settled-but-hamilton"],
     slides: [
-      { kicker: "Round 22 of 23 · Lusail · this weekend", title: "Qatar Grand Prix", countdown: "2026-11-29T16:00:00Z", text: "57 laps under the lights. Practice Friday, qualifying Saturday, lights out Sunday at 16:00 GMT (19:00 in Qatar). No sprint this time." },
-      { kicker: "The favourite", title: "Lusail belongs to Verstappen", helmet: "VER", stat: "3", statLabel: "Qatar wins in a row: 2023, 2024, 2025", text: "He arrives off the Las Vegas win and is the bookmakers' pick. Antonelli, Norris and Russell are next in the betting." },
+      { kicker: "Round 22 of 23 · Lusail · this weekend", title: "Qatar Grand Prix", countdown: "2026-11-29T16:00:00Z", text: "57 laps under the lights. Final practice 14:30 GMT and qualifying 18:00 GMT today; lights out Sunday at 16:00 GMT (19:00 in Qatar). No sprint this time." },
+      { kicker: "The favourite", title: "Lusail belongs to Verstappen", helmet: "VER", stat: "3", statLabel: "Qatar wins in a row: 2023, 2024, 2025", text: "He arrived off the Las Vegas win as the bookmakers' pick. But Friday belonged to Mercedes: Antonelli topped both sessions, and Verstappen was third on long-run pace." },
       { kicker: "How Qatar is won", title: "A safety car every year", stat: "3/3", statLabel: "of the last three races here had at least one", text: "In 2025 it came out on lap 7. Verstappen pitted under it and won from third, while Piastri, on pole, stayed out and finished second. In 2024 Verstappen's only stop also came under a safety car." },
       { kicker: "Form · last 5 races", title: "Nobody is hotter", rows: [[1, "VER", "108"], [2, "ANT", "77"], [3, "NOR", "75"]], text: "Points from the last five Grands Prix: Verstappen has three wins and nothing worse than third." },
       { kicker: "The fight for second", title: "Leave Qatar 26 clear and P2 is his", rows: [[2, "VER", "304"], [3, "HAM", "267"]], stat: "37", statLabel: "points ahead of Hamilton, with 50 left" },
       { kicker: "The fight for third", title: "Three drivers, three points", rows: [[3, "HAM", "267"], [4, "RUS", "264"], [5, "NOR", "264"]], text: "Both titles are settled. This is what Qatar and Abu Dhabi still decide." },
       { kicker: "Constructors · third place", title: "Red Bull vs McLaren", stat: "9", statLabel: "points between them: Red Bull 440, McLaren 431" },
       { kicker: "Tyres", title: "A two-stop race", stat: "27", statLabel: "laps max on any set of tyres, in a 57-lap race (reported by race previews)", text: "Lusail's fast, long corners punish the left-front. A cap per set forces at least two stops, so pit timing and safety cars decide a lot." },
-      { kicker: "Friday line-up", title: "Alonso sits out FP1", helmet: "ALO", small: true, text: "Aston Martin reserve Jak Crawford drives his car in first practice, as he did in Las Vegas, where rain left him with little more than an installation lap.", link: "#/race/22", linkText: "Full analysis" },
+      { kicker: "Saturday", title: "Qualifying at 18:00 GMT", text: "In two of the last three Qatar races the winner did not start on pole, but nobody has won here from lower than third. A front-row start still matters.", link: "#/race/22", linkText: "Practice times & full analysis" },
+    ],
+  },
+  {
+    id: "qatar-friday-practice", date: "2026-11-27T19:30:00Z", label: "Friday: a Mercedes 1-2", cover: { helmet: "ANT", hook: "P1 ×2" }, color: "#27E0C2",
+    news: ["antonelli-tops-both-friday", "hamilton-s-ferrari-loses-power"],
+    slides: [
+      { kicker: "Qatar GP · Friday practice", title: "Antonelli fastest twice", helmet: "ANT", stat: "1:23.077", statLabel: "his FP2 best, on mediums (FP1: 1:23.217)", text: "Russell was second in both sessions, so Mercedes ended Friday with two one-twos." },
+      { kicker: "FP2 · best laps", title: "Half a second covers five", rows: [[1, "ANT", "1:23.077"], [2, "RUS", "+0.127"], [3, "NOR", "+0.445"], [4, "PIA", "+0.472"], [5, "VER", "+0.499"]] },
+      { kicker: "Race pace · FP2 long runs", title: "Mercedes again, then Verstappen", rows: [[1, "ANT", "1:28.408"], [2, "RUS", "+0.205"], [3, "VER", "+0.502"]], text: "Median clean-lap time of each driver's quickest long run, all on mediums (OpenF1). Hadjar +0.800, Norris +0.845, Piastri +1.118." },
+      { kicker: "Two red flags", title: "Leclerc spun, Gasly crashed", text: "Leclerc's spin left gravel across the track. Gasly then ran too much kerb at Turn 14, hit a marker board and got stuck; he was unhurt and said his tyres were too cold. FP2 was extended by 13 minutes." },
+      { kicker: "Ferrari", title: "Hamilton stops with a power loss", helmet: "HAM", small: true, text: "He parked beside Turn 1 late in FP2. Reports say he has used his full engine allocation, so any new parts would cost him five grid places. Ferrari has not said whether it will change anything.", link: "#/race/22", linkText: "Practice times & race pace" },
+    ],
+  },
+  {
+    id: "lambiase-misses-qatar", date: "2026-11-27T12:00:00Z", label: "Max without Lambiase", cover: { helmet: "VER", hook: "HART" }, color: "#3B6FD8",
+    news: ["lambiase-misses-qatar"],
+    slides: [
+      { kicker: "Red Bull · Qatar weekend", title: "Lambiase is not in Qatar", helmet: "VER", text: "Verstappen's long-time race engineer Gianpiero Lambiase is missing the weekend for personal reasons. Tom Hart is on the radio instead." },
+      { kicker: "Not a stranger", title: "Hart already won with him", text: "Hart engineered Verstappen in Austin, São Paulo and Las Vegas, and Vegas was his first win as a race engineer. He is set to take the job full time next season." },
+      { kicker: "What's next", title: "Back for Abu Dhabi?", text: "Red Bull expects Lambiase back for the finale if his circumstances allow. He is expected to go on gardening leave during 2027." },
+    ],
+  },
+  {
+    id: "engine-freeze-2028", date: "2026-11-27T10:00:00Z", label: "Engines frozen from 2028", cover: { text: "V8", hook: "2030", bg: "#1F3C88" }, color: "#4FA3FF",
+    news: ["fia-freezes-current-f1-engines"],
+    slides: [
+      { kicker: "Rules · FIA · 27 Nov", title: "Today's engines get frozen", stat: "R13", statLabel: "of 2028: performance work on the current V6 hybrids stops there", text: "Manufacturers can still fix reliability after the freeze, but not add power." },
+      { kicker: "Holding the V8 back", title: "No early V8 testing", text: "No single-cylinder V8 on a dyno before 1 October 2027, and no full V8 before 1 July 2028. New entrants such as General Motors are exempt." },
+      { kicker: "Why", title: "Cost, and a level start", text: "The FIA wants to stop manufacturers spending on two engines at once or jumping to the V8 early. Still open: changes to ADUO, the catch-up help for weaker engines. “We are a bit late on the ADUO side,” said Nikolas Tombazis." },
     ],
   },
   {

@@ -22,7 +22,7 @@ Never add a workflow that pushes to `main` automatically.
 - `portraits.js` + `portraits/`: cartoon driver portraits (spec and style prompt: `content/faces/PORTRAITS.md` on the `content` branch).
 - `styles.css`: tokens (`--bg #0E0F12`, `--card`, `--fg`, `--red`) and versioned blocks appended at the end.
 - `sw.js`: offline cache (CORE list) and network-first for the data files. Add any new JS file to both lists.
-- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`.
+- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`, `practice.js`.
 - Stories row: sorted newest first. Hand stories in `stories.js` (themes: next GP, contracts, rule changes, last-race fallout);
   `round: N` replaces the automatic next-race story, `news: [id prefixes]` hides news items a story already covers.
 
@@ -30,6 +30,7 @@ Never add a workflow that pushes to `main` automatically.
 - `build_data.py` (needs the Stat Lab season source), then `add_schedule.py` (session times from OpenF1) and `add_quali.py`.
 - `build_race_detail.py`, `build_lab.py`, `build_duels.py`, `news_images.py` (news-site hosts are blocked here).
 - `build_analysis.py 22 23`: race-weekend analysis from past editions (strategy, safety cars, temps) for the preview page.
+- `build_practice.py 22`: practice best laps and long-run pace for a weekend (rerun after each session).
 - `add_news.py stories.json`: add news items (optional `short` = 2-line story label).
 - APIs that work from the cloud environment: api.openf1.org, api.jolpi.ca, api.openverse.org.
 

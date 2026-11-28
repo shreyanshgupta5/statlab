@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v72"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v73"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -915,6 +915,32 @@
       <ul class="drows reveal">${[...K.drivers, ...K.teams].map(fightTxt).join("")}</ul>`;
   }
 
+
+  /* ---------- v73: practice so far (practice.js) on the preview page ---------- */
+  const PRACTICE = window.PRACTICE || {};
+  const lapT = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(3).padStart(6, "0")}`;
+  function practiceBlock(round) {
+    const P = PRACTICE[round];
+    if (!P || !P.sessions.length) return "";
+    const names = Object.assign({}, ...P.sessions.map((x) => x.names || {}));
+    const nm = (c) => (driver[c] ? driver[c].last : names[c] || c), col = (c) => (driver[c] && team[driver[c].team] ? team[driver[c].team].color : "#5E6470");
+    const last = P.sessions[P.sessions.length - 1], top = last.best[0][1];
+    const short = (n) => n.replace("Practice ", "FP");
+    const row = (c, val, sub, i) => `<li class="drow pr-row" style="--tc:${col(c)}"><span class="mono dim">${i + 1}</span>${driver[c] ? helmet(c, { size: 28, look: 3 }) : `<span></span>`}<b>${esc(nm(c))}</b><span class="mono r">${val}</span><span class="mono r dim">${sub}</span></li>`;
+    const times = last.best.slice(0, 10).map(([c, t, n], i) => row(c, i ? "+" + (t - top).toFixed(3) : lapT(t), n + " laps", i)).join("");
+    const runSess = [...P.sessions].reverse().find((x) => x.longRuns.length >= 6);
+    const runs = runSess ? runSess.longRuns.slice(0, 8) : [], r0 = runs.length ? runs[0][2] : 0, rmax = runs.length ? runs[runs.length - 1][2] - r0 || 1 : 1;
+    const pace = runs.map(([c, comp, m, n], i) => `<li class="pr-run" style="--tc:${col(c)}"><b>${esc(nm(c))}</b><span class="pr-bar"><i style="width:${Math.max(6, 100 - (m - r0) / rmax * 70)}%"></i></span>
+        <span class="mono r">${i ? "+" + (m - r0).toFixed(3) : lapT(m)}</span><span class="mono dim r">${esc(comp.slice(0, 1))}·${n}</span></li>`).join("");
+    const earlier = P.sessions.slice(0, -1).map((x) => `<span><b>${short(x.name)}</b> ${x.best.slice(0, 3).map(([c], i) => `${i + 1}. ${esc(nm(c))}`).join("  ")}${x.redFlags ? ` · ${x.redFlags} red flag${x.redFlags > 1 ? "s" : ""}` : ""}</span>`).join("");
+    return `
+      ${sectionHead(`Practice so far · ${P.sessions.map((x) => short(x.name)).join(", ")}`, `${short(last.name)} times`, `<p class="note">Best lap per driver${last.redFlags ? `, a session stopped by ${last.redFlags} red flag${last.redFlags > 1 ? "s" : ""}` : ""}. Practice times hide fuel loads and engine modes: read them as a hint, not an order.</p>`)}
+      <ul class="drows reveal">${times}</ul>
+      ${earlier ? `<p class="pr-earlier mono dim reveal">${earlier}</p>` : ""}
+      ${pace ? `${sectionHead(`Long runs · ${short(runSess.name)}`, "Race pace", `<p class="note">Each driver's best long stint: the median of its clean laps. Closer to race trim than a single fast lap. Tyre · laps counted.</p>`)}
+      <ul class="pr-runs reveal">${pace}</ul>` : ""}`;
+  }
+
   function viewPreview(round) {
     const r = raceByRound[round], P = PREVIEWS[round];
     const hist = P ? P.history : [];
@@ -959,6 +985,7 @@
       ${mine.length ? `${sectionHead("Your drivers here", "Following")}<div class="favs reveal">${mine.map((d) => `<a class="fav-card has-helmet" href="#/driver/${d.id}" style="--tc:${codeCol(d.id)}">${helmet(d.id, { size: 56, look: 3 })}<span class="mono dim">${d.starts} START${d.starts === 1 ? "" : "S"} HERE</span><b>${esc(codeName(d.id))}</b><span class="note">${d.wins} win${d.wins === 1 ? "" : "s"} · ${d.podiums} podium${d.podiums === 1 ? "" : "s"} · best ${d.best ? "P" + d.best : "–"} · avg ${d.avg ?? "–"}</span></a>`).join("")}</div>` : ""}
       ${kings ? `${sectionHead(`Current grid · ${span}`, "Best on this track", best ? `<p class="note">${esc(codeName(best.id))} leads with ${best.wins} win${best.wins === 1 ? "" : "s"} and ${best.podiums} podium${best.podiums === 1 ? "" : "s"}.</p>` : "")}
         <ul class="drows reveal"><li class="drow head king"><span></span><span>Driver</span><span class="r">Wins</span><span class="r">Pod</span><span class="r">Poles</span><span class="r">Avg</span></li>${kings}</ul>` : ""}
+      ${practiceBlock(round)}
       ${analysisBlock(round)}
       ${gridBlock(round)}
       ${past ? `${sectionHead("Winners", "Past results")}<ul class="drows reveal">${past}</ul>` : ""}

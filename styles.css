@@ -1113,3 +1113,15 @@ html.story-open, html.story-open body { overflow: hidden; }
 .an-stake b { font-size: 14px; } .an-stake em { font-style: normal; font-size: 20px; font-weight: 700; }
 .an-stake small { grid-column: 2 / 4; font-size: 12px; color: var(--muted); }
 .an-top .r { white-space: nowrap; }
+
+/* v73: practice times and long-run pace on the preview page */
+.pr-row { grid-template-columns: 18px 28px minmax(0, 1fr) auto 56px; }
+.pr-row b { font: italic 800 14px var(--display); font-stretch: 112%; text-transform: uppercase; }
+.pr-earlier { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; font-size: 12px; } .pr-earlier b { color: var(--fg); }
+.pr-runs { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding: 12px 14px; background: var(--card); border-radius: var(--radius); }
+.pr-run { display: grid; grid-template-columns: 88px minmax(0, 1fr) 64px 40px; gap: 10px; align-items: center; font-size: 13px; }
+.pr-run b { font: italic 800 13px var(--display); font-stretch: 112%; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-bar { height: 10px; border-radius: 5px; background: rgba(255,255,255,.06); overflow: hidden; } .pr-bar i { display: block; height: 100%; background: var(--tc); border-radius: 5px; }
+.pr-run { grid-template-columns: 104px minmax(0, 1fr) 62px 34px; gap: 8px; } .pr-run b { font-size: 12px; } .pr-run .dim { white-space: nowrap; font-size: 11px; }
+.sv-rows li { grid-template-columns: 28px 48px minmax(0, 1fr) auto; } .sv-rows li b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sv-rows li em { white-space: nowrap; font-size: 16px; }
+.sv-rows li b { font-size: 17px; } .sv-rows li { gap: 8px; padding: 8px 10px; }
