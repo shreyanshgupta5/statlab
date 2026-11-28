@@ -43,5 +43,7 @@ Never add a workflow that pushes to `main` automatically.
 
 ## Rules the user set
 - Stay on brand: app black background, Chakra Petch numbers, Archivo italic display, team colours. Keep it minimal and number-led.
+- One number font everywhere (v78): every number uses Chakra Petch (`var(--num)`), as on the home result card. Give new numeric
+  elements the `mono` or `num` class (the v78 block in styles.css forces Chakra on them). JetBrains Mono only for small uppercase labels.
 - Never include the user's identity in requests to outside services.
 - Wikipedia/Commons pages, Reddit and most news sites are blocked in the cloud environment.

@@ -1215,3 +1215,13 @@ html.story-open, html.story-open body { overflow: hidden; }
 .sn-bars .sn-lbl { font: 700 9px var(--mono); }
 .sn-c b { flex: none; overflow: visible; font-size: 12px; padding-left: 5px; } .sn-c { gap: 4px; overflow: hidden; }
 .sn-row .mono { font-size: 11px; }
+
+/* v78: one number font across the app: Chakra Petch (as on the home result card). JetBrains Mono stays for small uppercase labels only. */
+.mono, .num, .pos, .form, .form.pts, .ls-val small, .ls-go, .countdown,
+.season .row .pos, .season .trow .pos, .season .row .pts small, .duel .h2h-score em, .duel .drow .mono.r[style], .duel .drow > b.mono,
+.chart text, .tl text, .poschart text, .poschart .end, .mini text, .lchart text, .sn-bars text, .sn-bars .sn-lbl,
+.wk-c em, .wk-c small, .wk-ty, .wk-tyrebar span, .an-dots i, .rel li, .ws-time, .ws-date b, .pl-xprow, .hero-num, .facts b, .sv-stat, .sv-rows .num, .sc-hook, .sc-t {
+  font-family: var(--num) !important; font-style: normal; font-stretch: 100%; font-variant-numeric: tabular-nums; letter-spacing: 0;
+}
+.facts b, .wk-tile b, .an-grid em, .wk-tyres em, .an-stake em, .an-form em, .wk-secs b { font-weight: 700; }
+.mono.dim, small.mono { font-weight: 500; }
