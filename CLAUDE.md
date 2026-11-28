@@ -19,7 +19,8 @@ Never add a workflow that pushes to `main` automatically.
   winners) plus all-time record stories, played in the home story viewer. Data: archive.js from `tools/build_archive.py` (Jolpica).
 - `app.js`: everything else (routes `#/`, `#/weekend`, `#/play`, `#/season`, `#/news/ID` (articles, no tab), `#/race/N`, `#/driver/ID`, `#/welcome`, …).
   - `helmet(id, opts)` draws every driver image. It shows a cartoon portrait when `portraits.js` lists one, else the helmet (`helmetSVG`).
-  - Home: the stories row (`buildStories`, `storiesRow`, full-screen viewer), the latest-session card (`latestCand`, `latestSession`), next race, following, standings.
+  - Home (v81): stories row, Up next (`upNext`: next session, countdown, weekend chips), latest session (`latestSession` from season data,
+    replaced live by `WEEKEND.homeLast` when a newer session's OpenF1 data exists), Latest updates (`latestUpdates`, newest NEWS), following, standings.
   - Race preview: weekend schedule (`weekendSchedule`). Race analysis: `raceInsights`. Season tab (v79): filter Season / R1…Rn (`#/season`, `#/season/r/N`), sections Race pace · Quali pace · Tyres · Results ·
     Development, each opening with a chart (`overallSections`, `roundSections`, `hbars`, `lineChart`); numbers come last.
 - `weekend.js`: the Weekend tab (replaced News in v74). Reads OpenF1 live in the browser (CORS open, queued ~0.65s apart

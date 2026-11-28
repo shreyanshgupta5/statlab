@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v80"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v81"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -212,6 +212,34 @@
     });
     return cands.sort((a, b) => b.at - a.at)[0];
   }
+
+  /* ---------- v81: home page: up next (session + countdown), latest updates ---------- */
+  const SESS_SHORT = { "Practice 1": "FP1", "Practice 2": "FP2", "Practice 3": "FP3", "Sprint Qualifying": "Sprint Quali", Sprint: "Sprint", Qualifying: "Qualifying", Race: "Race" };
+  const SESS_LONG = { "Practice 1": "First practice", "Practice 2": "Second practice", "Practice 3": "Final practice", "Sprint Qualifying": "Sprint qualifying", Sprint: "Sprint", Qualifying: "Qualifying", Race: "Race" };
+  function upNext() {
+    const now = Date.now();
+    const r = S.CALENDAR.find((c) => (c.sessions || []).some((x) => Date.parse(x.end) > now));
+    if (!r) return "";
+    const ses = r.sessions, nx = ses.find((x) => Date.parse(x.end) > now), live = Date.parse(nx.start) <= now;
+    const when = (x) => new Date(x.start).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    const chips = ses.map((x) => { const done = Date.parse(x.end) <= now, on = x === nx;
+      return `<span class="un-chip ${done ? "done" : on ? (live ? "live" : "next") : ""}"><b>${SESS_SHORT[x.name] || esc(x.name)}</b><span class="mono">${done ? "✓" : on && live ? "LIVE" : esc(when(x))}</span></span>`; }).join("");
+    return `<div class="next upnext t-wet reveal">
+      <a href="#/weekend"><span class="kicker">Up next · Round ${r.round} · ${r.flag} ${esc(r.name)}</span>
+      <b>${esc(SESS_LONG[nx.name] || nx.name)}</b>
+      <span class="mono countdown" data-start="${esc(nx.start)}" data-live="Live now"></span>
+      <span class="mono dim">${live ? "On track now · results here a few minutes after the flag" : `${esc(when(nx))} your time`}</span></a>
+      <div class="un-chips">${chips}</div>
+      <span class="mono dim un-race">Lights out ${esc(localStart(r))} your time</span>
+      <button class="cal" type="button" data-ics="${r.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
+    </div>`;
+  }
+  function latestUpdates() {
+    const items = (NEWS || []).slice(0, 5);
+    if (!items.length) return "";
+    return `${sectionHead("Paddock", "Latest updates")}<ul class="updates reveal">${items.map((n) => `<li><a href="#/news/${n.id}"><span class="mono dim">${fmtDate(n.date)} · ${esc(n.tag)}</span><b>${esc(n.title)}</b></a></li>`).join("")}</ul>`;
+  }
+
   function latestSession() {
     const toSec = (t) => { if (t == null || t === "") return null; if (typeof t === "number") return t; const [m, x] = String(t).split(":"); return x == null ? +m : +m * 60 + +x; };
     const L = latestCand();
@@ -495,17 +523,10 @@
 
     return `<div class="season">
       ${storiesRow()}
-      ${latestSession()}
+      ${upNext()}
+      <div id="home-last">${latestSession()}</div>
 
-      ${upcoming ? `<div class="next t-wet reveal">
-        <a href="#/race/${upcoming.round}"><span class="kicker">Next · Round ${upcoming.round} · tap for preview</span>
-        <b>${upcoming.flag} ${esc(upcoming.name)}</b>
-        <span class="mono countdown" data-date="${upcoming.date}" data-start="${upcoming.raceStart || ""}"></span>
-        <span class="mono dim">Lights out ${esc(localStart(upcoming))} your time</span>
-        ${(S.GRID || {})[upcoming.round] ? `<span class="note">Pole: ${esc(lastName(S.GRID[upcoming.round][0]))} · starting grid is in</span>` : ""}
-        ${awaiting.length ? `<span class="note">Results for ${awaiting.map((r) => esc(((S.RACE_INFO || {})[r.round] || {}).short || r.name)).join(", ")} are on the way.</span>` : ""}</a>
-        <button class="cal" type="button" data-ics="${upcoming.round}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Add to calendar</button>
-      </div>` : ""}
+      ${latestUpdates()}
 
       ${following}
 
@@ -1576,6 +1597,7 @@
     if (PLAY && p0 === "play") PLAY.mount(app);
     app.querySelectorAll(".sn-nav [data-jump]").forEach((b) => b.addEventListener("click", () => { const t = document.getElementById(b.dataset.jump); if (t) scrollTo({ top: t.getBoundingClientRect().top + scrollY - 64, behavior: "smooth" }); }));
     if (WEEKEND) { if (p0 === "weekend") WEEKEND.mount(app, parts); else WEEKEND.stop(); }
+    if (WEEKEND && !p0) { const L = latestCand(); WEEKEND.homeLast(document.getElementById("home-last"), L ? L.at : 0); }
     tabs.forEach((t) => {
       const on = t.dataset.tab === tab;
       t.classList.toggle("on", on);
@@ -1604,7 +1626,7 @@
       const target = new Date(cd.dataset.start || cd.dataset.date + "T14:00:00Z"); // Stat Lab patch: real race start when known
       const tick = () => {
         const ms = target - Date.now();
-        if (ms <= 0) { cd.textContent = "Race weekend"; return; }
+        if (ms <= 0) { cd.textContent = cd.dataset.live || "Race weekend"; return; }
         const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 36e5), m = Math.floor((ms % 36e5) / 6e4);
         cd.textContent = `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m`;
       };

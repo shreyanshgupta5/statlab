@@ -1253,3 +1253,21 @@ html.story-open, html.story-open body { overflow: hidden; }
 .tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); } .tabs a span { font-size: 10.5px; }
 .sv-code { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: color-mix(in srgb, var(--tc) 30%, #15171B); border: 2px solid var(--tc);
   font: 700 12px var(--num); color: #fff; letter-spacing: .02em; }
+
+/* v81: home: up next session, live latest session, latest updates */
+.upnext > a > b { font: italic 900 28px var(--display); font-stretch: 112%; text-transform: uppercase; }
+.un-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 12px; padding-bottom: 2px; }
+.un-chips::-webkit-scrollbar { display: none; }
+.un-chip { flex: none; display: flex; flex-direction: column; gap: 2px; min-width: 64px; padding: 7px 10px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+.un-chip b { font: italic 800 12px var(--display); font-stretch: 112%; text-transform: uppercase; white-space: nowrap; } .un-chip span { font-size: 10px; color: var(--muted); white-space: nowrap; }
+.un-chip.done span { color: #3DDC84; } .un-chip.next { border-color: #fff; } .un-chip.next span { color: var(--fg); } .un-chip.live { border-color: var(--red); } .un-chip.live span { color: var(--red-text, #FF5A4E); font-weight: 700; }
+.un-race { display: block; margin-top: 10px; font-size: 12px; }
+.ls-note { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
+.updates { list-style: none; display: flex; flex-direction: column; margin-top: 10px; background: var(--card); border-radius: var(--radius); overflow: hidden; }
+.updates li + li { border-top: 1px solid var(--line); }
+.updates a { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; color: var(--fg); }
+.updates .dim { font-size: 11px; } .updates b { font-size: 14px; line-height: 1.35; font-weight: 700; }
+.upnext .un-chip { display: flex; flex-direction: column; gap: 2px; min-width: 62px; padding: 7px 10px; margin: 0; }
+.upnext .un-chip b { font: italic 800 12px var(--display) !important; font-stretch: 112% !important; text-transform: uppercase; margin: 0; line-height: 1.1; }
+.upnext .un-chip span { font-size: 10px !important; line-height: 1.2; margin: 0; letter-spacing: 0; }
+.upnext .un-race { font-size: 12px; }

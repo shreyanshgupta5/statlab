@@ -327,5 +327,38 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
     refresh = setInterval(() => { if (!document.body.contains(body) || token !== mountedFor) { clearInterval(refresh); return; } fetchDone(); }, 120e3);
   }
   function stop() { clearInterval(refresh); mountedFor = ""; }
-  return { view, mount, stop };
+
+  // ---------- home page: the latest finished session of the current weekend, live ----------
+  const agoTxt = (t) => { const m = Math.round((Date.now() - t) / 60e3); return m < 60 ? `${m} min ago` : m < 48 * 60 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`; };
+  async function homeLast(el, notBefore) {
+    if (!el) return;
+    const race = currentRace();
+    let sessions; try { sessions = await sessionsFor(null, race); } catch (e) { return; }
+    const last = sessions.filter((x) => Date.now() > Date.parse(x.end)).pop();
+    if (!last || Date.parse(last.end) <= (notBefore || 0)) return;
+    let a; try { a = await loadSession(last); } catch (e) { return; }
+    if (!a || !document.body.contains(el)) return;
+    const M = { names: a.names, colours: a.colours };
+    const teamName = (id) => (driver[id] && team[driver[id].team] ? team[driver[id].team].name : "");
+    const row = (pos, id, val, sub, win) => `<li class="ls-row ${win ? "win" : ""}" style="--tc:${tcol(M, id)}"><span class="ls-pos num">${pos}</span>
+      <span class="ls-who"><b>${esc(nm(M, id))}</b><small>${esc(teamName(id))}</small></span><span class="ls-val"><b class="num">${val}</b>${sub ? `<small>${sub}</small>` : ""}</span></li>`;
+    let rows = "", facts = [];
+    if (a.race) {
+      rows = a.race.slice(0, 3).map((x, i) => row(i + 1, x.id, i ? (x.gap != null && !isNaN(+x.gap) ? "+" + (+x.gap).toFixed(3) + "s" : esc(String(x.gap || ""))) : "WIN", "", !i)).join("");
+    } else if (a.quali) {
+      const lt = (x) => x.q.filter(Boolean).slice(-1)[0], p = lt(a.quali[0]);
+      rows = a.quali.slice(0, 3).map((x, i) => row(i + 1, x.id, i ? "+" + (lt(x) - p).toFixed(3) : lapT(p), i ? "" : "pole lap", !i)).join("");
+    } else {
+      const r = a.rows, t0 = r[0] ? r[0].best : 0;
+      rows = r.slice(0, 3).map((x, i) => row(i + 1, x.id, i ? "+" + (x.best - t0).toFixed(3) : lapT(x.best), `${x.laps} laps`, !i)).join("");
+      if (a.runs[0]) facts.push(`Best long run: ${esc(nm(M, a.runs[0].id))} ${lapT(a.runs[0].pace)}`);
+    }
+    const red = a.flags.filter((f) => /^RED/.test(f.msg)).length; if (red) facts.push(`${red} red flag${red > 1 ? "s" : ""}`);
+    el.innerHTML = `<a class="latest" href="#/weekend">
+      <span class="ls-head"><span class="ls-latest">Latest session · ${agoTxt(Date.parse(last.end))}</span>
+        <span class="kicker"><b class="pill">${esc(SHORT[last.slug])}</b> · Round ${race.round} · ${new Date(last.start).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
+        <h1>${race.flag} ${esc(last.place || race.place || "")}</h1><span class="ls-go" aria-hidden="true">→</span></span>
+      <ol class="ls-rows">${rows}</ol>${facts.length ? `<p class="ls-note mono">${facts.join(" · ")}</p>` : ""}</a>`;
+  }
+  return { view, mount, stop, homeLast };
 };
