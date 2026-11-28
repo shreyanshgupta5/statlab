@@ -2,7 +2,8 @@
 // Reads OpenF1 straight from the browser once each session's data is published (usually minutes after it ends),
 // so the tab fills itself in as the weekend goes on: FP1 → FP2 → FP3 → Qualifying → Race (and sprint weekends).
 // Finished sessions are cached in localStorage; practice.js (built by tools/build_practice.py) is the offline fallback.
-// Routes: #/weekend (overview), #/weekend/<fp1|fp2|fp3|sq|sprint|q|race>, and #/weekend/m<meeting_key>/… for any past weekend.
+// One page: key numbers, then race / qualifying as they happen, then every practice session side by side.
+// Routes: #/weekend, and #/weekend/m<meeting_key> for any past weekend (handy for testing).
 window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sectionHead }) {
   const API = "https://api.openf1.org/v1/";
   const CACHE = "onef1.wk.v1.";
@@ -143,211 +144,196 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
   }
 
   // ---------- rendering helpers ----------
-  const tcol = (a, id) => (driver[id] && team[driver[id].team] ? team[driver[id].team].color : (a && a.colours[id]) || "#5E6470");
-  const nm = (a, id) => (driver[id] ? driver[id].last : (a && a.names[id]) || id);
+  const tcol = (a, id) => (driver[id] && team[driver[id].team] ? team[driver[id].team].color : (a && a.colours && a.colours[id]) || "#5E6470");
+  const nm = (a, id) => (driver[id] ? driver[id].last : (a && a.names && a.names[id]) || id);
   const face = (id, size) => (driver[id] ? helmet(id, { size, look: 3 }) : `<span class="wk-noface" style="width:${size}px;height:${size}px">${esc(id)}</span>`);
   const TY = { SOFT: "#E8102E", MEDIUM: "#F5C400", HARD: "#E8E8E6", INTERMEDIATE: "#2FB34A", WET: "#2F7BE0" };
   const tyreDot = (c) => c ? `<i class="wk-ty" style="--ty:${TY[c] || "#888"}" title="${esc(c)}">${esc(c[0])}</i>` : "";
-  const block = (kicker, title, body, note) => `${sectionHead(kicker, title, note ? `<p class="note">${note}</p>` : "")}${body}`;
+  const block = (id, kicker, title, body, note) => `<section id="${id}" class="wk-sec">${sectionHead(kicker, title, note ? `<p class="note">${note}</p>` : "")}${body}</section>`;
+  const tile = (k, v, who, sub, col) => `<div class="wk-tile" style="--tc:${col || "var(--red)"}"><span class="kicker">${k}</span><b class="mono">${v}</b><span class="wk-who">${who || ""}</span>${sub ? `<span class="mono dim">${sub}</span>` : ""}</div>`;
+  const SH = (slug) => ({ fp1: "FP1", fp2: "FP2", fp3: "FP3", sq: "SQ", sprint: "SPR", q: "Q", race: "RACE" }[slug] || slug);
+  // a merged lookup of names / colours over every loaded session (reserve drivers appear in one session only)
+  const meta = (list) => ({ names: Object.assign({}, ...list.map((a) => a.names || {})), colours: Object.assign({}, ...list.map((a) => a.colours || {})) });
 
-  function headlines(a, prev) {
-    const h = [], r = a.rows;
-    if (a.quali && a.quali[0]) {
-      const p = a.quali[0], q2 = a.quali[1], t = (x) => x.q.filter(Boolean).slice(-1)[0];
-      h.push(`<b>${esc(nm(a, p.id))} on pole</b> with ${lapT(t(p))}${q2 ? `, ${(t(q2) - t(p)).toFixed(3)}s clear of ${esc(nm(a, q2.id))}` : ""}.`);
-    } else if (a.race && a.race[0]) {
-      h.push(`<b>${esc(nm(a, a.race[0].id))} wins</b>${a.race[1] && a.race[1].gap != null ? ` by ${(+a.race[1].gap).toFixed(3)}s from ${esc(nm(a, a.race[1].id))}` : ""}.`);
-    } else if (r[0]) {
-      h.push(`<b>${esc(nm(a, r[0].id))} fastest</b> with ${lapT(r[0].best)}${r[1] ? `, ${(r[1].best - r[0].best).toFixed(3)}s ahead of ${esc(nm(a, r[1].id))}` : ""}.`);
+  // ---------- key numbers (no prose: one number per tile) ----------
+  function keyTiles(P, Q, R, M) {
+    const t = [];
+    if (R && R.race && R.race[0]) { const w = R.race[0], s = R.race[1];
+      t.push(tile(R.slug === "sprint" ? "Sprint winner" : "Winner", esc(nm(M, w.id).toUpperCase()), "", s && s.gap != null ? `by ${(+s.gap).toFixed(3)}s` : "", tcol(M, w.id))); }
+    if (Q && Q.quali && Q.quali[0]) { const lt = (x) => x.q.filter(Boolean).slice(-1)[0], p = Q.quali[0], q2 = Q.quali[1];
+      t.push(tile(Q.slug === "sq" ? "Sprint pole" : "Pole", lapT(lt(p)), esc(nm(M, p.id)), q2 ? `+${(lt(q2) - lt(p)).toFixed(3)} ${esc(nm(M, q2.id))}` : "", tcol(M, p.id))); }
+    if (P.length) {
+      const all = P.flatMap((a) => a.rows.map((r) => ({ ...r, s: a.slug })));
+      const best = {}; all.forEach((r) => { if (!best[r.id] || r.best < best[r.id].best) best[r.id] = r; });
+      const order = Object.values(best).sort((a, b) => a.best - b.best), f = order[0], g = order[1];
+      if (f) t.push(tile("Fastest practice lap", lapT(f.best), esc(nm(M, f.id)), SH(f.s), tcol(M, f.id)));
+      if (g) t.push(tile("Gap to P2", "+" + (g.best - f.best).toFixed(3), esc(nm(M, g.id)), SH(g.s), tcol(M, g.id)));
+      t.push(tile("Within 0.5s", order.filter((x) => x.best - f.best < 0.5).length, "drivers", "of the fastest lap"));
+      const runs = P.flatMap((a) => a.runs.map((r) => ({ ...r, s: a.slug }))).sort((a, b) => a.pace - b.pace);
+      if (runs[0]) t.push(tile("Best long run", lapT(runs[0].pace), esc(nm(M, runs[0].id)), `${SH(runs[0].s)} · ${runs[0].n} laps · ${(runs[0].tyre || "").toLowerCase()}`, tcol(M, runs[0].id)));
+      const sec = [0, 1, 2].map((i) => P.map((a) => a.sBest[i] && { ...a.sBest[i], s: a.slug }).filter(Boolean).sort((a, b) => a.t - b.t)[0]);
+      if (sec.every(Boolean)) { const ideal = sec[0].t + sec[1].t + sec[2].t; t.push(tile("Ideal lap", lapT(ideal), "best 3 sectors", `${(f.best - ideal).toFixed(3)}s under the best`)); }
+      const sp = all.filter((r) => r.top).sort((a, b) => b.top - a.top)[0];
+      if (sp) t.push(tile("Top speed", sp.top + "", esc(nm(M, sp.id)), `km/h · ${SH(sp.s)}`, tcol(M, sp.id)));
+      t.push(tile("Practice laps", P.reduce((a, x) => a + x.totalLaps, 0), `${P.length} session${P.length > 1 ? "s" : ""}`, ""));
+      const red = P.reduce((a, x) => a + x.flags.filter((f2) => /^RED/.test(f2.msg)).length, 0);
+      t.push(tile("Red flags", red, "", P.map((a) => `${SH(a.slug)} ${a.flags.filter((f2) => /^RED/.test(f2.msg)).length}`).join(" · ")));
     }
-    const within = r.filter((x) => r[0] && x.best - r[0].best < 0.5).length;
-    if (!a.race && within > 2) h.push(`<b>${within} drivers within half a second</b> of the top time.`);
-    if (a.runs.length >= 4) { const R = a.runs; h.push(`<b>Best race pace: ${esc(nm(a, R[0].id))}</b>, ${(R[1].pace - R[0].pace).toFixed(3)}s per lap better than ${esc(nm(a, R[1].id))} over a long run.`); }
-    const lost = r.slice(0, 10).filter((x) => x.lost != null && x.lost > 0.25).sort((x, y) => y.lost - x.lost)[0];
-    if (lost && !a.race) h.push(`<b>${esc(nm(a, lost.id))} left ${lost.lost.toFixed(3)}s</b> on the table: their best sectors add up to ${lapT(lost.ideal)}.`);
-    const fast = [...r].sort((x, y) => y.top - x.top)[0];
-    if (fast && fast.top) h.push(`<b>Top speed: ${esc(nm(a, fast.id))}, ${fast.top} km/h</b> through the speed trap.`);
-    if (prev && !a.race) {
-      const pp = Object.fromEntries(prev.rows.map((x, i) => [x.id, i + 1])), up = r.map((x, i) => [x, (pp[x.id] || 0) - (i + 1)]).filter(([, d]) => d >= 5).sort((x, y) => y[1] - x[1])[0];
-      if (up) h.push(`<b>${esc(nm(a, up[0].id))} jumped ${up[1]} places</b> from ${SHORT[prev.slug]} (P${pp[up[0].id]} to P${r.indexOf(up[0]) + 1}).`);
-    }
-    if (a.flags.length) { const red = a.flags.filter((f) => /^RED/.test(f.msg)).length, sc = a.flags.length - red;
-      h.push(`<b>${[red ? `${red} red flag${red > 1 ? "s" : ""}` : "", sc ? `${sc} safety car${sc > 1 ? "s" : ""}` : ""].filter(Boolean).join(" and ")}</b> interrupted the session.`); }
-    return h;
+    return t.length ? `<div class="wk-tiles reveal">${t.join("")}</div>` : "";
   }
 
-  function sessionView(a, prev) {
-    const r = a.rows, top = r[0] ? r[0].best : 0;
-    const H = headlines(a, prev);
-    const head = `<ol class="wk-heads reveal">${H.map((x) => `<li>${x}</li>`).join("")}</ol>`;
-    let html = head;
-    if (a.quali) {
-      const t = (x) => x.q.filter(Boolean).slice(-1)[0], p1 = t(a.quali[0]);
-      const stage = (x) => (x.q[2] ? "Q3" : x.q[1] ? "Q2" : "Q1");
-      html += block("Qualifying · the grid", "Results", `<ul class="drows reveal">${a.quali.map((x, i) => `<li class="drow wk-row" style="--tc:${tcol(a, x.id)}">
-        <span class="mono dim">${x.pos}</span>${face(x.id, 28)}<b>${esc(nm(a, x.id))}</b><span class="mono r">${i ? gapT(t(x) - p1) : lapT(p1)}</span><span class="mono dim r">${i >= 10 ? "out " + stage(x) : stage(x)}</span></li>`).join("")}</ul>`);
-      // team-mate gaps
-      const byTeam = {}; a.quali.forEach((x) => { const tm = driver[x.id] ? driver[x.id].team : x.id; (byTeam[tm] = byTeam[tm] || []).push(x); });
-      const duels = Object.values(byTeam).filter((v) => v.length === 2).map(([x, y]) => { const lv = [x.q, y.q].map((q) => q.filter(Boolean).length), k = Math.min(...lv) - 1;
-        return { x, y, gap: x.q[k] && y.q[k] ? y.q[k] - x.q[k] : null, k }; }).filter((d) => d.gap != null).sort((p, q) => Math.abs(q.gap) - Math.abs(p.gap));
-      html += block("Same car, same session", "Team-mate gaps", `<ul class="drows reveal">${duels.map((d) => `<li class="drow wk-duel" style="--tc:${tcol(a, d.x.id)}"><b>${esc(nm(a, d.x.id))}</b><span class="dim">beat</span><b>${esc(nm(a, d.y.id))}</b><span class="mono r">${d.gap.toFixed(3)}s</span><span class="mono dim r">Q${d.k + 1}</span></li>`).join("")}</ul>`, "Compared in the last part of qualifying both drivers reached.");
-    }
-    if (a.race) {
-      const w = a.race[0];
-      html += block("Race · classification", "Results", `<ul class="drows reveal">${a.race.map((x) => `<li class="drow wk-row" style="--tc:${tcol(a, x.id)}">
-        <span class="mono dim">${x.pos || "–"}</span>${face(x.id, 28)}<b>${esc(nm(a, x.id))}</b><span class="mono r">${x.dnf ? "DNF" : x.dns ? "DNS" : x.pos === 1 ? "WIN" : x.gap != null && !isNaN(+x.gap) ? "+" + (+x.gap).toFixed(3) : esc(String(x.gap || ""))}</span><span class="mono dim r">${x.pts ? "+" + x.pts : ""}</span></li>`).join("")}</ul>`);
-      const L = a.raceLaps || 1, ids = a.race.map((x) => x.id);
-      html += block("Tyres · every stint", "Strategy", `<ul class="wk-strat reveal">${ids.map((id) => `<li><b>${esc(nm(a, id).slice(0, 10))}</b><span class="wk-bar">${a.stints.filter((x) => x.id === id).map((x) => `<i style="left:${(x.a - 1) / L * 100}%;width:${(x.b - x.a + 1) / L * 100}%;--ty:${TY[x.c] || "#888"}"></i>`).join("")}</span></li>`).join("")}</ul>`, `Each bar is ${L} laps; colour = compound (red soft, yellow medium, white hard).`);
-      if (a.pits.length) html += block("Pit crews", "Fastest stops", `<ul class="drows reveal">${a.pits.slice(0, 5).map((p, i) => `<li class="drow wk-row" style="--tc:${tcol(a, p.id)}"><span class="mono dim">${i + 1}</span>${face(p.id, 28)}<b>${esc(nm(a, p.id))}</b><span class="mono r">${p.t.toFixed(1)}s</span><span class="mono dim r">lap ${p.lap}</span></li>`).join("")}</ul>`, "Time in the pit lane, entry to exit.");
-      void w;
-    }
-    if (!a.quali && !a.race) {
-      html += block(`${SHORT[a.slug]} · best lap per driver`, "Timesheet", `<ul class="drows reveal">${r.map((x, i) => `<li class="drow wk-row" style="--tc:${tcol(a, x.id)}">
-        <span class="mono dim">${i + 1}</span>${face(x.id, 28)}<b>${esc(nm(a, x.id))}</b><span class="mono r">${i ? gapT(x.best - top) : lapT(x.best)} ${tyreDot(x.tyre)}</span><span class="mono dim r">${x.laps} laps</span></li>`).join("")}</ul>`, "Practice times hide fuel loads and engine modes: read them as a hint, not an order. Tyre = compound on the best lap.");
-    }
-    // race pace (practice and sprint/race long runs)
-    if (a.runs.length >= 3 && !a.race) {
-      const R = a.runs.slice(0, 10), r0 = R[0].pace, span = (R[R.length - 1].pace - r0) || 1;
-      html += block("Long runs · 8+ clean laps", "Race pace", `<ul class="wk-runs reveal">${R.map((x, i) => `<li style="--tc:${tcol(a, x.id)}"><b>${esc(nm(a, x.id))}</b>
-        <span class="wk-pbar"><i style="width:${Math.max(6, 100 - (x.pace - r0) / span * 70)}%"></i></span><span class="mono r">${i ? "+" + (x.pace - r0).toFixed(3) : lapT(x.pace)}</span>
-        <span class="mono dim r">${tyreDot(x.tyre)} ${x.deg >= 0 ? "+" : "−"}${Math.abs(x.deg).toFixed(2)}</span></li>`).join("")}</ul>`,
-        "Median clean-lap time of each driver's quickest long run. Last column: tyre, and how much slower each lap got (s/lap): lower means kinder on tyres. Fuel burn hides some wear.");
-    }
-    // ideal laps
-    const ideal = r.filter((x) => x.ideal).map((x) => ({ ...x })).sort((p, q) => p.ideal - q.ideal).slice(0, 10);
-    if (ideal.length >= 3) {
-      const sb = a.sBest, sessIdeal = sb.every(Boolean) ? sb[0].t + sb[1].t + sb[2].t : null;
-      html += block("Best sectors added up", "Ideal laps", `${sessIdeal ? `<div class="wk-secs reveal">${sb.map((x, i) => `<div style="--tc:${tcol(a, x.id)}"><span class="kicker">Sector ${i + 1}</span><b class="mono">${x.t.toFixed(3)}</b><span>${esc(nm(a, x.id))}</span></div>`).join("")}<div><span class="kicker">Ideal lap</span><b class="mono">${lapT(sessIdeal)}</b><span>${top ? (top - sessIdeal).toFixed(3) + "s under the best" : ""}</span></div></div>` : ""}
-        <ul class="drows reveal">${ideal.map((x, i) => `<li class="drow wk-row" style="--tc:${tcol(a, x.id)}"><span class="mono dim">${i + 1}</span>${face(x.id, 28)}<b>${esc(nm(a, x.id))}</b><span class="mono r">${lapT(x.ideal)}</span><span class="mono dim r">${x.lost > 0.001 ? "−" + x.lost.toFixed(3) : "done"}</span></li>`).join("")}</ul>`,
-        "Each driver's best three sectors from any laps. Last column: time their best lap left on the table.");
-    }
-    // speed trap
-    const sp = r.filter((x) => x.top).sort((p, q) => q.top - p.top);
-    if (sp.length >= 5) {
-      const mx = sp[0].top, mn = sp[sp.length - 1].top;
-      html += block("Speed trap · km/h", "Top speed", `<ul class="wk-runs reveal">${sp.slice(0, 8).concat(sp.length > 10 ? [null] : [], sp.length > 10 ? sp.slice(-2) : []).map((x) => x ? `<li style="--tc:${tcol(a, x.id)}"><b>${esc(nm(a, x.id))}</b><span class="wk-pbar"><i style="width:${30 + (x.top - mn) / ((mx - mn) || 1) * 70}%"></i></span><span class="mono r">${x.top}</span><span class="mono dim r">${x.top === mx ? "max" : "−" + (mx - x.top)}</span></li>` : `<li class="wk-gap"><span class="dim">…</span></li>`).join("")}</ul>`,
-        "Fastest reading through the speed trap all session. Low numbers can mean more downforce, not less power.");
-    }
-    // teams
-    if (a.teams.length >= 5 && !a.race) {
-      const t0 = a.teams[0].best;
-      html += block("Best lap per team", "Team order", `<ul class="wk-runs reveal">${a.teams.map((t) => { const col = t.colour || tcol(a, t.id);
-        return `<li style="--tc:${col}"><b>${esc(t.team.replace(/ F1 Team| Racing| Formula 1 Team/g, ""))}</b><span class="wk-pbar"><i style="width:${Math.max(6, 100 - (t.best - t0) * 25)}%"></i></span><span class="mono r">${t.best === t0 ? lapT(t0) : "+" + (t.best - t0).toFixed(3)}</span><span class="mono dim r">${esc(nm(a, t.id).slice(0, 3).toUpperCase())}</span></li>`; }).join("")}</ul>`);
-    }
-    // tyres used
-    const tot = Object.values(a.fieldTyres).reduce((x, y) => x + y, 0);
-    if (tot) html += block("Tyres · laps by compound", "Tyre use", `<div class="wk-tyres reveal">${Object.entries(a.fieldTyres).sort((p, q) => q[1] - p[1]).map(([c, n]) => `<span style="--ty:${TY[c] || "#888"};flex:${n}"><b>${esc(c.toLowerCase())}</b><em class="mono">${n}</em></span>`).join("")}</div>`,
-      `${tot} laps in total across the field.`);
-    // session facts
-    const facts = [];
-    if (a.weather) facts.push(["Track", `${Math.round(a.weather.track[0])}–${Math.round(a.weather.track[1])}°`, a.weather.rain ? "rain" : "dry"], ["Air", `${Math.round(a.weather.air[0])}–${Math.round(a.weather.air[1])}°`, "°C"]);
-    facts.push(["Laps run", a.totalLaps, `${r.length} drivers`]);
-    const del = r.filter((x) => x.deleted).sort((p, q) => q.deleted - p.deleted);
-    facts.push(["Laps deleted", del.reduce((x, y) => x + y.deleted, 0), del[0] ? `most: ${nm(a, del[0].id)} (${del[0].deleted})` : "track limits"]);
-    html += `<div class="facts four reveal" style="margin-top:22px">${facts.map(([k, v, s]) => `<div><span class="kicker">${k}</span><b class="mono">${v}</b><span class="mono dim">${esc(String(s))}</span></div>`).join("")}</div>`;
-    if (a.flags.length) html += `<ul class="wk-flags reveal">${a.flags.map((f) => `<li><span class="mono">${f.lap ? "Lap " + f.lap : new Date(f.t).toISOString().slice(11, 16) + " GMT"}</span>${esc(f.msg.toLowerCase().replace(/^./, (c) => c.toUpperCase()))}</li>`).join("")}</ul>`;
+  // ---------- practice: every session side by side ----------
+  function practiceBlock(P, M) {
+    if (!P.length) return "";
+    const n = P.length, cols = `grid-template-columns:minmax(0,1fr) repeat(${n},${n > 2 ? 50 : 62}px) 64px`;
+    const pos = P.map((a) => Object.fromEntries(a.rows.map((r, i) => [r.id, { p: i + 1, g: r.best - a.rows[0].best, r }])));
+    const best = {}; P.forEach((a) => a.rows.forEach((r) => { if (!best[r.id] || r.best < best[r.id].best) best[r.id] = { best: r.best, s: a.slug }; }));
+    const ids = Object.keys(best).sort((a, b) => best[a].best - best[b].best), b0 = best[ids[0]].best;
+    const head = (extra) => `<div class="wk-th" style="${cols}"><span>Driver</span>${P.map((a) => `<span>${SH(a.slug)}</span>`).join("")}<span>${extra}</span></div>`;
+    let html = "";
+    // 1. timesheet
+    html += block("wk-practice", `Practice · ${P.map((a) => SH(a.slug)).join(" + ")}`, "Timesheet", `<div class="wk-table reveal">${head("Best")}${ids.map((id) => `<div class="wk-tr" style="${cols};--tc:${tcol(M, id)}">
+      <b>${esc(nm(M, id))}</b>${pos.map((p) => { const c = p[id]; return c ? `<span class="wk-c ${c.p === 1 ? "p1" : c.p <= 3 ? "p3" : ""}"><em>${c.p}</em><small>${c.p === 1 ? lapT(c.r.best).slice(2) : "+" + c.g.toFixed(3)}</small></span>` : `<span class="wk-c dim">–</span>`; }).join("")}
+      <span class="wk-c"><em class="mono">${best[id].best === b0 ? lapT(b0) : "+" + (best[id].best - b0).toFixed(3)}</em><small>${SH(best[id].s)}</small></span></div>`).join("")}</div>`,
+      "Position and gap to the fastest in each session; last column: each driver's best lap of the weekend. Fuel and engine modes vary in practice.");
+    // 2. race pace
+    const runs = {}; P.forEach((a) => a.runs.forEach((r) => { if (!runs[r.id] || r.pace < runs[r.id].pace) runs[r.id] = { ...r, s: a.slug }; }));
+    const R = Object.values(runs).sort((a, b) => a.pace - b.pace);
+    if (R.length >= 3) { const r0 = R[0].pace, span = (R[Math.min(R.length, 12) - 1].pace - r0) || 1;
+      html += block("wk-pace", "Long runs · 8+ clean laps", "Race pace", `<div class="wk-table reveal"><div class="wk-th wk-pace-row"><span>Driver</span><span></span><span>Pace</span><span>Deg</span><span>Run</span></div>
+        ${R.slice(0, 14).map((x, i) => `<div class="wk-tr wk-pace-row" style="--tc:${tcol(M, x.id)}"><b>${esc(nm(M, x.id))}</b><span class="wk-pbar"><i style="width:${Math.max(6, 100 - Math.min(1, (x.pace - r0) / span) * 75)}%"></i></span>
+        <span class="mono r">${i ? "+" + (x.pace - r0).toFixed(3) : lapT(x.pace)}</span><span class="mono r ${x.deg > 0.15 ? "hot" : ""}">${x.deg >= 0 ? "+" : "−"}${Math.abs(x.deg).toFixed(2)}</span><span class="mono dim r">${tyreDot(x.tyre)}${x.n}·${SH(x.s)}</span></div>`).join("")}</div>`,
+        "Median clean lap of each driver's quickest long run across practice. Deg = seconds lost per lap over the run (fuel burn hides some). Run = tyre, laps, session."); }
+    // 3. ideal laps over the weekend
+    const sec = [0, 1, 2].map((i) => P.map((a) => a.sBest[i] && { ...a.sBest[i], s: a.slug }).filter(Boolean).sort((a, b) => a.t - b.t)[0]);
+    const ideal = {}; P.forEach((a) => a.rows.forEach((r) => r.s.forEach((v, i) => { if (v) { const x = ideal[r.id] = ideal[r.id] || [null, null, null]; if (x[i] == null || v < x[i]) x[i] = v; } })));
+    const IL = Object.entries(ideal).filter(([, s]) => s.every(Boolean)).map(([id, s]) => ({ id, t: s[0] + s[1] + s[2], lost: best[id] ? best[id].best - (s[0] + s[1] + s[2]) : 0 })).sort((a, b) => a.t - b.t);
+    if (IL.length >= 3 && sec.every(Boolean)) html += block("wk-ideal", "Best sectors added up", "Ideal laps", `<div class="wk-secs reveal">${sec.map((x, i) => `<div style="--tc:${tcol(M, x.id)}"><span class="kicker">S${i + 1} · ${SH(x.s)}</span><b class="mono">${x.t.toFixed(3)}</b><span>${esc(nm(M, x.id))}</span></div>`).join("")}</div>
+      <div class="wk-table reveal"><div class="wk-th wk-il-row"><span>#</span><span>Driver</span><span>Ideal</span><span>Best</span><span>Lost</span></div>${IL.slice(0, 12).map((x, i) => `<div class="wk-tr wk-il-row" style="--tc:${tcol(M, x.id)}"><span class="mono dim">${i + 1}</span><b>${esc(nm(M, x.id))}</b><span class="mono r">${lapT(x.t)}</span><span class="mono r dim">${lapT(best[x.id].best)}</span><span class="mono r">${x.lost > 0.001 ? "−" + x.lost.toFixed(3) : "0"}</span></div>`).join("")}</div>`,
+      "Fastest sectors of the weekend (tiles) and each driver's best three sectors from any practice lap. Lost = ideal vs actual best lap.");
+    // 4. speed trap per session
+    const top = {}; P.forEach((a, k) => a.rows.forEach((r) => { (top[r.id] = top[r.id] || Array(n).fill(null))[k] = r.top || null; }));
+    const TS = Object.entries(top).map(([id, v]) => ({ id, v, mx: Math.max(...v.filter(Boolean)) })).filter((x) => isFinite(x.mx)).sort((a, b) => b.mx - a.mx);
+    if (TS.length >= 5) { const colsS = `grid-template-columns:minmax(0,1fr) repeat(${n},50px) 54px`, smax = P.map((_, k) => Math.max(...TS.map((x) => x.v[k] || 0)));
+      html += block("wk-speed", "Speed trap · km/h", "Top speed", `<div class="wk-table reveal"><div class="wk-th" style="${colsS}"><span>Driver</span>${P.map((a) => `<span>${SH(a.slug)}</span>`).join("")}<span>Max</span></div>
+        ${TS.map((x) => `<div class="wk-tr" style="${colsS};--tc:${tcol(M, x.id)}"><b>${esc(nm(M, x.id))}</b>${x.v.map((v, k) => `<span class="mono r ${v && v === smax[k] ? "hot" : "dim"}">${v || "–"}</span>`).join("")}<span class="mono r">${x.mx}</span></div>`).join("")}</div>`,
+        "Highest speed-trap reading per session. Low numbers can mean a high-downforce wing, not a weak engine."); }
+    // 5. team order per session
+    const teams = {}; P.forEach((a, k) => a.teams.forEach((t) => { (teams[t.team] = teams[t.team] || { team: t.team, id: t.id, colour: t.colour, v: Array(n).fill(null) }).v[k] = t.best - a.teams[0].best; }));
+    const TO = Object.values(teams).sort((a, b) => (a.v[n - 1] ?? 9) - (b.v[n - 1] ?? 9));
+    if (TO.length >= 5) { const colsT = `grid-template-columns:minmax(0,1fr) repeat(${n},62px)`;
+      html += block("wk-teams", "Best lap per team", "Team order", `<div class="wk-table reveal"><div class="wk-th" style="${colsT}"><span>Team</span>${P.map((a) => `<span>${SH(a.slug)}</span>`).join("")}</div>
+        ${TO.map((t) => `<div class="wk-tr" style="${colsT};--tc:${t.colour || tcol(M, t.id)}"><b>${esc(t.team.replace(/ F1 Team| Racing| Formula 1 Team| Team/g, ""))}</b>${t.v.map((v) => `<span class="mono r ${v === 0 ? "hot" : ""}">${v == null ? "–" : v === 0 ? "P1" : "+" + v.toFixed(3)}</span>`).join("")}</div>`).join("")}</div>`,
+        "Gap from each team's best lap to the fastest team, session by session (sorted by the latest)."); }
+    // 6. tyres + conditions per session
+    html += block("wk-cond", "Per session", "Tyres & conditions", `<div class="wk-table reveal"><div class="wk-th wk-cond-row"><span>Session</span><span>Laps</span><span>Track</span><span>Air</span><span>Del.</span><span>Red</span></div>
+      ${P.map((a) => `<div class="wk-tr wk-cond-row"><b>${SH(a.slug)}</b><span class="mono r">${a.totalLaps}</span><span class="mono r">${a.weather ? Math.round(a.weather.track[0]) + "–" + Math.round(a.weather.track[1]) + "°" : "–"}</span><span class="mono r">${a.weather ? Math.round(a.weather.air[0]) + "–" + Math.round(a.weather.air[1]) + "°" : "–"}</span><span class="mono r">${a.rows.reduce((x, r) => x + (r.deleted || 0), 0)}</span><span class="mono r">${a.flags.filter((f) => /^RED/.test(f.msg)).length}</span></div>
+        <div class="wk-tyrebar">${Object.entries(a.fieldTyres).sort((x, y) => y[1] - x[1]).map(([c, k]) => `<span style="--ty:${TY[c] || "#888"};flex:${k}">${esc(c[0])} ${k}</span>`).join("")}</div>`).join("")}</div>`,
+      "Laps run, temperature ranges (°C), laps deleted for track limits, red flags, and laps on each compound (S/M/H).");
     return html;
   }
 
-  function progression(list) {
-    const done = list.filter((a) => a && (a.rows.length));
-    if (done.length < 2) return "";
-    const order = (a) => (a.quali ? a.quali.map((x) => x.id) : a.race ? a.race.map((x) => x.id) : a.rows.map((x) => x.id));
-    const pos = done.map((a) => Object.fromEntries(order(a).map((id, i) => [id, i + 1])));
-    const last = done[done.length - 1], ids = order(last).slice(0, 22);
-    const cols = `grid-template-columns:minmax(0,1fr) repeat(${done.length},38px)`;
-    return block("Position in each session", "Weekend so far", `<div class="wk-prog reveal" style="--cols:${done.length}"><div class="wk-ph" style="${cols}"><span></span>${done.map((a) => `<span>${esc(SHORT[a.slug].replace("Qualifying", "Q").replace("Sprint Quali", "SQ"))}</span>`).join("")}</div>
-      ${ids.map((id) => `<div class="wk-pr" style="--tc:${tcol(last, id)};${cols}"><b>${esc(nm(last, id))}</b>${pos.map((p) => { const v = p[id]; return `<span class="mono ${v === 1 ? "p1" : v && v <= 3 ? "p3" : v && v <= 10 ? "p10" : ""}">${v || "–"}</span>`; }).join("")}</div>`).join("")}</div>`,
-      "Practice order is a rough guide: teams run different fuel loads and programmes.");
+  // ---------- qualifying (or sprint qualifying) ----------
+  function qualiBlock(Q, M) {
+    if (!Q || !Q.quali) return "";
+    const lt = (x) => x.q.filter(Boolean).slice(-1)[0], p1 = lt(Q.quali[0]), id = Q.slug === "sq" ? "wk-sq" : "wk-q";
+    const stage = (x) => (x.q[2] ? 3 : x.q[1] ? 2 : 1);
+    const cols = "grid-template-columns:20px minmax(0,1fr) 54px 54px 54px 54px";
+    let html = block(id, Q.slug === "sq" ? "Sprint qualifying" : "Qualifying · the grid", "Results", `<div class="wk-table reveal"><div class="wk-th n1" style="${cols}"><span>#</span><span>Driver</span><span>Q1</span><span>Q2</span><span>Q3</span><span>Gap</span></div>
+      ${Q.quali.map((x, i) => `<div class="wk-tr ${i === 9 || i === 15 ? "cut" : ""}" style="${cols};--tc:${tcol(M, x.id)}"><span class="mono dim">${x.pos}</span><b title="${esc(nm(M, x.id))}">${esc(x.id)}</b>${[0, 1, 2].map((k) => `<span class="mono r ${k < stage(x) - 1 ? "dim" : ""}">${x.q[k] ? lapT(x.q[k]).slice(2) : "–"}</span>`).join("")}<span class="mono r">${i ? "+" + (lt(x) - p1).toFixed(3) : "POLE"}</span></div>`).join("")}</div>`,
+      "Lap times in each part (minutes dropped); lines mark the Q3 and Q2 cut. Gap to pole uses each driver's last part.");
+    const byTeam = {}; Q.quali.forEach((x) => { const tm = driver[x.id] ? driver[x.id].team : x.id; (byTeam[tm] = byTeam[tm] || []).push(x); });
+    const duels = Object.values(byTeam).filter((v) => v.length === 2).map(([x, y]) => { const k = Math.min(x.q.filter(Boolean).length, y.q.filter(Boolean).length) - 1;
+      return { x, y, gap: x.q[k] && y.q[k] ? y.q[k] - x.q[k] : null, k }; }).filter((d) => d.gap != null).sort((p, q) => q.gap - p.gap);
+    if (duels.length) html += block(id + "-tm", "Same car", "Team-mate gaps", `<div class="wk-table reveal">${duels.map((d) => `<div class="wk-tr wk-duel" style="--tc:${tcol(M, d.x.id)}"><b>${esc(nm(M, d.x.id))}</b><span class="wk-pbar"><i style="width:${Math.min(100, 8 + d.gap * 150)}%"></i></span><span class="mono r">${d.gap.toFixed(3)}</span><span class="dim r">${esc(nm(M, d.y.id))}</span><span class="mono dim r">Q${d.k + 1}</span></div>`).join("")}</div>`,
+      "Faster driver, gap, slower driver, compared in the last part both reached.");
+    return html;
   }
 
-  // ---------- views ----------
-  function parse(parts) {
-    let meeting = null, slug = null;
-    parts.slice(1).forEach((p) => { if (/^m\d+$/.test(p)) meeting = +p.slice(1); else slug = p; });
-    return { meeting, slug };
+  // ---------- race (or sprint) ----------
+  function raceBlock(R, Q, M) {
+    if (!R || !R.race) return "";
+    const id = R.slug === "sprint" ? "wk-sprint" : "wk-race", grid = Q && Q.quali ? Object.fromEntries(Q.quali.map((x) => [x.id, x.pos])) : {};
+    const cols = "grid-template-columns:22px minmax(0,1fr) 34px 76px 34px";
+    let html = block(id, R.slug === "sprint" ? "Sprint" : "Race · classification", "Results", `<div class="wk-table reveal"><div class="wk-th n1" style="${cols}"><span>#</span><span>Driver</span><span>Grid</span><span>Gap</span><span>Pts</span></div>
+      ${R.race.map((x) => { const g = grid[x.id], d = g && x.pos ? g - x.pos : null;
+        return `<div class="wk-tr" style="${cols};--tc:${tcol(M, x.id)}"><span class="mono dim">${x.pos || "–"}</span><b>${esc(nm(M, x.id))}</b><span class="mono r ${d > 0 ? "up" : d < 0 ? "down" : "dim"}">${g ? (d ? (d > 0 ? "▲" : "▼") + Math.abs(d) : "=") : ""}</span>
+        <span class="mono r">${x.dnf ? "DNF" : x.dns ? "DNS" : x.pos === 1 ? "WIN" : x.gap != null && !isNaN(+x.gap) ? "+" + (+x.gap).toFixed(3) : esc(String(x.gap || ""))}</span><span class="mono r">${x.pts || ""}</span></div>`; }).join("")}</div>`,
+      Q ? "Grid column: places gained or lost from the qualifying position." : "");
+    const L = R.raceLaps || 1;
+    html += block(id + "-strat", "Every stint", "Strategy", `<div class="wk-strat reveal">${R.race.map((x) => `<div><b>${esc(nm(M, x.id))}</b><span class="wk-bar">${R.stints.filter((s) => s.id === x.id).map((s) => `<i style="left:${(s.a - 1) / L * 100}%;width:${(s.b - s.a + 1) / L * 100}%;--ty:${TY[s.c] || "#888"}"></i>`).join("")}</span><span class="mono dim r">${Math.max(0, R.stints.filter((s) => s.id === x.id).length - 1)}</span></div>`).join("")}</div>`,
+      `${L} laps; colour = compound (red soft, yellow medium, white hard); number = stops.`);
+    if (R.pits.length) html += block(id + "-pits", "Pit lane time", "Fastest stops", `<div class="wk-table reveal">${R.pits.slice(0, 6).map((p, i) => `<div class="wk-tr wk-il-row" style="--tc:${tcol(M, p.id)}"><span class="mono dim">${i + 1}</span><b>${esc(nm(M, p.id))}</b><span class="mono r">${p.t.toFixed(1)}s</span><span class="mono dim r">lap ${p.lap}</span><span></span></div>`).join("")}</div>`);
+    const fl = R.rows[0];
+    if (fl) html += `<div class="wk-tiles reveal" style="margin-top:12px">${tile("Fastest lap", lapT(fl.best), esc(nm(M, fl.id)), "", tcol(M, fl.id))}${tile("Top speed", Math.max(...R.rows.map((r) => r.top || 0)), "km/h", "")}${tile("Safety cars", R.flags.filter((f) => /SAFETY/.test(f.msg)).length, "incl. VSC", "")}${tile("Red flags", R.flags.filter((f) => /^RED/.test(f.msg)).length, "", "")}</div>`;
+    return html;
   }
+
+  // ---------- view + mount ----------
+  function parse(parts) { let meeting = null; parts.slice(1).forEach((p) => { if (/^m\d+$/.test(p)) meeting = +p.slice(1); }); return { meeting }; }
   function view(parts) {
-    const { meeting, slug } = parse(parts), race = currentRace();
-    const title = meeting ? "Race weekend" : race.name;
-    return `<div class="page-title reveal"><span class="kicker">${meeting ? "Past weekend" : `Round ${race.round} · ${esc(race.place || "")}`} · live from OpenF1</span><h1>${meeting ? "" : race.flag + " "}${esc(title)}</h1></div>
-      <div id="wk-strip" class="wk-strip reveal"></div>
-      <div id="wk-body" class="wk-body" data-slug="${esc(slug || "")}"><div class="wk-loading"><span class="dim">Loading the weekend…</span></div></div>`;
+    const { meeting } = parse(parts), race = currentRace();
+    return `<div class="page-title reveal"><span class="kicker">${meeting ? "Past weekend" : `Round ${race.round} · ${esc(race.place || "")}`} · OpenF1 timing</span><h1>${meeting ? "Race weekend" : race.flag + " " + esc(race.name)}</h1></div>
+      <div id="wk-strip" class="wk-strip reveal"></div><div id="wk-body" class="wk-body"><div class="wk-loading"><span class="dim">Loading the weekend…</span></div></div>`;
   }
-
-  function strip(sessions, slug, base, loaded) {
+  function strip(sessions, loaded) {
     const now = Date.now();
-    return `<a class="wk-chip ${!slug ? "on" : ""}" href="${base}" ${!slug ? 'aria-current="true"' : ""}><b>Overview</b><span class="mono">weekend</span></a>` + sessions.map((s) => {
-      const st = Date.parse(s.start), en = Date.parse(s.end), live = st <= now && now < en, done = now >= en;
-      const has = loaded[s.slug];
+    return sessions.map((s) => {
+      const st = Date.parse(s.start), en = Date.parse(s.end), live = st <= now && now < en, done = now >= en, has = loaded[s.slug];
       const state = live ? "live" : done ? (has ? "done" : "wait") : "next";
-      const when = live ? "LIVE" : done ? (has ? "✓" : "soon") : new Date(st).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
-      return `<a class="wk-chip ${state} ${slug === s.slug ? "on" : ""}" href="${base}/${s.slug}" ${slug === s.slug ? 'aria-current="true"' : ""}><b>${esc(SHORT[s.slug])}</b><span class="mono">${esc(when)}</span></a>`;
+      const when = live ? "LIVE" : done ? (has ? "✓ data" : "soon") : new Date(st).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
+      const target = { fp1: "wk-practice", fp2: "wk-practice", fp3: "wk-practice", sq: "wk-sq", sprint: "wk-sprint", q: "wk-q", race: "wk-race" }[s.slug];
+      return `<button type="button" class="wk-chip ${state}" data-jump="${target}"><b>${esc(SH(s.slug) === "Q" ? "QUALI" : SH(s.slug))}</b><span class="mono">${esc(when)}</span></button>`;
     }).join("");
   }
 
   async function mount(app, parts) {
-    const { meeting, slug } = parse(parts), race = currentRace();
-    const base = "#/weekend" + (meeting ? "/m" + meeting : "");
+    const { meeting } = parse(parts), race = currentRace();
     const body = app.querySelector("#wk-body"), stripEl = app.querySelector("#wk-strip");
     if (!body) return;
     const token = (mountedFor = location.hash + Date.now());
     clearInterval(refresh);
-    const fallback = () => {
-      const P = (window.PRACTICE || {})[race.round];
-      return P ? P.sessions.map((x) => ({ key: null, name: x.name, slug: SLUG[x.name], type: "Practice", start: x.start, rows: x.best.map(([id, t, n]) => ({ id, best: t, laps: n, s: [null, null, null], top: 0, deleted: 0 })),
-        runs: x.longRuns.map(([id, tyre, pace, n]) => ({ id, tyre, pace, n, deg: 0 })), teams: [], fieldTyres: {}, tyreLaps: {}, flags: [], weather: null, totalLaps: x.best.reduce((a, b) => a + b[2], 0), sBest: [null, null, null], names: x.names || {}, colours: {} })) : [];
-    };
-    let sessions, analyses = [], offline = false;
-    try {
-      sessions = await sessionsFor(meeting, race);
-      if (!sessions.length) throw new Error("no sessions");
-    } catch (e) { sessions = calendarSessions(race); offline = true; }
+    stripEl.addEventListener("click", (e) => { const b = e.target.closest("[data-jump]"); const t = b && document.getElementById(b.dataset.jump); if (t) scrollTo({ top: t.getBoundingClientRect().top + scrollY - 70, behavior: "smooth" }); });
+    let sessions, offline = false;
+    try { sessions = await sessionsFor(meeting, race); if (!sessions.length) throw new Error("none"); }
+    catch (e) { sessions = calendarSessions(race); offline = true; }
     if (token !== mountedFor) return;
-    const finished = sessions.filter((s) => Date.now() > Date.parse(s.end));
-    const loaded = {};
+    const got = {}, loaded = {};
+    if (offline) {
+      const P = (window.PRACTICE || {})[race.round];
+      (P ? P.sessions : []).forEach((x) => { const slug = SLUG[x.name]; loaded[slug] = true;
+        got[slug] = { slug, type: "Practice", rows: x.best.map(([id, t, n]) => ({ id, best: t, laps: n, s: [null, null, null], top: 0, deleted: 0 })),
+          runs: x.longRuns.map(([id, tyre, pace, n]) => ({ id, tyre, pace, n, deg: 0 })), teams: [], fieldTyres: {}, flags: [], weather: null, totalLaps: x.best.reduce((a, b) => a + b[2], 0), sBest: [null, null, null], names: x.names || {}, colours: {} }; });
+    }
     const draw = () => {
       if (token !== mountedFor || !document.body.contains(body)) return;
-      stripEl.innerHTML = strip(sessions, slug, base, loaded);
-      const sel = slug ? analyses.find((a) => a && a.slug === slug) : null;
-      const latest = [...analyses].reverse().find(Boolean);
+      stripEl.innerHTML = strip(sessions, loaded);
+      const list = sessions.map((s) => got[s.slug]).filter(Boolean), M = meta(list);
+      const P = list.filter((a) => a.type === "Practice");
+      const Q = got.q || null, SQ = got.sq || null, R = got.race || null, SP = got.sprint || null;
       const next = sessions.find((s) => Date.now() < Date.parse(s.end));
-      const nextTxt = next ? (Date.now() >= Date.parse(next.start) ? `<b>${esc(SHORT[next.slug])} is running now.</b> Its analysis appears here a few minutes after the chequered flag.`
-        : `<b>Next: ${esc(SHORT[next.slug])}</b>, ${new Date(next.start).toLocaleString(undefined, { weekday: "long", hour: "2-digit", minute: "2-digit" })} your time.`) : "";
-      let html = "";
-      if (slug) {
-        const s = sessions.find((x) => x.slug === slug);
-        if (sel) html = sessionView(sel, analyses[analyses.indexOf(sel) - 1]);
-        else if (s && Date.now() < Date.parse(s.end)) html = `<div class="panel wk-wait"><p>${esc(SHORT[slug])} starts ${new Date(s.start).toLocaleString(undefined, { weekday: "long", hour: "2-digit", minute: "2-digit" })} your time. Its full analysis builds here once the session is over.</p></div>`;
-        else html = `<div class="panel wk-wait"><p>${offline ? "Can't reach the timing data right now. Check your connection and pull to refresh." : "Timing data for this session usually lands within minutes of the chequered flag. This page checks again every 2 minutes."}</p></div>`;
-      } else {
-        html = (nextTxt ? `<p class="wk-next reveal">${nextTxt}</p>` : "") +
-          (latest ? `${sectionHead(`Latest · ${SHORT[latest.slug]}`, "Headlines")}<ol class="wk-heads reveal">${headlines(latest, analyses[analyses.indexOf(latest) - 1]).map((x) => `<li>${x}</li>`).join("")}</ol>
-            <a class="wk-more reveal" href="${base}/${latest.slug}">Full ${esc(SHORT[latest.slug])} analysis →</a>` : `<div class="panel wk-wait"><p>Nothing has run yet this weekend. Each session's analysis appears here as soon as its timing data is out.</p></div>`) +
-          progression(analyses) +
-          (!meeting ? `<a class="wk-more reveal" href="#/race/${race.round}">Track history, past winners and analysis →</a>` : "");
-      }
-      body.innerHTML = html;
+      const nextTile = next ? `<div class="wk-next reveal"><span class="kicker">${Date.now() >= Date.parse(next.start) ? "Running now" : "Next session"}</span><b>${esc(SHORT[next.slug])}</b>
+        <span class="mono">${new Date(next.start).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}</span><span class="mono dim">${Date.now() >= Date.parse(next.start) ? "data a few min after the flag" : "your time"}</span></div>` : "";
+      const anyDone = list.length;
+      body.innerHTML = nextTile + (anyDone ? keyTiles(P, Q || SQ, R || SP, M) + raceBlock(R, Q, M) + qualiBlock(Q, M) + raceBlock(SP, SQ, M) + qualiBlock(SQ, M) + practiceBlock(P, M)
+        : `<div class="panel wk-wait"><p>${offline ? "Can't reach the timing data right now." : "Nothing has run yet. Each session's numbers appear here a few minutes after it ends."}</p></div>`)
+        + (!meeting ? `<a class="wk-more reveal" href="#/race/${race.round}">Track history and past races →</a>` : "");
       body.querySelectorAll(".reveal").forEach((e) => e.classList.add("in"));
     };
     draw();
-    if (offline) { analyses = fallback(); analyses.forEach((a) => { loaded[a.slug] = true; }); draw(); return; }
-    for (const s of finished) {
-      try { const a = await loadSession(s); analyses.push(a); if (a) loaded[s.slug] = true; } catch (e) { analyses.push(null); }
-      if (token !== mountedFor) return;
-      draw();
-    }
-    // keep building: re-check every 2 minutes while this page is open
-    refresh = setInterval(async () => {
-      if (!document.body.contains(body) || token !== mountedFor) { clearInterval(refresh); return; }
+    if (offline) { draw(); return; }
+    const fetchDone = async () => {
       let changed = false;
       for (const s of sessions) {
         if (Date.now() < Date.parse(s.end) || loaded[s.slug]) continue;
-        try { const a = await loadSession(s); if (a) { const i = sessions.indexOf(s); analyses[i] = a; loaded[s.slug] = true; changed = true; } } catch (e) { /* not out yet */ }
+        try { const a = await loadSession(s); if (a) { got[s.slug] = a; loaded[s.slug] = true; changed = true; } } catch (e) { /* not published yet */ }
+        if (token !== mountedFor) return;
+        if (changed) draw();
       }
-      analyses = sessions.filter((s) => Date.now() > Date.parse(s.end)).map((s) => memo[s.key] || null);
-      if (changed || true) draw();
-    }, 120e3);
+      draw();
+    };
+    await fetchDone();
+    refresh = setInterval(() => { if (!document.body.contains(body) || token !== mountedFor) { clearInterval(refresh); return; } fetchDone(); }, 120e3);
   }
   function stop() { clearInterval(refresh); mountedFor = ""; }
   return { view, mount, stop };
