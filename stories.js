@@ -10,11 +10,11 @@
 // Top-story themes: the next Grand Prix, driver contracts, rule announcements, midweek fallout from the last race.
 window.STORIES = [
   {
-    id: "qatar-preview-2026-v4", date: "2026-11-28T07:00:00Z", round: 22, label: "Qatar GP: what to watch", cover: { text: "🇶🇦", hook: "3D" }, color: "#C8102E",
+    id: "qatar-preview-2026-v5", date: "2026-11-28T15:40:00Z", round: 22, label: "Qatar GP: what to watch", cover: { text: "🇶🇦", hook: "3D" }, color: "#C8102E",
     news: ["verstappen-heads-to-qatar", "qatar-preview-27-lap", "alonso-sits-out-qatar", "titles-settled-but-hamilton"],
     slides: [
-      { kicker: "Round 22 of 23 · Lusail · this weekend", title: "Qatar Grand Prix", countdown: "2026-11-29T16:00:00Z", text: "57 laps under the lights. Final practice 14:30 GMT and qualifying 18:00 GMT today; lights out Sunday at 16:00 GMT (19:00 in Qatar). No sprint this time." },
-      { kicker: "The favourite", title: "Lusail belongs to Verstappen", helmet: "VER", stat: "3", statLabel: "Qatar wins in a row: 2023, 2024, 2025", text: "He arrived off the Las Vegas win as the bookmakers' pick. But Friday belonged to Mercedes: Antonelli topped both sessions, and Verstappen was third on long-run pace." },
+      { kicker: "Round 22 of 23 · Lusail · this weekend", title: "Qatar Grand Prix", countdown: "2026-11-29T16:00:00Z", text: "57 laps under the lights. Qualifying 18:00 GMT today; lights out Sunday at 16:00 GMT (19:00 in Qatar). No sprint this time." },
+      { kicker: "The favourite", title: "Lusail belongs to Verstappen", helmet: "VER", stat: "3", statLabel: "Qatar wins in a row: 2023, 2024, 2025", text: "He arrived off the Las Vegas win as the bookmakers' pick. But practice belonged to Mercedes: Antonelli topped FP1, FP2 and FP3, and Verstappen was third in FP3 and on long-run pace." },
       { kicker: "How Qatar is won", title: "A safety car every year", stat: "3/3", statLabel: "of the last three races here had at least one", text: "In 2025 it came out on lap 7. Verstappen pitted under it and won from third, while Piastri, on pole, stayed out and finished second. In 2024 Verstappen's only stop also came under a safety car." },
       { kicker: "Form · last 5 races", title: "Nobody is hotter", rows: [[1, "VER", "108"], [2, "ANT", "77"], [3, "NOR", "75"]], text: "Points from the last five Grands Prix: Verstappen has three wins and nothing worse than third." },
       { kicker: "The fight for second", title: "Leave Qatar 26 clear and P2 is his", rows: [[2, "VER", "304"], [3, "HAM", "267"]], stat: "37", statLabel: "points ahead of Hamilton, with 50 left" },
@@ -22,6 +22,16 @@ window.STORIES = [
       { kicker: "Constructors · third place", title: "Red Bull vs McLaren", stat: "9", statLabel: "points between them: Red Bull 440, McLaren 431" },
       { kicker: "Tyres", title: "A two-stop race", stat: "27", statLabel: "laps max on any set of tyres, in a 57-lap race (reported by race previews)", text: "Lusail's fast, long corners punish the left-front. A cap per set forces at least two stops, so pit timing and safety cars decide a lot." },
       { kicker: "Saturday", title: "Qualifying at 18:00 GMT", text: "In two of the last three Qatar races the winner did not start on pole, but nobody has won here from lower than third. A front-row start still matters.", link: "#/weekend", linkText: "Live weekend analysis" },
+    ],
+  },
+  {
+    id: "qatar-fp3", date: "2026-11-28T15:45:00Z", label: "FP3: Mercedes sweep practice", cover: { helmet: "ANT", hook: "P1 ×3" }, color: "#27E0C2",
+    slides: [
+      { kicker: "Qatar GP · final practice", title: "Antonelli tops all three", helmet: "ANT", stat: "1:22.400", statLabel: "his FP3 best, on softs: 0.677s quicker than his FP2 lap", text: "Russell was second again, so Mercedes finished first and second in every practice session." },
+      { kicker: "FP3 · best laps", title: "Verstappen splits the McLarens off", rows: [[1, "ANT", "1:22.400"], [2, "RUS", "+0.249"], [3, "VER", "+0.510"], [4, "HAD", "+0.687"], [5, "LEC", "+0.808"]] },
+      { kicker: "Fastest sectors · FP3", title: "Verstappen owns the middle", text: "Sector 1: Antonelli 30.256. Sector 2: Verstappen 27.704. Sector 3: Antonelli 24.209. The best three sectors add up to 1:22.169, 0.231s under the top time." },
+      { kicker: "Who moved", title: "McLaren drop to sixth and seventh", rows: [[6, "NOR", "+0.868"], [7, "PIA", "+0.889"]], text: "Third and fourth in FP2, Norris and Piastri slipped behind Hadjar and Leclerc on the soft-tyre runs. Practice fuel loads vary, so qualifying will tell." },
+      { kicker: "Saturday · 18:00 GMT", title: "Qualifying next", text: "Track temperature sat at 29–30°C in FP3, similar to qualifying conditions. Timing data from OpenF1.", link: "#/weekend", linkText: "All practice data" },
     ],
   },
   {

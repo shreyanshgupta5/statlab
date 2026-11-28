@@ -71,8 +71,7 @@ def main():
     for rnd in map(int, sys.argv[1:]):
         race = next(c for c in S['CALENDAR'] if c['round'] == rnd)
         year = int(race['date'][:4]); start = race['sessions'][0]['start'][:10]
-        sess = [s for s in get('sessions', year=year, date_start=start) if s['session_type'] == 'Practice'] or \
-               [s for s in get('sessions', year=year) if s['session_type'] == 'Practice' and s['date_start'][:10] >= start and s['date_start'][:10] <= race['date']]
+        sess = [s for s in get('sessions', year=year) if s['session_type'] == 'Practice' and start <= s['date_start'][:10] <= race['date']]
         done = []
         for s in sorted(sess, key=lambda s: s['date_start']):
             if datetime.fromisoformat(s['date_end']) > now:
