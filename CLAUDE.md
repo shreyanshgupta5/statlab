@@ -14,7 +14,9 @@ Never add a workflow that pushes to `main` automatically.
 
 ## Map
 - `index.html`: shell, intro splash (logo on app black, then it lands in the header), header with the Guide button, glass tab bar.
-- Tabs (v77): Home `#/`, Weekend `#/weekend`, Play `#/play`, Season `#/season` (was Lab; `#/lab` still works).
+- Tabs (v80): Home `#/`, Weekend `#/weekend`, Season `#/season` (was Lab; `#/lab` still works), Play `#/play`, Archive `#/archive`.
+- Archive (`viewArchive`, `archiveStories`): every season 1950–last year as a story circle (champion, title fight, constructors,
+  winners) plus all-time record stories, played in the home story viewer. Data: archive.js from `tools/build_archive.py` (Jolpica).
 - `app.js`: everything else (routes `#/`, `#/weekend`, `#/play`, `#/season`, `#/news/ID` (articles, no tab), `#/race/N`, `#/driver/ID`, `#/welcome`, …).
   - `helmet(id, opts)` draws every driver image. It shows a cartoon portrait when `portraits.js` lists one, else the helmet (`helmetSVG`).
   - Home: the stories row (`buildStories`, `storiesRow`, full-screen viewer), the latest-session card (`latestCand`, `latestSession`), next race, following, standings.
@@ -29,7 +31,7 @@ Never add a workflow that pushes to `main` automatically.
 - `portraits.js` + `portraits/`: cartoon driver portraits (spec and style prompt: `content/faces/PORTRAITS.md` on the `content` branch).
 - `styles.css`: tokens (`--bg #0E0F12`, `--card`, `--fg`, `--red`) and versioned blocks appended at the end.
 - `sw.js`: offline cache (CORE list) and network-first for the data files. Add any new JS file to both lists.
-- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`, `practice.js`, `pace.js`.
+- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`, `practice.js`, `pace.js`, `archive.js`.
 - Stories row: sorted newest first. Hand stories in `stories.js` (themes: next GP, contracts, rule changes, last-race fallout);
   `round: N` replaces the automatic next-race story, `news: [id prefixes]` hides news items a story already covers.
 
@@ -39,6 +41,7 @@ Never add a workflow that pushes to `main` automatically.
 - `build_analysis.py 22 23`: race-weekend analysis from past editions (strategy, safety cars, temps) for the preview page.
 - `build_practice.py 22`: practice best laps and long-run pace for a weekend (rerun after each session).
 - `build_pace.py [round]`: race pace (median clean lap) and tyre wear (stint slope vs the field) per race → pace.js (Season tab).
+- `build_archive.py [year]`: past seasons for the Archive tab (slow: ~20 s per season, saves as it goes; add each new season once it ends).
 - `add_news.py stories.json`: add news items (optional `short` = 2-line story label).
 - APIs that work from the cloud environment: api.openf1.org, api.jolpi.ca, api.openverse.org.
 

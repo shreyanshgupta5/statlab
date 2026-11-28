@@ -1408,7 +1408,7 @@
     const dom = [...best].sort((a, b) => b.share - a.share);
     const all = [
       { id: "arch-titles", at: 0, when: "all-time", label: "Most world titles", cover: { text: "★", hook: String(topN(titles, 1)[0][1]) + "×", bg: "#E10600" }, color: "#E10600",
-        slides: [{ kicker: `${years[0]}–${years[years.length - 1]} · drivers' champions`, title: "Most world titles", rows: topN(titles, 5).map(([n, k], i) => [i + 1, lastOf(n).slice(0, 3).toUpperCase(), k + "×", n, histCol(A[champYears(n)[0]].top[0].team)]) },
+        slides: [{ kicker: `${years[0]}–${years[years.length - 1]} · drivers' champions`, title: "Most world titles", rows: topN(titles, 5).map(([n, k], i) => [i + 1, lastOf(n).slice(0, 3).toUpperCase(), k + "×", lastOf(n), histCol(A[champYears(n)[0]].top[0].team)]) },
                  { kicker: "Every champion", title: `${Object.keys(titles).length} different champions`, stat: String(years.length), statLabel: `seasons since ${years[0]}`, text: topN(titles, 3).map(([n]) => `${lastOf(n)}: ${champYears(n).join(", ")}`).join(" · ") }] },
       { id: "arch-cons", at: 0, when: "all-time", label: "Constructors' titles", cover: { text: "🏆", hook: String(topN(ctitles, 1)[0][1]) + "×", bg: "#E8102E" }, color: "#E8102E",
         slides: [{ kicker: "Since 1958", title: "Most constructors' titles", rows: topN(ctitles, 5).map(([n, k], i) => [i + 1, n.slice(0, 3).toUpperCase(), k + "×", n, histCol(n)]) }] },
