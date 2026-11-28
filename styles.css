@@ -1271,3 +1271,4 @@ html.story-open, html.story-open body { overflow: hidden; }
 .upnext .un-chip b { font: italic 800 12px var(--display) !important; font-stretch: 112% !important; text-transform: uppercase; margin: 0; line-height: 1.1; }
 .upnext .un-chip span { font-size: 10px !important; line-height: 1.2; margin: 0; letter-spacing: 0; }
 .upnext .un-race { font-size: 12px; }
+.wk-lock { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(245,183,0,.12); border-left: 3px solid #F5B700; font-size: 12px; line-height: 1.45; color: var(--soft, #B9BDC4); }

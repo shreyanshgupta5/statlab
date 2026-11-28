@@ -6,9 +6,9 @@
 // Routes: #/weekend, and #/weekend/m<meeting_key> for any past weekend (handy for testing).
 window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sectionHead }) {
   const API = "https://api.openf1.org/v1/";
-  const CACHE = "onef1.wk.v1.";
+  const CACHE = "onef1.wk.v1.";   // v84: every finished session is kept, with fetchedAt; used whenever OpenF1 is locked
   const memo = {};
-  let refresh = null, mountedFor = "";
+  let refresh = null, mountedFor = "", locked = false;
 
   const SLUG = { "Practice 1": "fp1", "Practice 2": "fp2", "Practice 3": "fp3", "Sprint Qualifying": "sq", "Sprint Shootout": "sq", Sprint: "sprint", Qualifying: "q", Race: "race" };
   const SHORT = { fp1: "FP1", fp2: "FP2", fp3: "FP3", sq: "Sprint Quali", sprint: "Sprint", q: "Qualifying", race: "Race" };
@@ -52,15 +52,22 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
     const key = "meet." + (meetingKey || race.round + "." + race.date);
     if (memo[key] && Date.now() - memo[key].t < 120e3) return memo[key].v;
     let list;
-    if (meetingKey) list = await get("sessions", { meeting_key: meetingKey });
-    else {
-      const first = (race.sessions && race.sessions[0] ? race.sessions[0].start : race.date).slice(0, 10);
-      const d0 = new Date(Date.parse(first) - 864e5).toISOString().slice(0, 10), d1 = new Date(Date.parse(race.date) + 864e5).toISOString().slice(0, 10);
-      list = await get("sessions", { year: race.date.slice(0, 4), "date_start>": d0, "date_start<": d1 });
+    try {
+      if (meetingKey) list = await get("sessions", { meeting_key: meetingKey });
+      else {
+        const first = (race.sessions && race.sessions[0] ? race.sessions[0].start : race.date).slice(0, 10);
+        const d0 = new Date(Date.parse(first) - 864e5).toISOString().slice(0, 10), d1 = new Date(Date.parse(race.date) + 864e5).toISOString().slice(0, 10);
+        list = await get("sessions", { year: race.date.slice(0, 4), "date_start>": d0, "date_start<": d1 });
+      }
+    } catch (e) {
+      // OpenF1 locks its free API while a session is live: fall back to the list saved on this phone
+      const saved = store.get(key); if (saved && saved.length) { locked = true; return saved; }
+      throw e;
     }
     const v = list.filter((s) => SLUG[s.session_name]).sort((a, b) => a.date_start.localeCompare(b.date_start))
       .map((s) => ({ key: s.session_key, meeting: s.meeting_key, name: s.session_name, slug: SLUG[s.session_name], type: s.session_type, start: s.date_start, end: s.date_end, place: s.location, year: s.year }));
     memo[key] = { t: Date.now(), v };
+    if (v.length) store.set(key, v);
     return v;
   }
   // fall back to the app calendar when OpenF1 can't be reached
@@ -69,15 +76,22 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
   // ---------- analysis ----------
   async function loadSession(s) {
     if (memo[s.key]) return memo[s.key];
-    const done = Date.now() - Date.parse(s.end) > 90 * 60e3;
-    const cached = done && store.get(s.key);
-    if (cached) return (memo[s.key] = cached);
-    const [drivers, laps, stints, rc, weather] = await Promise.all(["drivers", "laps", "stints", "race_control", "weather"].map((ep) => get(ep, { session_key: s.key })));
-    const extra = s.type === "Practice" ? [] : await get("session_result", { session_key: s.key }).catch(() => []);
-    const pits = s.type === "Race" ? await get("pit", { session_key: s.key }).catch(() => []) : [];
-    if (!laps.length) return null;
-    const a = analyse(s, drivers, laps, stints, rc, weather, extra, pits);
-    if (done) store.set(s.key, a);
+    // saved copy: final once it was fetched 90+ min after the flag (older saves carry no fetchedAt and were always final)
+    const cached = store.get(s.key), end = Date.parse(s.end);
+    if (cached && (!cached.fetchedAt || cached.fetchedAt - end > 90 * 60e3)) return (memo[s.key] = cached);
+    let a;
+    try {
+      const [drivers, laps, stints, rc, weather] = await Promise.all(["drivers", "laps", "stints", "race_control", "weather"].map((ep) => get(ep, { session_key: s.key })));
+      const extra = s.type === "Practice" ? [] : await get("session_result", { session_key: s.key }).catch(() => []);
+      const pits = s.type === "Race" ? await get("pit", { session_key: s.key }).catch(() => []) : [];
+      if (!laps.length) return cached || null;
+      a = analyse(s, drivers, laps, stints, rc, weather, extra, pits);
+    } catch (e) {
+      if (cached) { locked = true; return (memo[s.key] = cached); }   // live-session lock or no signal: use what we have
+      throw e;
+    }
+    a.fetchedAt = Date.now();
+    store.set(s.key, a);
     return (memo[s.key] = a);
   }
 
@@ -294,7 +308,7 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
       const P = (window.PRACTICE || {})[race.round];
       (P ? P.sessions : []).forEach((x) => { const slug = SLUG[x.name]; loaded[slug] = true;
         got[slug] = { slug, type: "Practice", rows: x.best.map(([id, t, n]) => ({ id, best: t, laps: n, s: [null, null, null], top: 0, deleted: 0 })),
-          runs: x.longRuns.map(([id, tyre, pace, n]) => ({ id, tyre, pace, n, deg: 0 })), teams: [], fieldTyres: {}, flags: [], weather: null, totalLaps: x.best.reduce((a, b) => a + b[2], 0), sBest: [null, null, null], names: x.names || {}, colours: {} }; });
+          runs: x.longRuns.map(([id, tyre, pace, n]) => ({ id, tyre, pace, n, deg: 0 })), teams: [], fieldTyres: {}, flags: Array.from({ length: x.redFlags || 0 }, () => ({ msg: "RED FLAG" })), weather: null, totalLaps: x.best.reduce((a, b) => a + b[2], 0), sBest: [null, null, null], names: x.names || {}, colours: {} }; });
     }
     const draw = () => {
       if (token !== mountedFor || !document.body.contains(body)) return;
@@ -306,13 +320,14 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
       const nextTile = next ? `<div class="wk-next reveal"><span class="kicker">${Date.now() >= Date.parse(next.start) ? "Running now" : "Next session"}</span><b>${esc(SHORT[next.slug])}</b>
         <span class="mono">${new Date(next.start).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}</span><span class="mono dim">${Date.now() >= Date.parse(next.start) ? "data a few min after the flag" : "your time"}</span></div>` : "";
       const anyDone = list.length;
-      body.innerHTML = nextTile + (anyDone ? keyTiles(P, Q || SQ, R || SP, M) + raceBlock(R, Q, M) + qualiBlock(Q, M) + raceBlock(SP, SQ, M) + qualiBlock(SQ, M) + practiceBlock(P, M)
-        : `<div class="panel wk-wait"><p>${offline ? "Can't reach the timing data right now." : "Nothing has run yet. Each session's numbers appear here a few minutes after it ends."}</p></div>`)
+      const lockNote = locked || offline ? `<p class="wk-lock reveal">Live timing is locked while a session runs. Showing the data saved on this phone; it refreshes by itself after the flag.</p>` : "";
+      body.innerHTML = nextTile + lockNote + (anyDone ? keyTiles(P, Q || SQ, R || SP, M) + raceBlock(R, Q, M) + qualiBlock(Q, M) + raceBlock(SP, SQ, M) + qualiBlock(SQ, M) + practiceBlock(P, M)
+        : `<div class="panel wk-wait"><p>${offline ? "Can't reach the timing data right now (it is locked during live sessions). Trying again every 2 minutes." : "Nothing has run yet. Each session's numbers appear here a few minutes after it ends."}</p></div>`)
         + (!meeting ? `<a class="wk-more reveal" href="#/race/${race.round}">Track history and past races →</a>` : "");
       body.querySelectorAll(".reveal").forEach((e) => e.classList.add("in"));
     };
     draw();
-    if (offline) { draw(); return; }
+    if (offline) { refresh = setInterval(() => { if (document.body.contains(body) && token === mountedFor) mount(app, parts); else clearInterval(refresh); }, 120e3); return; }
     const fetchDone = async () => {
       let changed = false;
       for (const s of sessions) {
