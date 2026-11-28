@@ -21,7 +21,7 @@ window.STORIES = [
       { kicker: "The fight for third", title: "Three drivers, three points", rows: [[3, "HAM", "267"], [4, "RUS", "264"], [5, "NOR", "264"]], text: "Both titles are settled. This is what Qatar and Abu Dhabi still decide." },
       { kicker: "Constructors · third place", title: "Red Bull vs McLaren", stat: "9", statLabel: "points between them: Red Bull 440, McLaren 431" },
       { kicker: "Tyres", title: "A two-stop race", stat: "27", statLabel: "laps max on any set of tyres, in a 57-lap race (reported by race previews)", text: "Lusail's fast, long corners punish the left-front. A cap per set forces at least two stops, so pit timing and safety cars decide a lot." },
-      { kicker: "Saturday", title: "Qualifying at 18:00 GMT", text: "In two of the last three Qatar races the winner did not start on pole, but nobody has won here from lower than third. A front-row start still matters.", link: "#/race/22", linkText: "Practice times & full analysis" },
+      { kicker: "Saturday", title: "Qualifying at 18:00 GMT", text: "In two of the last three Qatar races the winner did not start on pole, but nobody has won here from lower than third. A front-row start still matters.", link: "#/weekend", linkText: "Live weekend analysis" },
     ],
   },
   {
@@ -32,7 +32,7 @@ window.STORIES = [
       { kicker: "FP2 · best laps", title: "Half a second covers five", rows: [[1, "ANT", "1:23.077"], [2, "RUS", "+0.127"], [3, "NOR", "+0.445"], [4, "PIA", "+0.472"], [5, "VER", "+0.499"]] },
       { kicker: "Race pace · FP2 long runs", title: "Mercedes again, then Verstappen", rows: [[1, "ANT", "1:28.408"], [2, "RUS", "+0.205"], [3, "VER", "+0.502"]], text: "Median clean-lap time of each driver's quickest long run, all on mediums (OpenF1). Hadjar +0.800, Norris +0.845, Piastri +1.118." },
       { kicker: "Two red flags", title: "Leclerc spun, Gasly crashed", text: "Leclerc's spin left gravel across the track. Gasly then ran too much kerb at Turn 14, hit a marker board and got stuck; he was unhurt and said his tyres were too cold. FP2 was extended by 13 minutes." },
-      { kicker: "Ferrari", title: "Hamilton stops with a power loss", helmet: "HAM", small: true, text: "He parked beside Turn 1 late in FP2. Reports say he has used his full engine allocation, so any new parts would cost him five grid places. Ferrari has not said whether it will change anything.", link: "#/race/22", linkText: "Practice times & race pace" },
+      { kicker: "Ferrari", title: "Hamilton stops with a power loss", helmet: "HAM", small: true, text: "He parked beside Turn 1 late in FP2. Reports say he has used his full engine allocation, so any new parts would cost him five grid places. Ferrari has not said whether it will change anything.", link: "#/weekend/fp2", linkText: "Full FP2 analysis" },
     ],
   },
   {

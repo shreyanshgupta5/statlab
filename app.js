@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v73"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v74"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -1018,7 +1018,7 @@
     const n = NEWS.find((x) => x.id === id);
     if (!n) return viewMissing("We couldn't find that story.");
     return `
-      <a class="back" href="#/news"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>News</a>
+      <a class="back" href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Home</a>
       <article class="article reveal">
         <span class="tag">${esc(n.tag)}</span>
         <h1>${esc(n.title)}</h1>
@@ -1285,6 +1285,7 @@
 
   /* ---------- Play: games, levels, friend challenges (play.js) ---------- */
   const PLAY = window.PLAY_INIT ? window.PLAY_INIT({ S, driver, team, helmet, esc, raceByRound, driverStats }) : null;
+  const WEEKEND = window.WEEKEND_INIT ? window.WEEKEND_INIT({ S, driver, team, helmet, esc, raceByRound, sectionHead }) : null;
 
   /* ---------- router ---------- */
   const tabs = [...document.querySelectorAll(".tabs a")];
@@ -1298,7 +1299,8 @@
     else if (p0 === "race") { html = viewRace(Number(p1)); tab = "season"; }
     else if (p0 === "driver") { html = viewDriver(p1); tab = "season"; }
     else if (p0 === "team") { html = viewTeam(p1); tab = "season"; }
-    else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = "news"; }
+    else if (p0 === "news") { html = p1 ? viewArticle(p1) : viewNews(); tab = ""; }
+    else if (p0 === "weekend" && WEEKEND) { html = WEEKEND.view(parts); tab = "weekend"; }
     else if (p0 === "play" && PLAY) { html = PLAY.view(parts); tab = "play"; }
     else if (p0 === "welcome") { html = viewSeason(); tab = "season"; setTimeout(() => openWelcome(p1 === "install" ? 2 : 0)); }
     else if (p0 === "lab") { html = viewLab(p1); tab = "lab"; }
@@ -1308,6 +1310,7 @@
     if (PLAY) PLAY.stop();
     app.innerHTML = html;
     if (PLAY && p0 === "play") PLAY.mount(app);
+    if (WEEKEND) { if (p0 === "weekend") WEEKEND.mount(app, parts); else WEEKEND.stop(); }
     tabs.forEach((t) => {
       const on = t.dataset.tab === tab;
       t.classList.toggle("on", on);

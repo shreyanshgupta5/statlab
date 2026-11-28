@@ -14,10 +14,14 @@ Never add a workflow that pushes to `main` automatically.
 
 ## Map
 - `index.html`: shell, intro splash (logo on app black, then it lands in the header), header with the Guide button, glass tab bar.
-- `app.js`: everything else (routes `#/`, `#/news`, `#/play`, `#/lab`, `#/race/N`, `#/driver/ID`, `#/welcome`, …).
+- `app.js`: everything else (routes `#/`, `#/weekend`, `#/play`, `#/lab`, `#/news/ID` (articles, no tab), `#/race/N`, `#/driver/ID`, `#/welcome`, …).
   - `helmet(id, opts)` draws every driver image. It shows a cartoon portrait when `portraits.js` lists one, else the helmet (`helmetSVG`).
   - Home: the stories row (`buildStories`, `storiesRow`, full-screen viewer), the latest-session card (`latestCand`, `latestSession`), next race, following, standings.
   - Race preview: weekend schedule (`weekendSchedule`). Race analysis: `raceInsights`. Lab tab: `viewLab`.
+- `weekend.js`: the Weekend tab (replaced News in v74). Reads OpenF1 live in the browser (CORS open, queued ~0.65s apart
+  because the free API rate-limits), analyses each finished session (timesheet, long runs, ideal laps, speed trap, teams, tyres,
+  flags; quali results + team-mate gaps; race result, strategy, pit stops) and caches finished sessions in localStorage.
+  `#/weekend/m<meeting_key>/<fp1|fp2|fp3|sq|sprint|q|race>` opens any past weekend (handy for testing). practice.js is the offline fallback.
 - `stories.js`: hand-written "burning" stories (label, date, cover, slides). New `id` = shows as unseen again.
 - `portraits.js` + `portraits/`: cartoon driver portraits (spec and style prompt: `content/faces/PORTRAITS.md` on the `content` branch).
 - `styles.css`: tokens (`--bg #0E0F12`, `--card`, `--fg`, `--red`) and versioned blocks appended at the end.

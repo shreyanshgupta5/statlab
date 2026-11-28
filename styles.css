@@ -1125,3 +1125,47 @@ html.story-open, html.story-open body { overflow: hidden; }
 .pr-run { grid-template-columns: 104px minmax(0, 1fr) 62px 34px; gap: 8px; } .pr-run b { font-size: 12px; } .pr-run .dim { white-space: nowrap; font-size: 11px; }
 .sv-rows li { grid-template-columns: 28px 48px minmax(0, 1fr) auto; } .sv-rows li b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sv-rows li em { white-space: nowrap; font-size: 16px; }
 .sv-rows li b { font-size: 17px; } .sv-rows li { gap: 8px; padding: 8px 10px; }
+
+/* v74: Weekend tab (weekend.js): live session-by-session analysis */
+.wk-strip { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 14px calc(-1 * var(--gutter)) 0; padding: 2px var(--gutter) 6px; }
+.wk-strip::-webkit-scrollbar { display: none; }
+.wk-chip { flex: 0 0 auto; display: flex; flex-direction: column; gap: 2px; min-width: 78px; padding: 10px 12px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); color: var(--fg); }
+.wk-chip b { font: italic 800 14px var(--display); font-stretch: 112%; text-transform: uppercase; white-space: nowrap; }
+.wk-chip span { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.wk-chip.done span { color: #3DDC84; } .wk-chip.live { border-color: var(--red); } .wk-chip.live span { color: var(--red-text, #FF5A4E); font-weight: 700; }
+.wk-chip.wait span { color: #F5B700; } .wk-chip.on { background: #fff; color: #111; border-color: #fff; } .wk-chip.on span { color: #444; }
+.wk-body { min-height: 40vh; } .wk-loading, .wk-wait { margin-top: 18px; } .wk-wait p { font-size: 14px; line-height: 1.5; color: var(--soft, #B9BDC4); }
+.wk-next { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--red) 14%, var(--card)); font-size: 14px; line-height: 1.45; }
+.wk-heads { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.wk-heads li { padding: 12px 14px 12px 16px; background: var(--card); border-radius: 14px; border-left: 3px solid var(--red); font-size: 14px; line-height: 1.45; color: var(--soft, #B9BDC4); }
+.wk-heads b { color: var(--fg); }
+.wk-more { display: inline-block; margin-top: 12px; font-weight: 800; font-size: 14px; color: var(--fg); }
+.wk-row { grid-template-columns: 22px 28px minmax(0, 1fr) auto 62px; }
+.wk-row b, .wk-duel b, .wk-runs b, .wk-strat b, .wk-pr b { font: italic 800 14px var(--display); font-stretch: 112%; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wk-row .r { white-space: nowrap; }
+.wk-duel { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 62px 30px; font-size: 13px; }
+.wk-noface { display: grid; place-items: center; border-radius: 50%; background: var(--card-2); font: 700 9px var(--mono); color: var(--muted); }
+.wk-ty { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--ty); font: 700 8px var(--mono); font-style: normal; color: var(--fg); vertical-align: -3px; margin-left: 4px; }
+.wk-runs { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-top: 10px; padding: 12px 14px; background: var(--card); border-radius: var(--radius); }
+.wk-runs li { display: grid; grid-template-columns: 96px minmax(0, 1fr) 62px 62px; gap: 8px; align-items: center; font-size: 13px; }
+.wk-runs b { font-size: 12px; } .wk-runs .dim { white-space: nowrap; font-size: 11px; } .wk-runs .wk-gap { display: block; text-align: center; }
+.wk-pbar { height: 10px; border-radius: 5px; background: rgba(255,255,255,.06); overflow: hidden; } .wk-pbar i { display: block; height: 100%; border-radius: 5px; background: var(--tc); }
+.wk-secs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.wk-secs div { display: flex; flex-direction: column; gap: 3px; padding: 12px; background: var(--card); border-radius: 12px; border-top: 3px solid var(--tc, var(--red)); }
+.wk-secs b { font-size: 20px; } .wk-secs span:last-child { font-size: 12px; color: var(--muted); }
+.wk-tyres { display: flex; gap: 4px; margin-top: 10px; border-radius: 12px; overflow: hidden; }
+.wk-tyres span { display: flex; flex-direction: column; gap: 2px; padding: 10px; min-width: 64px; background: color-mix(in srgb, var(--ty) 22%, var(--card)); border-top: 3px solid var(--ty); }
+.wk-tyres b { font-size: 12px; text-transform: capitalize; } .wk-tyres em { font-style: normal; font-size: 18px; font-weight: 700; }
+.wk-flags { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.wk-flags li { display: flex; gap: 10px; font-size: 13px; padding: 10px 12px; background: var(--card); border-radius: 10px; border-left: 3px solid #F5B700; } .wk-flags .mono { color: var(--muted); white-space: nowrap; }
+.wk-strat { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-top: 10px; padding: 12px 14px; background: var(--card); border-radius: var(--radius); }
+.wk-strat li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; align-items: center; } .wk-strat b { font-size: 11px; }
+.wk-bar { position: relative; height: 12px; border-radius: 4px; background: rgba(255,255,255,.05); }
+.wk-bar i { position: absolute; top: 0; bottom: 0; background: var(--ty); border-radius: 3px; border-right: 2px solid var(--card); }
+.wk-prog { margin-top: 10px; padding: 8px 14px; background: var(--card); border-radius: var(--radius); }
+.wk-ph, .wk-pr { display: grid; grid-template-columns: minmax(0, 1fr) repeat(6, 40px); align-items: center; gap: 4px; padding: 6px 0; }
+.wk-ph { font: 700 11px var(--mono); color: var(--muted); border-bottom: 1px solid var(--line); } .wk-ph span, .wk-pr span { text-align: center; }
+.wk-pr { border-top: 1px solid var(--line); } .wk-pr:nth-child(2) { border-top: 0; } .wk-pr b { font-size: 13px; border-left: 3px solid var(--tc); padding-left: 8px; }
+.wk-pr span { font-size: 13px; color: var(--muted); } .wk-pr .p10 { color: var(--fg); } .wk-pr .p3 { color: var(--fg); font-weight: 700; } .wk-pr .p1 { color: #111; background: #F5B700; border-radius: 6px; font-weight: 700; }
+.wk-row b { font-size: 13px; }
+.wk-duel { grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr) 52px 24px; gap: 6px; } .wk-duel b { font-size: 12px; } .wk-duel .dim { font-size: 11px; }
