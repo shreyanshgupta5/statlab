@@ -18,8 +18,8 @@ Never add a workflow that pushes to `main` automatically.
 - `app.js`: everything else (routes `#/`, `#/weekend`, `#/play`, `#/season`, `#/news/ID` (articles, no tab), `#/race/N`, `#/driver/ID`, `#/welcome`, …).
   - `helmet(id, opts)` draws every driver image. It shows a cartoon portrait when `portraits.js` lists one, else the helmet (`helmetSVG`).
   - Home: the stories row (`buildStories`, `storiesRow`, full-screen viewer), the latest-session card (`latestCand`, `latestSession`), next race, following, standings.
-  - Race preview: weekend schedule (`weekendSchedule`). Race analysis: `raceInsights`. Season tab: `viewLab` = `seasonBlock` (race by race: tiles, table, margins,
-    driver records, team-mate qualifying, points race) + the development analysis from lab.js.
+  - Race preview: weekend schedule (`weekendSchedule`). Race analysis: `raceInsights`. Season tab (v79): filter Season / R1…Rn (`#/season`, `#/season/r/N`), sections Race pace · Quali pace · Tyres · Results ·
+    Development, each opening with a chart (`overallSections`, `roundSections`, `hbars`, `lineChart`); numbers come last.
 - `weekend.js`: the Weekend tab (replaced News in v74). Reads OpenF1 live in the browser (CORS open, queued ~0.65s apart
   because the free API rate-limits), analyses each finished session (timesheet, long runs, ideal laps, speed trap, teams, tyres,
   flags; quali results + team-mate gaps; race result, strategy, pit stops) and caches finished sessions in localStorage.
@@ -29,7 +29,7 @@ Never add a workflow that pushes to `main` automatically.
 - `portraits.js` + `portraits/`: cartoon driver portraits (spec and style prompt: `content/faces/PORTRAITS.md` on the `content` branch).
 - `styles.css`: tokens (`--bg #0E0F12`, `--card`, `--fg`, `--red`) and versioned blocks appended at the end.
 - `sw.js`: offline cache (CORE list) and network-first for the data files. Add any new JS file to both lists.
-- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`, `practice.js`.
+- Data files are generated: `data.js` (season + news), `racedetail.js`, `lab.js`, `duels.js`, `previews.js`, `analysis.js`, `practice.js`, `pace.js`.
 - Stories row: sorted newest first. Hand stories in `stories.js` (themes: next GP, contracts, rule changes, last-race fallout);
   `round: N` replaces the automatic next-race story, `news: [id prefixes]` hides news items a story already covers.
 
@@ -38,6 +38,7 @@ Never add a workflow that pushes to `main` automatically.
 - `build_race_detail.py`, `build_lab.py`, `build_duels.py`, `news_images.py` (news-site hosts are blocked here).
 - `build_analysis.py 22 23`: race-weekend analysis from past editions (strategy, safety cars, temps) for the preview page.
 - `build_practice.py 22`: practice best laps and long-run pace for a weekend (rerun after each session).
+- `build_pace.py [round]`: race pace (median clean lap) and tyre wear (stint slope vs the field) per race → pace.js (Season tab).
 - `add_news.py stories.json`: add news items (optional `short` = 2-line story label).
 - APIs that work from the cloud environment: api.openf1.org, api.jolpi.ca, api.openverse.org.
 
