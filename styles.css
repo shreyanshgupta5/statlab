@@ -1271,9 +1271,3 @@ html.story-open, html.story-open body { overflow: hidden; }
 .upnext .un-chip b { font: italic 800 12px var(--display) !important; font-stretch: 112% !important; text-transform: uppercase; margin: 0; line-height: 1.1; }
 .upnext .un-chip span { font-size: 10px !important; line-height: 1.2; margin: 0; letter-spacing: 0; }
 .upnext .un-race { font-size: 12px; }
-
-/* v82: one font for the whole app: Chakra Petch (the race-number font) for headings, text, labels and numbers.
-   Only the ONE F1 logo keeps Archivo (it sets its own font inline). */
-:root { --display: 'Chakra Petch', system-ui, sans-serif; --mono: 'Chakra Petch', system-ui, sans-serif; --num: 'Chakra Petch', system-ui, sans-serif;
-  --led: 'Chakra Petch', system-ui, sans-serif; --hand: 'Chakra Petch', system-ui, sans-serif; }
-body, button, input, select, textarea { font-family: 'Chakra Petch', system-ui, sans-serif; }

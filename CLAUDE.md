@@ -47,8 +47,8 @@ Never add a workflow that pushes to `main` automatically.
 - APIs that work from the cloud environment: api.openf1.org, api.jolpi.ca, api.openverse.org.
 
 ## Rules the user set
-- Stay on brand: app black background, team colours, minimal and number-led.
-- One font for everything (v82): Chakra Petch for headings, body, labels and numbers (`--display`, `--mono`, `--num` all point to it).
-  Only the ONE F1 logo keeps Archivo italic. Don't bring other fonts back.
+- Stay on brand: app black background, Chakra Petch numbers, Archivo italic display, team colours. Keep it minimal and number-led.
+- One number font everywhere (v78): every number uses Chakra Petch (`var(--num)`), as on the home result card. Give new numeric
+  elements the `mono` or `num` class (the v78 block in styles.css forces Chakra on them). JetBrains Mono only for small uppercase labels.
 - Never include the user's identity in requests to outside services.
 - Wikipedia/Commons pages, Reddit and most news sites are blocked in the cloud environment.
