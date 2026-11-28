@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v79"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v80"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -368,10 +368,11 @@
   }
   function drawStory() {
     const st = STORY_LIST[SV.si], sl = st.slides[SV.k]; markSeen(st.id);
-    const row = (r) => `<li style="--tc:${tc((driver[r[1]] || {}).team) || "#5E6470"}"><span class="num">${r[0]}</span>${helmet(r[1], { size: 44, look: 2 })}<b>${esc(lastName(r[1]))}</b><em class="num">${esc(r[2])}</em></li>`;
+    const row = (r) => (driver[r[1]] && !r[3]) ? `<li style="--tc:${tc((driver[r[1]] || {}).team) || "#5E6470"}"><span class="num">${r[0]}</span>${helmet(r[1], { size: 44, look: 2 })}<b>${esc(lastName(r[1]))}</b><em class="num">${esc(r[2])}</em></li>`
+      : `<li style="--tc:${r[4] || "#5E6470"}"><span class="num">${r[0]}</span><span class="sv-code" style="--tc:${r[4] || "#5E6470"}">${esc(r[1])}</span><b>${esc(r[3] || r[1])}</b><em class="num">${esc(r[2])}</em></li>`;
     SV.el.style.setProperty("--sc", st.color);
     SV.el.innerHTML = `<div class="sv-bars">${st.slides.map((_, j) => `<i class="${j < SV.k ? "done" : ""}"><b></b></i>`).join("")}</div>
-      <div class="sv-head"><span class="sv-cov">${storyCover(st, 34)}</span><b>${esc(st.label)}</b><span class="mono dim">${ago(st.at)}</span>
+      <div class="sv-head"><span class="sv-cov">${storyCover(st, 34)}</span><b>${esc(st.label)}</b><span class="mono dim">${st.when ? esc(st.when) : ago(st.at)}</span>
         <button type="button" class="sv-x" data-sclose aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       ${sl.img ? `<div class="sv-img" style="background-image:url('${esc(sl.img)}')"></div>` : ""}
       <div class="sv-slide${sl.img ? " has-img" : ""}" key="${SV.si}-${SV.k}">
@@ -1373,6 +1374,66 @@
   }
   const seasonNav = (withDev) => `<nav class="sn-nav reveal">${[["sn-race", "Race pace"], ["sn-quali", "Quali pace"], ["sn-tyres", "Tyres"], ["sn-results", "Results"], ...(withDev ? [["sn-dev", "Development"]] : [])].map(([id, t]) => `<button type="button" data-jump="${id}">${t}</button>`).join("")}</nav>`;
 
+
+  /* ---------- v80: Archive tab: every past season as a story (archive.js, tools/build_archive.py) ---------- */
+  const TEAM_HIST = { Ferrari: "#E8102E", McLaren: "#FF8A1F", Williams: "#4FA3FF", Mercedes: "#27E0C2", "Red Bull": "#3B6FD8", "Team Lotus": "#C9A227", Lotus: "#C9A227",
+    Brabham: "#2E8B57", "Brabham-Repco": "#2E8B57", Renault: "#F5C400", Benetton: "#5BC236", Tyrrell: "#2F6BD8", Cooper: "#3C7A55", "Cooper-Climax": "#3C7A55", BRM: "#5A8F3A",
+    Matra: "#2F7BE0", "Matra-Ford": "#2F7BE0", "Alfa Romeo": "#B22222", Maserati: "#C1272D", Vanwall: "#1F6E43", Brawn: "#C9D23A", "Lotus-Climax": "#C9A227", "Lotus-Ford": "#C9A227" };
+  const histCol = (team) => TEAM_HIST[team] || TEAM_HIST[String(team).split(/[- ]/)[0]] || "#8D939B";
+  const ord = (n) => n + (n % 10 === 1 && n % 100 !== 11 ? "st" : n % 10 === 2 && n % 100 !== 12 ? "nd" : n % 10 === 3 && n % 100 !== 13 ? "rd" : "th");
+  const fmtPts = (p) => (p % 1 ? p.toFixed(1) : String(p));
+  function archiveStories() {
+    const A = window.ARCHIVE || {}, years = Object.keys(A).map(Number).sort((a, b) => a - b);
+    if (!years.length) return { all: [], seasons: [] };
+    const titles = {}, ctitles = {}, seasons = [];
+    years.forEach((y) => {
+      const x = A[y], c = x.top[0], p2 = x.top[1], col = histCol(c.team);
+      titles[c.n] = (titles[c.n] || 0) + 1;
+      if (x.cons[0]) ctitles[x.cons[0].n] = (ctitles[x.cons[0].n] || 0) + 1;
+      const slides = [
+        { kicker: `${y} World Champion · ${x.rounds} races`, title: c.n, stat: fmtPts(c.pts), statLabel: `points · ${c.w} win${c.w === 1 ? "" : "s"} · ${c.team} · ${ord(titles[c.n])} title` },
+        { kicker: `${y} · the title fight`, title: p2 ? `${c.last} beats ${p2.last}${(c.pts - p2.pts) <= 3 ? ", just" : ""}` : "Champion", rows: x.top.map((d, i) => [i + 1, d.c, fmtPts(d.pts), d.last, histCol(d.team)]), stat: p2 ? fmtPts(c.pts - p2.pts) : "", statLabel: p2 ? `points between ${c.last} and ${p2.last}` : "" },
+      ];
+      if (x.cons[0]) slides.push({ kicker: `${y} · Constructors' champions`, title: x.cons[0].n, rows: x.cons.map((t, i) => [i + 1, t.n.slice(0, 3).toUpperCase(), fmtPts(t.pts), t.n, histCol(t.n)]), stat: `${ord(ctitles[x.cons[0].n])}`, statLabel: `constructors' title for ${x.cons[0].n}` });
+      const totW = x.wins.reduce((a, w) => a + w[1], 0);
+      slides.push({ kicker: `${y} · race winners`, title: `${x.wins.length} different winner${x.wins.length === 1 ? "" : "s"}`, rows: x.wins.slice(0, 3).map((w, i) => [i + 1, w[0].replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase(), w[1] + (w[1] === 1 ? " win" : " wins"), w[0], "#B9BDC4"]),
+        stat: `${x.fromPole}/${totW}`, statLabel: `races won from pole · ${x.teamWins.map((t) => `${t[0]} ${t[1]}`).slice(0, 3).join(", ")}` });
+      seasons.push({ id: `arch-${y}`, at: 0, when: String(y), y, label: `${c.last} · ${c.team.split("-")[0]}`, cover: { text: String(y), hook: c.last.slice(0, 3).toUpperCase(), bg: col }, color: col, slides });
+    });
+    // all-time stories
+    const topN = (m, n) => Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, n);
+    const lastOf = (name) => name.split(" ").slice(-1)[0];
+    const champYears = (name) => years.filter((y) => A[y].top[0].n === name);
+    const best = years.map((y) => ({ y, d: A[y].top[0], share: A[y].top[0].w / A[y].rounds })).sort((a, b) => b.d.w - a.d.w || b.share - a.share);
+    const dom = [...best].sort((a, b) => b.share - a.share);
+    const all = [
+      { id: "arch-titles", at: 0, when: "all-time", label: "Most world titles", cover: { text: "★", hook: String(topN(titles, 1)[0][1]) + "×", bg: "#E10600" }, color: "#E10600",
+        slides: [{ kicker: `${years[0]}–${years[years.length - 1]} · drivers' champions`, title: "Most world titles", rows: topN(titles, 5).map(([n, k], i) => [i + 1, lastOf(n).slice(0, 3).toUpperCase(), k + "×", n, histCol(A[champYears(n)[0]].top[0].team)]) },
+                 { kicker: "Every champion", title: `${Object.keys(titles).length} different champions`, stat: String(years.length), statLabel: `seasons since ${years[0]}`, text: topN(titles, 3).map(([n]) => `${lastOf(n)}: ${champYears(n).join(", ")}`).join(" · ") }] },
+      { id: "arch-cons", at: 0, when: "all-time", label: "Constructors' titles", cover: { text: "🏆", hook: String(topN(ctitles, 1)[0][1]) + "×", bg: "#E8102E" }, color: "#E8102E",
+        slides: [{ kicker: "Since 1958", title: "Most constructors' titles", rows: topN(ctitles, 5).map(([n, k], i) => [i + 1, n.slice(0, 3).toUpperCase(), k + "×", n, histCol(n)]) }] },
+      { id: "arch-dominant", at: 0, when: "all-time", label: "Most dominant seasons", cover: { text: Math.round(dom[0].share * 100) + "%", hook: "WINS", bg: histCol(dom[0].d.team) }, color: histCol(dom[0].d.team),
+        slides: [{ kicker: "Share of races won by the champion", title: "Most dominant seasons", rows: dom.slice(0, 5).map((x, i) => [i + 1, String(x.y), Math.round(x.share * 100) + "%", `${x.d.last} · ${x.d.w}/${A[x.y].rounds}`, histCol(x.d.team)]) },
+                 { kicker: "Most wins in one season", title: `${best[0].d.n}, ${best[0].y}`, stat: String(best[0].d.w), statLabel: `wins from ${A[best[0].y].rounds} races`, rows: best.slice(1, 4).map((x, i) => [i + 2, String(x.y), x.d.w + " wins", x.d.last, histCol(x.d.team)]) }] },
+      { id: "arch-closest", at: 0, when: "all-time", label: "Closest title fights", cover: { text: "0.5", hook: "PTS", bg: "#F5B700" }, color: "#F5B700",
+        slides: [{ kicker: "Smallest winning margin in the drivers' title", title: "Closest title fights", rows: years.filter((y) => A[y].top[1]).map((y) => ({ y, g: A[y].top[0].pts - A[y].top[1].pts })).sort((a, b) => a.g - b.g).slice(0, 5).map((x, i) => [i + 1, String(x.y), fmtPts(x.g) + " pts", `${A[x.y].top[0].last} over ${A[x.y].top[1].last}`, histCol(A[x.y].top[0].team)]) }] },
+    ];
+    const closest = all[3].slides[0].rows[0]; if (closest) all[3].cover.text = closest[2].replace(" pts", "");
+    return { all, seasons: seasons.reverse() };
+  }
+  function viewArchive() {
+    const { all, seasons } = archiveStories();
+    if (!seasons.length) return viewMissing("The archive isn't loaded yet.");
+    STORY_LIST = [...all, ...seasons];
+    const circle = (st, i) => `<button class="story-c" type="button" data-story="${i}" style="--sc:${st.color}" aria-label="${esc(st.label)} story"><span class="ring"><span class="disc">${storyCover(st, 64)}</span></span><span class="lbl">${esc(st.label)}</span></button>`;
+    const decades = {}; seasons.forEach((st, k) => { const d = Math.floor(st.y / 10) * 10; (decades[d] = decades[d] || []).push([st, all.length + k]); });
+    const first = seasons[seasons.length - 1].y, last = seasons[0].y;
+    return `<div class="page-title reveal"><span class="kicker">${first}–${last} · ${seasons.length} seasons</span><h1>Archive</h1></div>
+      ${sectionHead("All-time", "Records")}<div class="story-row reveal">${all.map((st, i) => circle(st, i)).join("")}</div>
+      ${Object.keys(decades).sort((a, b) => b - a).map((d) => `${sectionHead(`${decades[d].length} seasons`, `${d}s`)}<div class="story-row reveal">${decades[d].map(([st, i]) => circle(st, i)).join("")}</div>`).join("")}
+      <p class="foot">Data: Jolpica (Ergast) results and standings · points as awarded each season · unofficial fan project.</p>`;
+  }
+
   function viewLab(sel, arg) {
     if (sel === "r" && raceByRound[+arg]) return viewSeasonRound(+arg);
 
@@ -1505,6 +1566,7 @@
     else if (p0 === "weekend" && WEEKEND) { html = WEEKEND.view(parts); tab = "weekend"; }
     else if (p0 === "play" && PLAY) { html = PLAY.view(parts); tab = "play"; }
     else if (p0 === "welcome") { html = viewSeason(); tab = "season"; setTimeout(() => openWelcome(p1 === "install" ? 2 : 0)); }
+    else if (p0 === "archive") { html = viewArchive(); tab = "archive"; }
     else if (p0 === "lab" || p0 === "season") { html = viewLab(p1, p2); tab = "lab"; }
     else if (p0 === "duel") { html = viewDuelRace(p1, p2, p3 === "race" ? Number(p4) : undefined); tab = "lab"; }
     else { html = viewMissing("That page doesn't exist."); tab = ""; }

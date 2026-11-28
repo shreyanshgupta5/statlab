@@ -1248,3 +1248,8 @@ html.story-open, html.story-open body { overflow: hidden; }
 .hb-r { grid-template-columns: 104px minmax(0, 1fr) 62px; }
 .sn-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; } .sn-legend span { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--soft, #B9BDC4); }
 .sn-legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+
+/* v80: five tabs, Archive tab */
+.tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); } .tabs a span { font-size: 10.5px; }
+.sv-code { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: color-mix(in srgb, var(--tc) 30%, #15171B); border: 2px solid var(--tc);
+  font: 700 12px var(--num); color: #fff; letter-spacing: .02em; }
