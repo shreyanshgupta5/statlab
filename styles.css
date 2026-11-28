@@ -1205,3 +1205,13 @@ html.story-open, html.story-open body { overflow: hidden; }
 .wk-il-row.wk-th span:nth-child(2) { text-align: left; } .wk-pace-row { grid-template-columns: minmax(0, 1fr) 40px 62px 42px 60px; }
 .wk-th.n1 span:nth-child(2) { text-align: left; }
 .wk-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* v77: Season tab, race by race */
+.sn-row { color: var(--fg); } .sn-row:active { background: rgba(255,255,255,.04); }
+.sn-c { display: flex; align-items: baseline; gap: 5px; min-width: 0; } .sn-c b { border-left: 3px solid var(--tc); padding-left: 6px; font: italic 800 13px var(--display); font-stretch: 112%; }
+.sn-c small { font-size: 10px; color: var(--muted); } .sn-c small.up { color: #3DDC84; }
+.sn-row .mono { font-size: 12px; white-space: nowrap; }
+.sn-bars { width: 100%; height: auto; display: block; } .sn-bars text { font: 9px var(--mono); fill: var(--muted); } .sn-bars .gl { stroke: var(--line); stroke-dasharray: 3 3; }
+.sn-bars .sn-lbl { font: 700 9px var(--mono); }
+.sn-c b { flex: none; overflow: visible; font-size: 12px; padding-left: 5px; } .sn-c { gap: 4px; overflow: hidden; }
+.sn-row .mono { font-size: 11px; }

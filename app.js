@@ -1,6 +1,6 @@
 /* ONE F1 (formerly Stat Lab) — mobile app shell: hash router + views. */
 (function () {
-  const APP_VERSION = "v76"; // keep in step with VERSION in sw.js
+  const APP_VERSION = "v77"; // keep in step with VERSION in sw.js
   const S = window.SEASON;
   const NEWS = window.NEWS || [];
   const PREVIEWS = window.PREVIEWS || {};
@@ -1191,6 +1191,94 @@
   }
 
   /* ---------- Lab: car development and season analysis (lab.js, tools/build_lab.py) ---------- */
+
+  /* ---------- v77: Season tab, race by race (qualifying + race) above the development analysis ---------- */
+  function seasonRaces() {
+    const lapS = (v) => { if (v == null) return null; if (typeof v === "number") return v; const m = String(v).match(/(?:(\d+):)?(\d+\.\d+)/); return m ? (+m[1] || 0) * 60 + +m[2] : null; };
+    const lastQ = (x) => x.q3 ?? x.q2 ?? x.q1 ?? x.best;
+    return S.RESULTS.map((res) => {
+      const r = res.round, c = raceByRound[r], QD = (S.QUALI_DETAIL || {})[r] || [], RD = (S.RACE_DETAIL || {})[r] || {};
+      const q = QD.filter((x) => x.pos).sort((a, b) => a.pos - b.pos), race = (res.race || []).filter((x) => x.pos).sort((a, b) => a.pos - b.pos);
+      const p1 = q[0], p2 = q[1], w = race[0], s2 = race[1];
+      const fl = (res.race || []).map((x) => ({ id: x.id, t: lapS(x.best) })).filter((x) => x.t).sort((a, b) => a.t - b.t)[0];
+      const gain = (res.race || []).filter((x) => x.pos && x.grid).map((x) => ({ id: x.id, d: x.grid - x.pos, g: x.grid, p: x.pos })).sort((a, b) => b.d - a.d)[0];
+      const ev = RD.events || [];
+      return { r, c, short: ((S.RACE_INFO || {})[r] || {}).short || c.name.slice(0, 3).toUpperCase(),
+        pole: p1 && p1.id, poleT: p1 && lastQ(p1), poleGap: p1 && p2 && lastQ(p2) != null && lastQ(p1) != null ? lastQ(p2) - lastQ(p1) : null, p2: p2 && p2.id,
+        win: w && w.id, winGrid: w && w.grid, margin: s2 && s2.gap != null && !isNaN(+s2.gap) ? +s2.gap : null, podium: race.slice(0, 3).map((x) => x.id),
+        fl: fl && fl.id, dnf: (res.race || []).filter((x) => x.dnf).length, sc: ev.filter((e) => e.type === "sc").length, vsc: ev.filter((e) => e.type === "vsc").length,
+        ot: RD.overtakes ? RD.overtakes.total : null, rain: RD.weather ? !!RD.weather.rain : false, gain, q };
+    });
+  }
+  function seasonBlock() {
+    const RR = seasonRaces(); if (!RR.length) return "";
+    const col = (id) => (driver[id] && team[driver[id].team] ? team[driver[id].team].color : "#5E6470"), ln = (id) => esc(lastName(id));
+    const uniq = (k) => new Set(RR.map((x) => x[k]).filter(Boolean)).size;
+    const conv = RR.filter((x) => x.pole && x.pole === x.win).length;
+    const pg = RR.filter((x) => x.poleGap != null), mg = RR.filter((x) => x.margin != null);
+    const avg = (a) => a.reduce((x, y) => x + y, 0) / (a.length || 1);
+    const closeQ = [...pg].sort((a, b) => a.poleGap - b.poleGap)[0], closeR = [...mg].sort((a, b) => a.margin - b.margin)[0], bigR = [...mg].sort((a, b) => b.margin - a.margin)[0];
+    const mostOT = RR.filter((x) => x.ot != null).sort((a, b) => b.ot - a.ot)[0];
+    const tile = (k, v, sub, c) => `<div class="wk-tile" style="--tc:${c || "var(--red)"}"><span class="kicker">${k}</span><b class="mono">${v}</b>${sub ? `<span class="mono dim">${sub}</span>` : ""}</div>`;
+    const tiles = [
+      tile("Different winners", uniq("win"), `in ${RR.length} races`), tile("Different polesitters", uniq("pole"), `in ${RR.length} qualifyings`),
+      tile("Pole → win", `${conv}/${RR.length}`, `${Math.round(conv / RR.length * 100)}% converted`), tile("Avg pole margin", avg(pg.map((x) => x.poleGap)).toFixed(3) + "s", "P1 to P2"),
+      closeQ ? tile("Closest pole", closeQ.poleGap.toFixed(3) + "s", `${closeQ.c.flag} ${esc(closeQ.short)} · ${ln(closeQ.pole)}`, col(closeQ.pole)) : "",
+      closeR ? tile("Closest finish", closeR.margin.toFixed(3) + "s", `${closeR.c.flag} ${esc(closeR.short)} · ${ln(closeR.win)}`, col(closeR.win)) : "",
+      bigR ? tile("Biggest win", bigR.margin.toFixed(1) + "s", `${bigR.c.flag} ${esc(bigR.short)} · ${ln(bigR.win)}`, col(bigR.win)) : "",
+      mostOT ? tile("Most overtakes", mostOT.ot, `${mostOT.c.flag} ${esc(mostOT.short)}`) : "",
+      tile("Safety cars", RR.reduce((a, x) => a + x.sc, 0), `in ${RR.filter((x) => x.sc).length} races`), tile("Retirements", RR.reduce((a, x) => a + x.dnf, 0), `${avg(RR.map((x) => x.dnf)).toFixed(1)} per race`),
+    ].join("");
+    // race-by-race table
+    const cols = "grid-template-columns:18px 42px minmax(0,1.1fr) minmax(0,1fr) 44px 26px 16px";
+    const table = `<div class="wk-table reveal"><div class="wk-th n1" style="${cols}"><span>R</span><span>GP</span><span>Pole · gap</span><span>Winner · grid</span><span>Margin</span><span>OT</span><span>SC</span></div>
+      ${RR.map((x) => `<a class="wk-tr sn-row" href="#/race/${x.r}" style="${cols}"><span class="mono dim">${x.r}</span><span class="mono">${x.c.flag}${esc(x.short)}</span>
+        <span class="sn-c" style="--tc:${col(x.pole)}"><b>${esc(x.pole || "–")}</b><small class="mono">${x.poleGap != null ? x.poleGap.toFixed(3).replace(/^0/, "") : ""}</small></span>
+        <span class="sn-c" style="--tc:${col(x.win)}"><b>${esc(x.win || "–")}</b><small class="mono ${x.winGrid > 1 ? "up" : ""}">P${x.winGrid || "–"}</small></span>
+        <span class="mono r">${x.margin != null ? x.margin.toFixed(x.margin < 10 ? 3 : 1) : "–"}</span><span class="mono r dim">${x.ot ?? "–"}</span><span class="mono r ${x.sc ? "hot" : "dim"}">${x.sc || (x.vsc ? "v" : "–")}</span></a>`).join("")}</div>`;
+    // margins by round (bars)
+    const W = 340, H = 120, n = RR.length, bw = (W - 30) / n;
+    const bars = (key, cap, colKey, fmt) => { const mx = Math.min(cap, Math.max(...RR.map((x) => x[key] || 0))) || 1;
+      return `<svg viewBox="0 0 ${W} ${H + 18}" class="sn-bars">${[0.5, 1].map((f) => `<line x1="28" x2="${W}" y1="${(H - f * (H - 10)).toFixed(1)}" y2="${(H - f * (H - 10)).toFixed(1)}" class="gl"/><text x="24" y="${(H - f * (H - 10) + 3).toFixed(1)}" text-anchor="end">${fmt(mx * f)}</text>`).join("")}
+        ${RR.map((x, i) => { const v = x[key]; if (v == null) return ""; const h = Math.max(2, Math.min(v, mx) / mx * (H - 10));
+          return `<rect x="${(30 + i * bw + 1).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${col(x[colKey])}"><title>R${x.r} ${x.short}: ${v.toFixed(3)}</title></rect>`; }).join("")}
+        ${RR.filter((_, i) => i % 4 === 0 || i === n - 1).map((x) => `<text x="${(30 + (x.r - RR[0].r) * bw + bw / 2).toFixed(1)}" y="${H + 14}" text-anchor="middle">R${x.r}</text>`).join("")}</svg>`; };
+    // driver records
+    const ds = {}; const d0 = (id) => (ds[id] = ds[id] || { id, poles: 0, wins: 0, pods: 0, fl: 0, front: 0, qs: [], fs: [], dnf: 0 });
+    RR.forEach((x) => { if (x.pole) d0(x.pole).poles++; if (x.win) d0(x.win).wins++; x.podium.forEach((id) => d0(id).pods++); if (x.fl) d0(x.fl).fl++;
+      x.q.forEach((q) => { d0(q.id).qs.push(q.pos); if (q.pos <= 2) d0(q.id).front++; }); });
+    S.RESULTS.forEach((res) => (res.race || []).forEach((y) => { const d = d0(y.id); if (y.dnf) d.dnf++; else if (y.pos) d.fs.push(y.pos); }));
+    const recs = Object.values(ds).filter((d) => d.poles || d.wins || d.pods).sort((a, b) => b.wins - a.wins || b.poles - a.poles || b.pods - a.pods);
+    const cR = "grid-template-columns:minmax(0,1fr) 30px 32px 32px 40px 40px";
+    const records = `<div class="wk-table reveal"><div class="wk-th" style="${cR}"><span>Driver</span><span>Win</span><span>Pole</span><span>Pod</span><span>Avg Q</span><span>Avg R</span></div>
+      ${recs.map((d) => `<div class="wk-tr" style="${cR};--tc:${col(d.id)}"><b>${ln(d.id)}</b><span class="mono r ${d.wins ? "hot" : "dim"}">${d.wins}</span><span class="mono r">${d.poles}</span><span class="mono r">${d.pods}</span><span class="mono r">${avg(d.qs).toFixed(1)}</span><span class="mono r">${d.fs.length ? avg(d.fs).toFixed(1) : "–"}</span></div>`).join("")}</div>`;
+    // team-mate qualifying battles over the season (last part both reached)
+    const lastCommon = (a, b) => { for (const k of ["q3", "q2", "q1"]) if (a[k] != null && b[k] != null) return [a[k], b[k]]; return null; };
+    const tm = {};
+    RR.forEach((x) => { const byT = {}; x.q.forEach((q) => (byT[q.team] = byT[q.team] || []).push(q));
+      Object.entries(byT).forEach(([t, v]) => { if (v.length !== 2) return; const [a, b] = [...v].sort((p, q) => p.id.localeCompare(q.id)), lc = lastCommon(a, b); if (!lc) return;
+        const k = t + ":" + a.id + ":" + b.id, e = tm[k] = tm[k] || { t, a: a.id, b: b.id, wa: 0, wb: 0, gaps: [] }; if (lc[0] < lc[1]) e.wa++; else e.wb++; e.gaps.push(lc[1] - lc[0]); }); });
+    const TM = Object.values(tm).filter((e) => e.wa + e.wb >= 5).map((e) => { const lead = e.wa >= e.wb; return { ...e, lead: lead ? e.a : e.b, trail: lead ? e.b : e.a, wl: Math.max(e.wa, e.wb), wt: Math.min(e.wa, e.wb), med: Math.abs([...e.gaps].sort((p, q) => p - q)[e.gaps.length >> 1]) }; })
+      .sort((p, q) => (q.wl / (q.wl + q.wt)) - (p.wl / (p.wl + p.wt)));
+    const cT = "grid-template-columns:minmax(0,1.3fr) 42px minmax(0,1fr) 48px";
+    const tmHtml = `<div class="wk-table reveal">${TM.map((e) => `<div class="wk-tr" style="${cT};--tc:${team[e.t] ? team[e.t].color : "#888"}"><b>${ln(e.lead)}</b><span class="mono r hot">${e.wl}–${e.wt}</span><span class="dim r">${ln(e.trail)}</span><span class="mono r">${e.med.toFixed(3)}</span></div>`).join("")}</div>`;
+    // drivers' points race (top 6, Grand Prix points)
+    const top = DS.slice(0, 6).map((d) => d.id), cum = (id) => { let c = 0; return RR.map((x) => (c += ((S.RESULTS.find((y) => y.round === x.r).race || []).find((y) => y.id === id) || {}).points || 0)); };
+    const labelYs = (ys) => { const o = ys.map((y, i) => [y, i]).sort((a, b) => a[0] - b[0]), out = []; let last = -99; o.forEach(([y, i]) => { const v = Math.max(y, last + 10); out[i] = v; last = v; }); return out; };
+    const pts = top.map((id) => ({ id, v: cum(id) })), pmax = Math.max(...pts.map((p) => p.v[p.v.length - 1])) || 1, HP = 190, xp = (i) => 30 + i * ((W - 70) / (n - 1 || 1)), yp = (v) => 8 + (1 - v / pmax) * (HP - 26);
+    const ptsSvg = `<svg viewBox="0 0 ${W} ${HP}" class="sn-bars">${[0.5, 1].map((f) => `<line x1="28" x2="${W - 40}" y1="${yp(pmax * f).toFixed(1)}" y2="${yp(pmax * f).toFixed(1)}" class="gl"/><text x="24" y="${(yp(pmax * f) + 3).toFixed(1)}" text-anchor="end">${Math.round(pmax * f)}</text>`).join("")}
+      ${pts.map((p) => `<path d="${p.v.map((v, i) => `${i ? "L" : "M"}${xp(i).toFixed(1)},${yp(v).toFixed(1)}`).join("")}" fill="none" stroke="${col(p.id)}" stroke-width="2.4" stroke-linejoin="round"/>`).join("")}${labelYs(pts.map((p) => yp(p.v[n - 1]))).map((y, k) => `<text x="${(xp(n - 1) + 4).toFixed(1)}" y="${(y + 3).toFixed(1)}" class="sn-lbl" fill="${col(pts[k].id)}">${esc(pts[k].id)}</text>`).join("")}
+      ${RR.filter((_, i) => i % 4 === 0 || i === n - 1).map((x) => `<text x="${xp(RR.indexOf(x)).toFixed(1)}" y="${HP - 4}" text-anchor="middle">R${x.r}</text>`).join("")}</svg>`;
+    return `<div class="wk-tiles reveal">${tiles}</div>
+      ${sectionHead("Every round · tap for the full race", "Race by race", `<p class="note">Pole and gap to P2, winner and their grid slot, winning margin (s), overtakes, safety cars (v = virtual only).</p>`)}${table}
+      ${sectionHead("Saturdays", "Pole margin by round", `<p class="note">Gap from pole to P2 in seconds, coloured by the polesitter's team.</p>`)}<figure class="chart reveal">${bars("poleGap", 0.6, "pole", (v) => v.toFixed(2))}</figure>
+      ${sectionHead("Sundays", "Winning margin by round", `<p class="note">Gap from the winner to P2 in seconds (capped at 20), coloured by the winner's team.</p>`)}<figure class="chart reveal">${bars("margin", 20, "win", (v) => v.toFixed(0))}</figure>
+      ${sectionHead("Season records", "Driver by driver", `<p class="note">Wins, poles, podiums, average qualifying and finishing position (finishes only).</p>`)}${records}
+      ${sectionHead("Same car all season", "Team-mate qualifying", `<p class="note">Head-to-head in the last part both reached, and the median gap (s).</p>`)}${tmHtml}
+      ${sectionHead("Grand Prix points · top 6", "Drivers' points race")}<figure class="chart reveal">${ptsSvg}</figure>
+      ${sectionHead("How the cars developed", "Development")}`;
+  }
+
   function viewLab(sel) {
     const LB = S.LAB;
     if (!LB) return viewMissing("Season analysis isn't loaded yet.");
@@ -1206,7 +1294,7 @@
     const roll = (t, k) => R.map((r, i) => { const w = R.slice(Math.max(0, i - 1), i + 2).map((x) => T[t][k][x]).filter((v) => v != null); return w.length ? avg(w) : null; });
     const pathOf = (vals, x, y) => vals.map((v, i) => (v == null ? "" : `${i && vals[i - 1] != null ? "L" : "M"}${x(R[i]).toFixed(1)},${y(v).toFixed(1)}`)).join("");
     const rTicks = (y) => [R[0], 6, 11, 16, R[R.length - 1]].filter((r) => R.includes(r)).map((r) => `<text x="${xr(r).toFixed(1)}" y="${y}" text-anchor="middle">R${r}</text>`).join("");
-    const chips = order.map((t) => `<a class="lchip ${t === cur ? "on" : ""}" href="#/lab/${t}" style="--tc:${col(t)}">${shortT(t)}</a>`).join("");
+    const chips = order.map((t) => `<a class="lchip ${t === cur ? "on" : ""}" href="#/season/${t}" style="--tc:${col(t)}">${shortT(t)}</a>`).join("");
 
     // 1. development race: gap to the fastest car, 3-round rolling average
     const H1 = 210, T1 = 10, B1 = 22, maxP = Math.min(5, Math.max(...ids.map((t) => Math.max(...roll(t, "pace").filter((v) => v != null)))));
@@ -1249,7 +1337,8 @@
 
     const early = `R${LB.early[0]}–${LB.early[1]}`, late = `R${LB.late[0]}–${LB.late[1]}`;
     return `<div class="season lab">
-      <div class="page-title reveal"><span class="kicker">2026 · ${R.length} rounds analysed</span><h1>Lab</h1><p class="dim">How the cars developed, from every qualifying lap of the season.</p></div>
+      <div class="page-title reveal"><span class="kicker">2026 · ${R.length} rounds analysed</span><h1>Season</h1><p class="dim">Every qualifying and race of 2026, round by round, and how the cars developed.</p></div>
+      ${seasonBlock()}
       <div class="lchips">${chips}</div>
 
       ${sectionHead("Qualifying pace", "The development race", `<p class="note">Gap to the fastest car each Saturday (3-race average). Lower is faster.</p>`)}
@@ -1303,7 +1392,7 @@
     else if (p0 === "weekend" && WEEKEND) { html = WEEKEND.view(parts); tab = "weekend"; }
     else if (p0 === "play" && PLAY) { html = PLAY.view(parts); tab = "play"; }
     else if (p0 === "welcome") { html = viewSeason(); tab = "season"; setTimeout(() => openWelcome(p1 === "install" ? 2 : 0)); }
-    else if (p0 === "lab") { html = viewLab(p1); tab = "lab"; }
+    else if (p0 === "lab" || p0 === "season") { html = viewLab(p1); tab = "lab"; }
     else if (p0 === "duel") { html = viewDuelRace(p1, p2, p3 === "race" ? Number(p4) : undefined); tab = "lab"; }
     else { html = viewMissing("That page doesn't exist."); tab = ""; }
 
@@ -1454,7 +1543,7 @@
       body = `<span class="w-kick">Formation lap · 3 steps</span>
         <h1 class="w-h">Lights out on<br>your <em>F1</em> season.</h1>
         <p class="w-sub">Every race decoded, every car's development tracked, and games to settle it with your friends.</p>
-        <ol class="w-tower">${row(1, "#E10600", "Race analysis", "Gaps, strategy, key moments", "LIVE DATA")}${row(2, "#27F4D2", "The Lab", "How every car developed", "21 RNDS")}${row(3, "#FF8000", "Play", "Reaction, trivia, challenges", "VS FRIENDS")}</ol>`;
+        <ol class="w-tower">${row(1, "#E10600", "Race analysis", "Gaps, strategy, key moments", "LIVE DATA")}${row(2, "#27F4D2", "Season", "Race by race and how every car developed", "21 RNDS")}${row(3, "#FF8000", "Play", "Reaction, trivia, challenges", "VS FRIENDS")}</ol>`;
       foot = `<button class="w-go" type="button" data-w="next"><span>Start the formation lap</span>${svgI("arrow")}</button><button class="w-skip" type="button" data-w="done">Skip to the app</button>`;
     } else if (wStep === 1) {
       // drivers on a staggered starting grid, helmets and all

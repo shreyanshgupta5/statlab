@@ -14,10 +14,12 @@ Never add a workflow that pushes to `main` automatically.
 
 ## Map
 - `index.html`: shell, intro splash (logo on app black, then it lands in the header), header with the Guide button, glass tab bar.
-- `app.js`: everything else (routes `#/`, `#/weekend`, `#/play`, `#/lab`, `#/news/ID` (articles, no tab), `#/race/N`, `#/driver/ID`, `#/welcome`, …).
+- Tabs (v77): Home `#/`, Weekend `#/weekend`, Play `#/play`, Season `#/season` (was Lab; `#/lab` still works).
+- `app.js`: everything else (routes `#/`, `#/weekend`, `#/play`, `#/season`, `#/news/ID` (articles, no tab), `#/race/N`, `#/driver/ID`, `#/welcome`, …).
   - `helmet(id, opts)` draws every driver image. It shows a cartoon portrait when `portraits.js` lists one, else the helmet (`helmetSVG`).
   - Home: the stories row (`buildStories`, `storiesRow`, full-screen viewer), the latest-session card (`latestCand`, `latestSession`), next race, following, standings.
-  - Race preview: weekend schedule (`weekendSchedule`). Race analysis: `raceInsights`. Lab tab: `viewLab`.
+  - Race preview: weekend schedule (`weekendSchedule`). Race analysis: `raceInsights`. Season tab: `viewLab` = `seasonBlock` (race by race: tiles, table, margins,
+    driver records, team-mate qualifying, points race) + the development analysis from lab.js.
 - `weekend.js`: the Weekend tab (replaced News in v74). Reads OpenF1 live in the browser (CORS open, queued ~0.65s apart
   because the free API rate-limits), analyses each finished session (timesheet, long runs, ideal laps, speed trap, teams, tyres,
   flags; quali results + team-mate gaps; race result, strategy, pit stops) and caches finished sessions in localStorage.
