@@ -171,8 +171,6 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
       t.push(tile("Within 0.5s", order.filter((x) => x.best - f.best < 0.5).length, "drivers", "of the fastest lap"));
       const runs = P.flatMap((a) => a.runs.map((r) => ({ ...r, s: a.slug }))).sort((a, b) => a.pace - b.pace);
       if (runs[0]) t.push(tile("Best long run", lapT(runs[0].pace), esc(nm(M, runs[0].id)), `${SH(runs[0].s)} · ${runs[0].n} laps · ${(runs[0].tyre || "").toLowerCase()}`, tcol(M, runs[0].id)));
-      const sec = [0, 1, 2].map((i) => P.map((a) => a.sBest[i] && { ...a.sBest[i], s: a.slug }).filter(Boolean).sort((a, b) => a.t - b.t)[0]);
-      if (sec.every(Boolean)) { const ideal = sec[0].t + sec[1].t + sec[2].t; t.push(tile("Ideal lap", lapT(ideal), "best 3 sectors", `${(f.best - ideal).toFixed(3)}s under the best`)); }
       const sp = all.filter((r) => r.top).sort((a, b) => b.top - a.top)[0];
       if (sp) t.push(tile("Top speed", sp.top + "", esc(nm(M, sp.id)), `km/h · ${SH(sp.s)}`, tcol(M, sp.id)));
       t.push(tile("Practice laps", P.reduce((a, x) => a + x.totalLaps, 0), `${P.length} session${P.length > 1 ? "s" : ""}`, ""));
@@ -204,13 +202,6 @@ window.WEEKEND_INIT = function ({ S, driver, team, helmet, esc, raceByRound, sec
         ${R.slice(0, 14).map((x, i) => `<div class="wk-tr wk-pace-row" style="--tc:${tcol(M, x.id)}"><b>${esc(nm(M, x.id))}</b><span class="wk-pbar"><i style="width:${Math.max(6, 100 - Math.min(1, (x.pace - r0) / span) * 75)}%"></i></span>
         <span class="mono r">${i ? "+" + (x.pace - r0).toFixed(3) : lapT(x.pace)}</span><span class="mono r ${x.deg > 0.15 ? "hot" : ""}">${x.deg >= 0 ? "+" : "−"}${Math.abs(x.deg).toFixed(2)}</span><span class="mono dim r">${tyreDot(x.tyre)}${x.n}·${SH(x.s)}</span></div>`).join("")}</div>`,
         "Median clean lap of each driver's quickest long run across practice. Deg = seconds lost per lap over the run (fuel burn hides some). Run = tyre, laps, session."); }
-    // 3. ideal laps over the weekend
-    const sec = [0, 1, 2].map((i) => P.map((a) => a.sBest[i] && { ...a.sBest[i], s: a.slug }).filter(Boolean).sort((a, b) => a.t - b.t)[0]);
-    const ideal = {}; P.forEach((a) => a.rows.forEach((r) => r.s.forEach((v, i) => { if (v) { const x = ideal[r.id] = ideal[r.id] || [null, null, null]; if (x[i] == null || v < x[i]) x[i] = v; } })));
-    const IL = Object.entries(ideal).filter(([, s]) => s.every(Boolean)).map(([id, s]) => ({ id, t: s[0] + s[1] + s[2], lost: best[id] ? best[id].best - (s[0] + s[1] + s[2]) : 0 })).sort((a, b) => a.t - b.t);
-    if (IL.length >= 3 && sec.every(Boolean)) html += block("wk-ideal", "Best sectors added up", "Ideal laps", `<div class="wk-secs reveal">${sec.map((x, i) => `<div style="--tc:${tcol(M, x.id)}"><span class="kicker">S${i + 1} · ${SH(x.s)}</span><b class="mono">${x.t.toFixed(3)}</b><span>${esc(nm(M, x.id))}</span></div>`).join("")}</div>
-      <div class="wk-table reveal"><div class="wk-th wk-il-row"><span>#</span><span>Driver</span><span>Ideal</span><span>Best</span><span>Lost</span></div>${IL.slice(0, 12).map((x, i) => `<div class="wk-tr wk-il-row" style="--tc:${tcol(M, x.id)}"><span class="mono dim">${i + 1}</span><b>${esc(nm(M, x.id))}</b><span class="mono r">${lapT(x.t)}</span><span class="mono r dim">${lapT(best[x.id].best)}</span><span class="mono r">${x.lost > 0.001 ? "−" + x.lost.toFixed(3) : "0"}</span></div>`).join("")}</div>`,
-      "Fastest sectors of the weekend (tiles) and each driver's best three sectors from any practice lap. Lost = ideal vs actual best lap.");
     // 4. speed trap per session
     const top = {}; P.forEach((a, k) => a.rows.forEach((r) => { (top[r.id] = top[r.id] || Array(n).fill(null))[k] = r.top || null; }));
     const TS = Object.entries(top).map(([id, v]) => ({ id, v, mx: Math.max(...v.filter(Boolean)) })).filter((x) => isFinite(x.mx)).sort((a, b) => b.mx - a.mx);

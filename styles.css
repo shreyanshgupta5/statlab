@@ -1204,3 +1204,4 @@ html.story-open, html.story-open body { overflow: hidden; }
 .wk-secs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .wk-secs b { font-size: 17px; }
 .wk-il-row.wk-th span:nth-child(2) { text-align: left; } .wk-pace-row { grid-template-columns: minmax(0, 1fr) 40px 62px 42px 60px; }
 .wk-th.n1 span:nth-child(2) { text-align: left; }
+.wk-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
